@@ -1,5 +1,6 @@
 import { Router, RequestHandler } from "express";
 import { User } from "../models/User";
+import { SalaryRecord } from "../models/SalaryRecord";
 import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
@@ -22,6 +23,49 @@ export const seedUsers = async () => {
     }
   } catch (error) {
     console.error("Error seeding users:", error);
+  }
+};
+
+// Seed sample salary records
+export const seedSalaryRecords = async () => {
+  try {
+    const count = await SalaryRecord.countDocuments();
+    if (count === 0) {
+      console.log("Seeding sample salary records...");
+      // Using the employee ID from the screenshot
+      const defaultSalaryRecords = [
+        {
+          employeeId: "699f25b508838b1b788dd5e4",
+          month: "2024-01",
+          year: 2024,
+          totalWorkingDays: 26,
+          actualWorkingDays: 26,
+          basicSalary: 50000,
+          bonus: 5000,
+          deductions: 3500,
+          totalSalary: 51500,
+          paymentDate: "2024-02-05",
+          notes: "January salary payment",
+        },
+        {
+          employeeId: "699f25b508838b1b788dd5e4",
+          month: "2024-02",
+          year: 2024,
+          totalWorkingDays: 29,
+          actualWorkingDays: 28,
+          basicSalary: 50000,
+          bonus: 0,
+          deductions: 3500,
+          totalSalary: 46500,
+          paymentDate: "2024-03-05",
+          notes: "February salary payment - 1 day leave",
+        },
+      ];
+      await SalaryRecord.insertMany(defaultSalaryRecords);
+      console.log("Sample salary records seeded successfully.");
+    }
+  } catch (error) {
+    console.error("Error seeding salary records:", error);
   }
 };
 
