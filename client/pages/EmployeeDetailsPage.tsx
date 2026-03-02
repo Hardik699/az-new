@@ -498,7 +498,14 @@ export default function EmployeeDetailsPage() {
   const handleDeleteSalaryRecord = async (recordId: string) => {
     if (confirm("Are you sure you want to delete this salary record?")) {
       try {
-        const response = await fetch(`/api/salary-records/${recordId}`, {
+        // Find the record to get the MongoDB _id
+        const record = salaryRecords.find((r) => r.id === recordId);
+        if (!record) {
+          throw new Error("Record not found");
+        }
+
+        const mongoId = (record as any)._id || recordId;
+        const response = await fetch(`/api/salary-records/${mongoId}`, {
           method: "DELETE",
         });
 
