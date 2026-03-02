@@ -1543,26 +1543,6 @@ export default function EmployeeDetailsPage() {
                         <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
                           {salaryForm.basic}
                         </div>
-                        {parseFloat(salaryForm.basic) > 0 && (
-                          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Actual Basic (50%)</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5).toFixed(2)}</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">HRA (40%, min 1600)</div>
-                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).hra.toFixed(2)}</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Conveyance</div>
-                              <div className="text-white font-semibold">1,600</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Sp. Allowance</div>
-                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).specialAllowance.toFixed(2)}</div>
-                            </div>
-                          </div>
-                        )}
                       </div>
 
                       <div className="overflow-x-auto border border-slate-700 rounded">
@@ -1766,6 +1746,42 @@ export default function EmployeeDetailsPage() {
                         className="bg-slate-800/50 border-slate-700 text-white"
                         placeholder="Any additional notes..."
                       />
+                    </div>
+
+                    {/* Net Salary Credited - Auto-calculated */}
+                    <div className="space-y-2">
+                      <Label className="text-slate-300">Net Salary Credited</Label>
+                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                        {(() => {
+                          // Calculate total earned gross
+                          const earnedFields = [
+                            "basicEarned", "hraEarned", "conveyanceEarned", "specialAllowanceEarned",
+                            "incentiveEarned", "adjustmentEarned", "bonusEarned", "retentionBonusEarned", "advanceAnyEarned"
+                          ];
+                          let totalEarnedGross = 0;
+                          earnedFields.forEach((field) => {
+                            const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                            if (field === "advanceAnyEarned") {
+                              totalEarnedGross -= value;
+                            } else {
+                              totalEarnedGross += value;
+                            }
+                          });
+
+                          // Calculate deductions
+                          const pf = parseFloat(salaryForm.pf as string) || 0;
+                          const esic = parseFloat(salaryForm.esic as string) || 0;
+                          const pt = parseFloat(salaryForm.pt as string) || 0;
+                          const tds = parseFloat(salaryForm.tds as string) || 0;
+                          const advanceAnyDeduction = parseFloat(salaryForm.advanceAnyDeduction as string) || 0;
+                          const retention = parseFloat(salaryForm.retention as string) || 0;
+
+                          const totalDeductions = pf + esic + pt + tds + advanceAnyDeduction + retention;
+                          const netSalaryCredited = totalEarnedGross - totalDeductions;
+
+                          return netSalaryCredited.toFixed(2);
+                        })()}
+                      </div>
                     </div>
 
                     <div className="flex gap-2">
