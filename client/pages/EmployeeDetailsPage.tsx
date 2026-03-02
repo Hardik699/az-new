@@ -615,11 +615,16 @@ export default function EmployeeDetailsPage() {
 
   const handleEditSalaryRecord = (record: SalaryRecord) => {
     setEditingSalaryRecordId(record.id);
+    const salary = parseFloat(employee?.salary || "0");
+    const pf = parseFloat(employee?.pf || "0");
+    const esic = parseFloat(employee?.esic || "0");
+    const basicAmount = (salary - pf - esic).toString();
+
     setSalaryForm({
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
-      basic: "",
+      basic: basicAmount,
       hra: "",
       conveyance: "",
       specialAllowance: "",
@@ -628,6 +633,15 @@ export default function EmployeeDetailsPage() {
       bonus: record.bonus?.toString() || "",
       retentionBonus: "",
       advanceAny: "",
+      basicEarned: "",
+      hraEarned: "",
+      conveyanceEarned: "",
+      specialAllowanceEarned: "",
+      incentiveEarned: "",
+      adjustmentEarned: "",
+      bonusEarned: "",
+      retentionBonusEarned: "",
+      advanceAnyEarned: "",
       pf: employee?.pf || "",
       esic: employee?.esic || "",
       pt: employee?.pt || "",
@@ -1262,11 +1276,16 @@ export default function EmployeeDetailsPage() {
                     setShowSalaryForm(!showSalaryForm);
                     if (showSalaryForm) {
                       setEditingSalaryRecordId(null);
+                      const salary = parseFloat(employee?.salary || "0");
+                      const pf = parseFloat(employee?.pf || "0");
+                      const esic = parseFloat(employee?.esic || "0");
+                      const basicAmount = (salary - pf - esic).toString();
+
                       setSalaryForm({
                         month: "",
                         totalWorkingDays: "",
                         actualWorkingDays: "",
-                        basic: "",
+                        basic: basicAmount,
                         hra: "",
                         conveyance: "",
                         specialAllowance: "",
@@ -1315,11 +1334,16 @@ export default function EmployeeDetailsPage() {
                         onClick={() => {
                           setShowSalaryForm(false);
                           setEditingSalaryRecordId(null);
+                          const salary = parseFloat(employee?.salary || "0");
+                          const pf = parseFloat(employee?.pf || "0");
+                          const esic = parseFloat(employee?.esic || "0");
+                          const basicAmount = (salary - pf - esic).toString();
+
                           setSalaryForm({
                             month: "",
                             totalWorkingDays: "",
                             actualWorkingDays: "",
-                            basic: "",
+                            basic: basicAmount,
                             hra: "",
                             conveyance: "",
                             specialAllowance: "",
@@ -1328,16 +1352,16 @@ export default function EmployeeDetailsPage() {
                             bonus: "",
                             retentionBonus: "",
                             advanceAny: "",
-                        basicEarned: "",
-                        hraEarned: "",
-                        conveyanceEarned: "",
-                        specialAllowanceEarned: "",
-                        incentiveEarned: "",
-                        adjustmentEarned: "",
-                        bonusEarned: "",
-                        retentionBonusEarned: "",
-                        advanceAnyEarned: "",
-                        pf: employee?.pf || "",
+                            basicEarned: "",
+                            hraEarned: "",
+                            conveyanceEarned: "",
+                            specialAllowanceEarned: "",
+                            incentiveEarned: "",
+                            adjustmentEarned: "",
+                            bonusEarned: "",
+                            retentionBonusEarned: "",
+                            advanceAnyEarned: "",
+                            pf: employee?.pf || "",
                             esic: employee?.esic || "",
                             pt: employee?.pt || "",
                             tds: employee?.tds || "",
