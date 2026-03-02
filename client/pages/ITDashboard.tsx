@@ -41,7 +41,9 @@ import {
   X,
   RefreshCw,
   ArrowLeft,
+  Download,
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import {
   getPendingNotifications,
   markAsProcessed,
@@ -163,6 +165,86 @@ export default function ITDashboard() {
     }
   };
 
+  const exportToExcel = () => {
+    if (records.length === 0) {
+      alert("No IT records to export");
+      return;
+    }
+
+    // Prepare data for export with ALL information
+    const exportData = records.map((r) => {
+      // Format all emails with passwords
+      const emailDetails = r.emails.map((e, idx) => {
+        const provider = e.provider === "CUSTOM" ? e.providerCustom : e.provider;
+        return `${idx + 1}. ${provider}: ${e.email} | Password: ${e.password || "-"}`;
+      }).join(" | ");
+
+      return {
+        "Employee ID": r.employeeId,
+        "Employee Name": r.employeeName,
+        "Department": r.department,
+        "Table Number": r.tableNumber,
+        "Status": r.status === "active" ? "Active" : "Inactive",
+        "System ID": r.systemId,
+        "Email Accounts": emailDetails || "-",
+        "Email 1": r.emails[0]?.email || "-",
+        "Email 1 Password": r.emails[0]?.password || "-",
+        "Email 2": r.emails[1]?.email || "-",
+        "Email 2 Password": r.emails[1]?.password || "-",
+        "Email 3": r.emails[2]?.email || "-",
+        "Email 3 Password": r.emails[2]?.password || "-",
+        "VG/VON Provider": (r as any).vitelGlobal?.provider === "vonage" ? "Vonage" : "Vitel Global",
+        "VG/VON ID": r.vitelGlobal?.id || "-",
+        "LM ID": r.lmPlayer.id || "-",
+        "LM Password": r.lmPlayer.password || "-",
+        "LM License": r.lmPlayer.license || "Standard",
+        "Notes": r.notes || "-",
+        "Created Date": new Date(r.createdAt).toLocaleDateString(),
+        "Created Time": new Date(r.createdAt).toLocaleTimeString(),
+      };
+    });
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths for all columns
+    const columnWidths = [
+      { wch: 12 }, // Employee ID
+      { wch: 20 }, // Employee Name
+      { wch: 15 }, // Department
+      { wch: 12 }, // Table Number
+      { wch: 10 }, // Status
+      { wch: 12 }, // System ID
+      { wch: 45 }, // Email Accounts (combined)
+      { wch: 25 }, // Email 1
+      { wch: 20 }, // Email 1 Password
+      { wch: 25 }, // Email 2
+      { wch: 20 }, // Email 2 Password
+      { wch: 25 }, // Email 3
+      { wch: 20 }, // Email 3 Password
+      { wch: 15 }, // VG/VON Provider
+      { wch: 15 }, // VG/VON ID
+      { wch: 12 }, // LM ID
+      { wch: 20 }, // LM Password
+      { wch: 12 }, // LM License
+      { wch: 30 }, // Notes
+      { wch: 12 }, // Created Date
+      { wch: 12 }, // Created Time
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "IT Accounts");
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `IT_Accounts_${timestamp}.xlsx`;
+
+    // Write file
+    XLSX.writeFile(workbook, filename);
+  };
+
   useEffect(() => {
     // Check access control
     const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -280,6 +362,15 @@ export default function ITDashboard() {
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </span>
             )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-300"
+              onClick={exportToExcel}
+              title="Download IT accounts information as Excel file"
+            >
+              <Download className="h-4 w-4 mr-2" /> Export Excel
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -459,8 +550,12 @@ export default function ITDashboard() {
                 </TableHeader>
                 <TableBody>
                   {filtered.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">
+                    <TableRow
+                      key={r.id}
+                      className="cursor-pointer hover:bg-slate-800/50 transition-colors"
+                      onClick={() => navigate(`/it-preview/${r.id}`)}
+                    >
+                      <TableCell className="font-medium text-blue-400 hover:underline">
                         {r.employeeName}
                       </TableCell>
                       <TableCell>
@@ -497,7 +592,10 @@ export default function ITDashboard() {
                           variant="outline"
                           size="sm"
                           className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                          onClick={() => navigate(`/it-preview/${r.id}`)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/it-preview/${r.id}`);
+                          }}
                         >
                           <Eye className="h-4 w-4 mr-1" /> Preview
                         </Button>

@@ -116,9 +116,14 @@ export default function ITPage() {
   );
 
   const availableEmployees = useMemo(() => {
-    const assignedIds = new Set(records.map((r) => r.employeeId));
+    // Only filter out ACTIVE users - inactive users can be assigned again
+    const activeAssignedIds = new Set(
+      records
+        .filter((r) => r.status === "active")
+        .map((r) => r.employeeId)
+    );
     return employees.filter(
-      (e) => !assignedIds.has(e.id) || e.id === employeeId,
+      (e) => !activeAssignedIds.has(e.id) || e.id === employeeId,
     );
   }, [employees, records, employeeId]);
 
@@ -154,7 +159,7 @@ export default function ITPage() {
   // --- HELPER FUNCTIONS ---
 
   // Load and filter available PC/Laptop IDs from database
-  const loadAvailableSystemIds = async () => {
+  const loadAvailableSystemIds = async (currentRecords?: ITRecord[]) => {
     try {
       const response = await fetch("/api/pc-laptop");
       const result = await response.json();
@@ -163,12 +168,16 @@ export default function ITPage() {
         const pcLaptops = result.data;
         const pcLaptopIds = pcLaptops.map((item: any) => item.id);
 
-        // Get currently assigned system IDs from records
-        const assignedIds = records.map((record) => record.systemId);
+        // Get system IDs assigned to ACTIVE users only
+        // If a user is inactive, their system ID becomes available for reuse
+        const recordsToFilter = currentRecords !== undefined ? currentRecords : records;
+        const activeAssignedIds = recordsToFilter
+          .filter((record) => record.status === "active")
+          .map((record) => record.systemId);
 
-        // Filter out assigned IDs to show only available ones
+        // Filter out assigned IDs of active users to show only available ones
         let available = pcLaptopIds.filter(
-          (id: string) => !assignedIds.includes(id),
+          (id: string) => !activeAssignedIds.includes(id),
         );
         if (preSelectedSystemId && !available.includes(preSelectedSystemId)) {
           available = [preSelectedSystemId, ...available];
@@ -237,8 +246,8 @@ export default function ITPage() {
       alert("Some errors occurred while saving:\n" + errors.join("\n"));
     }
 
-    // Refresh available system IDs after saving
-    await loadAvailableSystemIds();
+    // Refresh available system IDs after saving (pass the updated records)
+    await loadAvailableSystemIds(next);
     return errors.length === 0;
   };
 
@@ -376,6 +385,8 @@ export default function ITPage() {
                 _id: rec._id, // Keep _id for database operations
               }));
               setRecords(mappedRecords);
+              // Load available PC/Laptop IDs immediately with the fetched records
+              await loadAvailableSystemIds(mappedRecords);
             }
           } catch (e) {
             console.error("Failed to parse IT accounts response:", e);
@@ -385,8 +396,6 @@ export default function ITPage() {
         console.error("Failed to load IT data:", error);
       }
 
-      // Load available PC/Laptop IDs
-      await loadAvailableSystemIds();
       setIsLoading(false);
     };
 
@@ -540,7 +549,7 @@ export default function ITPage() {
     }
   }, [employee, isPreFilled]);
 
-  // Load provider IDs from System assets (from database)
+  // Load provider IDs from System assets (from database) with filtering for active users
   useEffect(() => {
     const vonageAssets = systemAssets.filter(
       (a) => a.category === "vonage"
@@ -553,6 +562,12 @@ export default function ITPage() {
 
     console.log("Total systemAssets loaded:", systemAssets.length);
     console.log("All categories in systemAssets:", [...new Set(systemAssets.map(a => a.category))]);
+
+    // Get IDs assigned to ACTIVE users for the current provider
+    const activeAssignedProviderIds = records
+      .filter((record) => record.status === "active")
+      .map((record) => record.vitelGlobal?.id)
+      .filter((id): id is string => !!id);
 
     let ids = systemAssets
       .filter((a) =>
@@ -567,7 +582,10 @@ export default function ITPage() {
         }
         return a.id;
       })
-      .filter((x) => typeof x === "string" && x.trim() && x.trim() !== "-");
+      .filter((x) => typeof x === "string" && x.trim() && x.trim() !== "-")
+      // Filter out IDs assigned to ACTIVE users (available for inactive users or new assignments)
+      .filter((id) => !activeAssignedProviderIds.includes(id));
+
     console.log(`Provider IDs for ${provider}:`, ids);
     console.log(`Filtered count for ${provider}:`, ids.length);
     if (preSelectedProviderId && !ids.includes(preSelectedProviderId)) {
@@ -577,12 +595,12 @@ export default function ITPage() {
     setVitel((s) => ({
       id: ids.includes(s.id) ? s.id : preSelectedProviderId || "",
     }));
-  }, [provider, preSelectedProviderId, systemAssets]);
+  }, [provider, preSelectedProviderId, systemAssets, records]);
 
   // Ensure the pre-selected System ID is present in options after URL parsing
   useEffect(() => {
-    loadAvailableSystemIds();
-  }, [preSelectedSystemId]);
+    loadAvailableSystemIds(records);
+  }, [preSelectedSystemId, records]);
 
   // Auto-load PC/Laptop details when System ID changes
   useEffect(() => {
@@ -729,7 +747,7 @@ export default function ITPage() {
                   </div>
                   <Button
                     type="button"
-                    onClick={loadAvailableSystemIds}
+                    onClick={() => loadAvailableSystemIds(records)}
                     size="sm"
                     variant="outline"
                     className="border-slate-600 text-slate-300 hover:bg-slate-700 w-full sm:w-auto"
@@ -1228,9 +1246,8 @@ export default function ITPage() {
                               size="sm"
                               className="border-red-600 text-red-400"
                               onClick={() => {
-                                saveRecords(records.filter((x) => x.id !== r.id));
-                                // Refresh available IDs after deletion
-                                setTimeout(loadAvailableSystemIds, 100);
+                                const filtered = records.filter((x) => x.id !== r.id);
+                                saveRecords(filtered);
                               }}
                             >
                               <Trash2 className="h-4 w-4" />
