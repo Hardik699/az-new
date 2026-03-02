@@ -209,8 +209,9 @@ export default function EmployeeDetailsPage() {
     // Actual Basic for Gross calculation = Basic Salary * 50%
     const actualBasic = basicSalary * 0.5;
 
-    // HRA = Actual Basic * 40%
-    const hra = actualBasic * 0.4;
+    // HRA = Actual Basic * 40%, with minimum of 1600
+    const calculatedHra = actualBasic * 0.4;
+    const hra = Math.max(calculatedHra, 1600);
 
     // Conveyance = fixed 1600
     const conveyance = 1600;
@@ -1473,8 +1474,8 @@ export default function EmployeeDetailsPage() {
                               <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5).toFixed(2)}</div>
                             </div>
                             <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">HRA (40%)</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5 * 0.4).toFixed(2)}</div>
+                              <div className="text-slate-400">HRA (40%, min 1600)</div>
+                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).hra.toFixed(2)}</div>
                             </div>
                             <div className="bg-slate-700/50 p-2 rounded">
                               <div className="text-slate-400">Conveyance</div>
