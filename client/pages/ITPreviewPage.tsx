@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Eye,
@@ -15,6 +17,7 @@ import {
   Smartphone,
   Mail,
   Pencil,
+  AlertCircle,
 } from "lucide-react";
 
 interface ITRecord {
@@ -51,11 +54,75 @@ export default function ITPreviewPage() {
   const [pcLaptops, setPcLaptops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPasswords, setShowPasswords] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivatePassword, setDeactivatePassword] = useState("");
+  const [deactivatingLoading, setDeactivatingLoading] = useState(false);
+  const [deactivateError, setDeactivateError] = useState("");
 
   const requirePasscode = () => {
     const code = prompt("Enter passcode to show passwords");
     if (code === "123") setShowPasswords(true);
     else if (code !== null) alert("Incorrect passcode");
+  };
+
+  const handleDeactivateUser = async () => {
+    if (!deactivatePassword.trim()) {
+      setDeactivateError("Please enter your password");
+      return;
+    }
+
+    setDeactivatingLoading(true);
+    setDeactivateError("");
+
+    try {
+      // Verify password by attempting login
+      const currentUser = localStorage.getItem("currentUser");
+      const verifyRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: currentUser,
+          password: deactivatePassword,
+        }),
+      });
+
+      if (!verifyRes.ok) {
+        setDeactivateError("Incorrect password");
+        setDeactivatingLoading(false);
+        return;
+      }
+
+      // Password verified, now update the IT account status
+      if (!record) return;
+
+      const updateRes = await fetch(`/api/it-accounts/${record._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...record,
+          status: "inactive",
+        }),
+      });
+
+      if (!updateRes.ok) {
+        const errData = await updateRes.json().catch(() => ({}));
+        setDeactivateError(
+          errData.error || "Failed to deactivate user"
+        );
+        setDeactivatingLoading(false);
+        return;
+      }
+
+      // Success - redirect to dashboard
+      alert("User account deactivated successfully");
+      navigate("/it-dashboard");
+    } catch (error) {
+      setDeactivateError(
+        error instanceof Error ? error.message : "An error occurred"
+      );
+    } finally {
+      setDeactivatingLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -203,6 +270,15 @@ export default function ITPreviewPage() {
               )}
               {showPasswords ? "Hide Passwords" : "Show Passwords"}
             </Button>
+            {record.status === "active" && (
+              <Button
+                variant="outline"
+                className="border-orange-600/50 text-orange-400 hover:bg-orange-950/50"
+                onClick={() => setShowDeactivateModal(true)}
+              >
+                <AlertCircle className="mr-2 h-4 w-4" /> Make Inactive
+              </Button>
+            )}
           </div>
         </header>
 
@@ -427,6 +503,73 @@ export default function ITPreviewPage() {
           <div>Created on {new Date(record.createdAt).toLocaleString()}</div>
         </footer>
       </main>
+
+      {/* Deactivate User Modal */}
+      {showDeactivateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="bg-slate-900 border-slate-700 w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-orange-400" /> Deactivate User
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-slate-300">
+                To deactivate <strong>{record.employeeName}</strong>'s IT account,
+                please enter your password for verification.
+              </p>
+
+              {deactivateError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm">
+                  {deactivateError}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label className="text-slate-300">Your Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={deactivatePassword}
+                  onChange={(e) => {
+                    setDeactivatePassword(e.target.value);
+                    setDeactivateError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !deactivatingLoading) {
+                      handleDeactivateUser();
+                    }
+                  }}
+                  className="bg-slate-800/50 border-slate-700 text-white"
+                  disabled={deactivatingLoading}
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  onClick={() => {
+                    setShowDeactivateModal(false);
+                    setDeactivatePassword("");
+                    setDeactivateError("");
+                  }}
+                  disabled={deactivatingLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                  onClick={handleDeactivateUser}
+                  disabled={deactivatingLoading}
+                >
+                  {deactivatingLoading ? "Verifying..." : "Confirm Deactivate"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

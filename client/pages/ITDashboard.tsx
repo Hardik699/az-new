@@ -41,7 +41,9 @@ import {
   X,
   RefreshCw,
   ArrowLeft,
+  Download,
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import {
   getPendingNotifications,
   markAsProcessed,
@@ -163,6 +165,56 @@ export default function ITDashboard() {
     }
   };
 
+  const exportToExcel = () => {
+    if (records.length === 0) {
+      alert("No IT records to export");
+      return;
+    }
+
+    // Prepare data for export
+    const exportData = records.map((r) => ({
+      "Employee Name": r.employeeName,
+      "Department": r.department,
+      "Table Number": r.tableNumber,
+      "System ID": r.systemId,
+      "Status": r.status === "active" ? "Active" : "Inactive",
+      "Emails": r.emails.map((e) => e.email).join(", ") || "-",
+      "VG/VON Provider": (r as any).vitelGlobal?.provider === "vonage" ? "Vonage" : "Vitel Global",
+      "VG/VON ID": r.vitelGlobal?.id || "-",
+      "LM ID": r.lmPlayer.id || "-",
+      "Created Date": new Date(r.createdAt).toLocaleDateString(),
+    }));
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths
+    const columnWidths = [
+      { wch: 20 }, // Employee Name
+      { wch: 15 }, // Department
+      { wch: 12 }, // Table Number
+      { wch: 12 }, // System ID
+      { wch: 10 }, // Status
+      { wch: 30 }, // Emails
+      { wch: 15 }, // VG/VON Provider
+      { wch: 15 }, // VG/VON ID
+      { wch: 12 }, // LM ID
+      { wch: 12 }, // Created Date
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "IT Accounts");
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `IT_Accounts_${timestamp}.xlsx`;
+
+    // Write file
+    XLSX.writeFile(workbook, filename);
+  };
+
   useEffect(() => {
     // Check access control
     const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -280,6 +332,15 @@ export default function ITDashboard() {
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </span>
             )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-300"
+              onClick={exportToExcel}
+              title="Download IT accounts information as Excel file"
+            >
+              <Download className="h-4 w-4 mr-2" /> Export Excel
+            </Button>
             <Button
               variant="outline"
               size="sm"

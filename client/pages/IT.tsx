@@ -116,9 +116,14 @@ export default function ITPage() {
   );
 
   const availableEmployees = useMemo(() => {
-    const assignedIds = new Set(records.map((r) => r.employeeId));
+    // Only filter out ACTIVE users - inactive users can be assigned again
+    const activeAssignedIds = new Set(
+      records
+        .filter((r) => r.status === "active")
+        .map((r) => r.employeeId)
+    );
     return employees.filter(
-      (e) => !assignedIds.has(e.id) || e.id === employeeId,
+      (e) => !activeAssignedIds.has(e.id) || e.id === employeeId,
     );
   }, [employees, records, employeeId]);
 
@@ -163,12 +168,15 @@ export default function ITPage() {
         const pcLaptops = result.data;
         const pcLaptopIds = pcLaptops.map((item: any) => item.id);
 
-        // Get currently assigned system IDs from records
-        const assignedIds = records.map((record) => record.systemId);
+        // Get system IDs assigned to ACTIVE users only
+        // If a user is inactive, their system ID becomes available for reuse
+        const activeAssignedIds = records
+          .filter((record) => record.status === "active")
+          .map((record) => record.systemId);
 
-        // Filter out assigned IDs to show only available ones
+        // Filter out assigned IDs of active users to show only available ones
         let available = pcLaptopIds.filter(
-          (id: string) => !assignedIds.includes(id),
+          (id: string) => !activeAssignedIds.includes(id),
         );
         if (preSelectedSystemId && !available.includes(preSelectedSystemId)) {
           available = [preSelectedSystemId, ...available];
