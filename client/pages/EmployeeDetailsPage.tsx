@@ -159,6 +159,16 @@ export default function EmployeeDetailsPage() {
     bonus: "",
     retentionBonus: "",
     advanceAny: "",
+    // Earned Gross
+    basicEarned: "",
+    hraEarned: "",
+    conveyanceEarned: "",
+    specialAllowanceEarned: "",
+    incentiveEarned: "",
+    adjustmentEarned: "",
+    bonusEarned: "",
+    retentionBonusEarned: "",
+    advanceAnyEarned: "",
     // Deductions
     pf: "",
     esic: "",
@@ -1265,6 +1275,15 @@ export default function EmployeeDetailsPage() {
                         bonus: "",
                         retentionBonus: "",
                         advanceAny: "",
+                        basicEarned: "",
+                        hraEarned: "",
+                        conveyanceEarned: "",
+                        specialAllowanceEarned: "",
+                        incentiveEarned: "",
+                        adjustmentEarned: "",
+                        bonusEarned: "",
+                        retentionBonusEarned: "",
+                        advanceAnyEarned: "",
                         pf: employee?.pf || "",
                         esic: employee?.esic || "",
                         pt: employee?.pt || "",
@@ -1309,7 +1328,16 @@ export default function EmployeeDetailsPage() {
                             bonus: "",
                             retentionBonus: "",
                             advanceAny: "",
-                            pf: employee?.pf || "",
+                        basicEarned: "",
+                        hraEarned: "",
+                        conveyanceEarned: "",
+                        specialAllowanceEarned: "",
+                        incentiveEarned: "",
+                        adjustmentEarned: "",
+                        bonusEarned: "",
+                        retentionBonusEarned: "",
+                        advanceAnyEarned: "",
+                        pf: employee?.pf || "",
                             esic: employee?.esic || "",
                             pt: employee?.pt || "",
                             tds: employee?.tds || "",
@@ -1385,20 +1413,18 @@ export default function EmployeeDetailsPage() {
                           </thead>
                           <tbody>
                             {[
-                              { label: "Basic", key: "basic" },
-                              { label: "HRA", key: "hra" },
-                              { label: "Conveyance", key: "conveyance" },
-                              { label: "Sp. Allowance", key: "specialAllowance" },
-                              { label: "Incentive", key: "incentive" },
-                              { label: "Adjustment", key: "adjustment" },
-                              { label: "Bonus", key: "bonus" },
-                              { label: "Retention Bonus", key: "retentionBonus" },
-                              { label: "Advance Any", key: "advanceAny" },
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned" },
+                              { label: "HRA", key: "hra", earnedKey: "hraEarned" },
+                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
+                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
+                              { label: "Incentive", key: "incentive", earnedKey: "incentiveEarned" },
+                              { label: "Adjustment", key: "adjustment", earnedKey: "adjustmentEarned" },
+                              { label: "Bonus", key: "bonus", earnedKey: "bonusEarned" },
+                              { label: "Retention Bonus", key: "retentionBonus", earnedKey: "retentionBonusEarned" },
+                              { label: "Advance Any", key: "advanceAny", earnedKey: "advanceAnyEarned" },
                             ].map((field) => {
                               const actualValue = parseFloat(salaryForm[field.key as keyof typeof salaryForm] as string) || 0;
-                              const totalDays = parseFloat(salaryForm.totalWorkingDays) || 1;
-                              const actualDays = parseFloat(salaryForm.actualWorkingDays) || totalDays;
-                              const earnedValue = (actualValue / totalDays) * actualDays;
+                              const earnedValue = parseFloat(salaryForm[field.earnedKey as keyof typeof salaryForm] as string) || 0;
 
                               return (
                                 <tr key={field.key} className="border-b border-slate-700 hover:bg-slate-800/30">
@@ -1417,35 +1443,45 @@ export default function EmployeeDetailsPage() {
                                       placeholder="0"
                                     />
                                   </td>
-                                  <td className="px-4 py-3 text-right text-slate-300 text-sm font-medium">
-                                    {earnedValue.toFixed(2)}
+                                  <td className="px-4 py-3 text-right">
+                                    <Input
+                                      type="number"
+                                      value={earnedValue}
+                                      onChange={(e) =>
+                                        setSalaryForm({
+                                          ...salaryForm,
+                                          [field.earnedKey]: e.target.value,
+                                        })
+                                      }
+                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
+                                      placeholder="0"
+                                    />
                                   </td>
                                 </tr>
                               );
                             })}
                             {/* Gross Earnings Total Row */}
                             {(() => {
-                              const fields = [
-                                { label: "Basic", key: "basic" },
-                                { label: "HRA", key: "hra" },
-                                { label: "Conveyance", key: "conveyance" },
-                                { label: "Sp. Allowance", key: "specialAllowance" },
-                                { label: "Incentive", key: "incentive" },
-                                { label: "Adjustment", key: "adjustment" },
-                                { label: "Bonus", key: "bonus" },
-                                { label: "Retention Bonus", key: "retentionBonus" },
-                                { label: "Advance Any", key: "advanceAny" },
+                              const actualFields = [
+                                "basic", "hra", "conveyance", "specialAllowance",
+                                "incentive", "adjustment", "bonus", "retentionBonus", "advanceAny"
                               ];
-                              const totalDays = parseFloat(salaryForm.totalWorkingDays) || 1;
-                              const actualDays = parseFloat(salaryForm.actualWorkingDays) || totalDays;
+                              const earnedFields = [
+                                "basicEarned", "hraEarned", "conveyanceEarned", "specialAllowanceEarned",
+                                "incentiveEarned", "adjustmentEarned", "bonusEarned", "retentionBonusEarned", "advanceAnyEarned"
+                              ];
 
                               let totalActual = 0;
                               let totalEarned = 0;
 
-                              fields.forEach((field) => {
-                                const value = parseFloat(salaryForm[field.key as keyof typeof salaryForm] as string) || 0;
+                              actualFields.forEach((field) => {
+                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
                                 totalActual += value;
-                                totalEarned += (value / totalDays) * actualDays;
+                              });
+
+                              earnedFields.forEach((field) => {
+                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                totalEarned += value;
                               });
 
                               return (
