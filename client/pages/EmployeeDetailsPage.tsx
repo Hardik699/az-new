@@ -45,6 +45,69 @@ import { uploadFileToSupabase, uploadBase64ToSupabase } from "@/lib/supabase";
 import AppNav from "@/components/Navigation";
 import SuccessModal from "@/components/SuccessModal";
 
+// Helper function to convert numbers to words
+const numberToWords = (num: number): string => {
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const scales = ["", "Thousand", "Lakh", "Crore"];
+
+  if (num === 0) return "Zero";
+
+  const parts: string[] = [];
+  let scaleIndex = 0;
+
+  while (num > 0 && scaleIndex < scales.length) {
+    let divisor = scaleIndex === 0 ? 1000 : (scaleIndex === 1 ? 100 : 100);
+    let groupValue = num % (scaleIndex === 0 ? 1000 : 1000000);
+
+    if (scaleIndex === 0) {
+      groupValue = num % 1000;
+    } else if (scaleIndex === 1) {
+      groupValue = Math.floor((num % 100000) / 1000);
+    } else if (scaleIndex === 2) {
+      groupValue = Math.floor((num % 10000000) / 100000);
+    } else {
+      groupValue = Math.floor(num / 10000000);
+    }
+
+    if (groupValue > 0) {
+      let groupText = "";
+      const hundreds = Math.floor(groupValue / 100);
+      const remainder = groupValue % 100;
+
+      if (hundreds > 0) {
+        groupText += ones[hundreds] + " Hundred";
+      }
+
+      if (remainder >= 20) {
+        if (hundreds > 0) groupText += " ";
+        groupText += tens[Math.floor(remainder / 10)];
+        if (remainder % 10 > 0) {
+          groupText += " " + ones[remainder % 10];
+        }
+      } else if (remainder >= 10) {
+        if (hundreds > 0) groupText += " ";
+        groupText += teens[remainder - 10];
+      } else if (remainder > 0) {
+        if (hundreds > 0) groupText += " ";
+        groupText += ones[remainder];
+      }
+
+      if (scales[scaleIndex]) {
+        groupText += " " + scales[scaleIndex];
+      }
+
+      parts.unshift(groupText);
+    }
+
+    num = Math.floor(num / (scaleIndex === 0 ? 1000 : 100000));
+    scaleIndex++;
+  }
+
+  return parts.join(" ");
+};
+
 interface Employee {
   id: string;
   employeeId: string;
@@ -1824,7 +1887,7 @@ export default function EmployeeDetailsPage() {
                     {/* Net Salary Credited - Auto-calculated */}
                     <div className="space-y-2">
                       <Label className="text-slate-300">Net Salary Credited</Label>
-                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium">
                         {(() => {
                           // Calculate total earned gross
                           const earnedFields = [
@@ -1852,7 +1915,12 @@ export default function EmployeeDetailsPage() {
                           const totalDeductions = pf + esic + pt + tds + advanceAnyDeduction + retention;
                           const netSalaryCredited = totalEarnedGross - totalDeductions;
 
-                          return netSalaryCredited.toFixed(2);
+                          return (
+                            <div className="space-y-1">
+                              <div className="text-lg">{netSalaryCredited.toFixed(2)}</div>
+                              <div className="text-sm text-slate-400">{numberToWords(Math.floor(netSalaryCredited))}</div>
+                            </div>
+                          );
                         })()}
                       </div>
                     </div>
