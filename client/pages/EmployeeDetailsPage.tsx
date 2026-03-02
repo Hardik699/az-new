@@ -1637,18 +1637,9 @@ export default function EmployeeDetailsPage() {
                                     )}
                                   </td>
                                   <td className="px-4 py-3 text-right">
-                                    <Input
-                                      type="number"
-                                      value={earnedValue}
-                                      onChange={(e) =>
-                                        setSalaryForm({
-                                          ...salaryForm,
-                                          [field.earnedKey]: e.target.value,
-                                        })
-                                      }
-                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
-                                      placeholder="0"
-                                    />
+                                    <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
+                                      {earnedValue.toFixed(2)}
+                                    </div>
                                   </td>
                                 </tr>
                               );
