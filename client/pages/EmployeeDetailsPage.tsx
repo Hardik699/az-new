@@ -1081,24 +1081,24 @@ export default function EmployeeDetailsPage() {
                                   <td className="px-4 py-2 text-slate-300">Basic Salary</td>
                                   <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
                                 </tr>
-                                {record.bonus && record.bonus > 0 && (
+                                {(record.bonus && record.bonus > 0) ? (
                                   <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
                                     <td className="px-4 py-2 text-slate-300">Bonus</td>
                                     <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
                                   </tr>
-                                )}
+                                ) : null}
                                 <tr className="border-b border-slate-700/50 bg-slate-800/30">
                                   <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
                                   <td className="px-4 py-2 text-right text-white font-bold">
                                     ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
                                   </td>
                                 </tr>
-                                {record.deductions && record.deductions > 0 && (
+                                {(record.deductions && record.deductions > 0) ? (
                                   <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
                                     <td className="px-4 py-2 text-slate-300">Deductions</td>
                                     <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
                                   </tr>
-                                )}
+                                ) : null}
                                 <tr className="bg-green-500/10 border-t-2 border-green-500/30">
                                   <td className="px-4 py-2 text-green-400 font-semibold">Net Salary</td>
                                   <td className="px-4 py-2 text-right text-green-400 font-bold text-lg">
