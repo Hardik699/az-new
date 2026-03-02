@@ -159,6 +159,16 @@ export default function EmployeeDetailsPage() {
     bonus: "",
     retentionBonus: "",
     advanceAny: "",
+    // Earned Gross
+    basicEarned: "",
+    hraEarned: "",
+    conveyanceEarned: "",
+    specialAllowanceEarned: "",
+    incentiveEarned: "",
+    adjustmentEarned: "",
+    bonusEarned: "",
+    retentionBonusEarned: "",
+    advanceAnyEarned: "",
     // Deductions
     pf: "",
     esic: "",
@@ -605,11 +615,16 @@ export default function EmployeeDetailsPage() {
 
   const handleEditSalaryRecord = (record: SalaryRecord) => {
     setEditingSalaryRecordId(record.id);
+    const salary = parseFloat(employee?.salary || "0");
+    const pf = parseFloat(employee?.pf || "0");
+    const esic = parseFloat(employee?.esic || "0");
+    const basicAmount = (salary - pf - esic).toString();
+
     setSalaryForm({
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
-      basic: "",
+      basic: basicAmount,
       hra: "",
       conveyance: "",
       specialAllowance: "",
@@ -618,12 +633,21 @@ export default function EmployeeDetailsPage() {
       bonus: record.bonus?.toString() || "",
       retentionBonus: "",
       advanceAny: "",
-      pf: "",
-      esic: "",
-      pt: "",
-      tds: "",
+      basicEarned: "",
+      hraEarned: "",
+      conveyanceEarned: "",
+      specialAllowanceEarned: "",
+      incentiveEarned: "",
+      adjustmentEarned: "",
+      bonusEarned: "",
+      retentionBonusEarned: "",
+      advanceAnyEarned: "",
+      pf: employee?.pf || "",
+      esic: employee?.esic || "",
+      pt: employee?.pt || "",
+      tds: employee?.tds || "",
       advanceAnyDeduction: "",
-      retention: "",
+      retention: employee?.retention || "",
       paymentDate: record.paymentDate || "",
       notes: record.notes || "",
     });
@@ -1252,11 +1276,16 @@ export default function EmployeeDetailsPage() {
                     setShowSalaryForm(!showSalaryForm);
                     if (showSalaryForm) {
                       setEditingSalaryRecordId(null);
+                      const salary = parseFloat(employee?.salary || "0");
+                      const pf = parseFloat(employee?.pf || "0");
+                      const esic = parseFloat(employee?.esic || "0");
+                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+
                       setSalaryForm({
                         month: "",
                         totalWorkingDays: "",
                         actualWorkingDays: "",
-                        basic: "",
+                        basic: basicAmount,
                         hra: "",
                         conveyance: "",
                         specialAllowance: "",
@@ -1265,12 +1294,21 @@ export default function EmployeeDetailsPage() {
                         bonus: "",
                         retentionBonus: "",
                         advanceAny: "",
-                        pf: "",
-                        esic: "",
-                        pt: "",
-                        tds: "",
+                        basicEarned: "",
+                        hraEarned: "",
+                        conveyanceEarned: "",
+                        specialAllowanceEarned: "",
+                        incentiveEarned: "",
+                        adjustmentEarned: "",
+                        bonusEarned: "",
+                        retentionBonusEarned: "",
+                        advanceAnyEarned: "",
+                        pf: employee?.pf || "",
+                        esic: employee?.esic || "",
+                        pt: employee?.pt || "",
+                        tds: employee?.tds || "",
                         advanceAnyDeduction: "",
-                        retention: "",
+                        retention: employee?.retention || "",
                         paymentDate: "",
                         notes: "",
                       });
@@ -1296,11 +1334,16 @@ export default function EmployeeDetailsPage() {
                         onClick={() => {
                           setShowSalaryForm(false);
                           setEditingSalaryRecordId(null);
+                          const salary = parseFloat(employee?.salary || "0");
+                      const pf = parseFloat(employee?.pf || "0");
+                      const esic = parseFloat(employee?.esic || "0");
+                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+
                           setSalaryForm({
                             month: "",
                             totalWorkingDays: "",
                             actualWorkingDays: "",
-                            basic: "",
+                            basic: basicAmount,
                             hra: "",
                             conveyance: "",
                             specialAllowance: "",
@@ -1309,12 +1352,21 @@ export default function EmployeeDetailsPage() {
                             bonus: "",
                             retentionBonus: "",
                             advanceAny: "",
-                            pf: "",
-                            esic: "",
-                            pt: "",
-                            tds: "",
+                            basicEarned: "",
+                            hraEarned: "",
+                            conveyanceEarned: "",
+                            specialAllowanceEarned: "",
+                            incentiveEarned: "",
+                            adjustmentEarned: "",
+                            bonusEarned: "",
+                            retentionBonusEarned: "",
+                            advanceAnyEarned: "",
+                            pf: employee?.pf || "",
+                            esic: employee?.esic || "",
+                            pt: employee?.pt || "",
+                            tds: employee?.tds || "",
                             advanceAnyDeduction: "",
-                            retention: "",
+                            retention: employee?.retention || "",
                             paymentDate: "",
                             notes: "",
                           });
@@ -1374,36 +1426,108 @@ export default function EmployeeDetailsPage() {
                     {/* Earnings Section */}
                     <div className="space-y-3">
                       <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {[
-                          { label: "Basic", key: "basic" },
-                          { label: "HRA", key: "hra" },
-                          { label: "Conveyance", key: "conveyance" },
-                          { label: "Special Allowance", key: "specialAllowance" },
-                          { label: "Incentive", key: "incentive" },
-                          { label: "Adjustment", key: "adjustment" },
-                          { label: "Bonus", key: "bonus" },
-                          { label: "Retention Bonus", key: "retentionBonus" },
-                          { label: "Advance Any", key: "advanceAny" },
-                        ].map((field) => (
-                          <div key={field.key} className="space-y-1">
-                            <Label className="text-slate-300 text-xs">
-                              {field.label}
-                            </Label>
-                            <Input
-                              type="number"
-                              value={salaryForm[field.key as keyof typeof salaryForm]}
-                              onChange={(e) =>
-                                setSalaryForm({
-                                  ...salaryForm,
-                                  [field.key]: e.target.value,
-                                })
-                              }
-                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
-                              placeholder="0"
-                            />
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto border border-slate-700 rounded">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-slate-800/50 border-b border-slate-700">
+                              <th className="px-4 py-2 text-left text-slate-300 font-semibold text-sm">Earning</th>
+                              <th className="px-4 py-2 text-right text-slate-300 font-semibold text-sm">Actual Gross</th>
+                              <th className="px-4 py-2 text-right text-slate-300 font-semibold text-sm">Earned Gross</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true },
+                              { label: "HRA", key: "hra", earnedKey: "hraEarned" },
+                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
+                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
+                              { label: "Incentive", key: "incentive", earnedKey: "incentiveEarned" },
+                              { label: "Adjustment", key: "adjustment", earnedKey: "adjustmentEarned" },
+                              { label: "Bonus", key: "bonus", earnedKey: "bonusEarned" },
+                              { label: "Retention Bonus", key: "retentionBonus", earnedKey: "retentionBonusEarned" },
+                              { label: "Advance Any", key: "advanceAny", earnedKey: "advanceAnyEarned" },
+                            ].map((field) => {
+                              const actualValue = parseFloat(salaryForm[field.key as keyof typeof salaryForm] as string) || 0;
+                              const earnedValue = parseFloat(salaryForm[field.earnedKey as keyof typeof salaryForm] as string) || 0;
+
+                              return (
+                                <tr key={field.key} className="border-b border-slate-700 hover:bg-slate-800/30">
+                                  <td className="px-4 py-3 text-slate-300 text-sm font-medium">{field.label}</td>
+                                  <td className="px-4 py-3 text-right">
+                                    {field.isReadOnly ? (
+                                      <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
+                                        {actualValue.toFixed(2)}
+                                      </div>
+                                    ) : (
+                                      <Input
+                                        type="number"
+                                        value={salaryForm[field.key as keyof typeof salaryForm]}
+                                        onChange={(e) =>
+                                          setSalaryForm({
+                                            ...salaryForm,
+                                            [field.key]: e.target.value,
+                                          })
+                                        }
+                                        className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
+                                        placeholder="0"
+                                      />
+                                    )}
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    <Input
+                                      type="number"
+                                      value={earnedValue}
+                                      onChange={(e) =>
+                                        setSalaryForm({
+                                          ...salaryForm,
+                                          [field.earnedKey]: e.target.value,
+                                        })
+                                      }
+                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
+                                      placeholder="0"
+                                    />
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            {/* Gross Earnings Total Row */}
+                            {(() => {
+                              const actualFields = [
+                                "basic", "hra", "conveyance", "specialAllowance",
+                                "incentive", "adjustment", "bonus", "retentionBonus", "advanceAny"
+                              ];
+                              const earnedFields = [
+                                "basicEarned", "hraEarned", "conveyanceEarned", "specialAllowanceEarned",
+                                "incentiveEarned", "adjustmentEarned", "bonusEarned", "retentionBonusEarned", "advanceAnyEarned"
+                              ];
+
+                              let totalActual = 0;
+                              let totalEarned = 0;
+
+                              actualFields.forEach((field) => {
+                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                totalActual += value;
+                              });
+
+                              earnedFields.forEach((field) => {
+                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                totalEarned += value;
+                              });
+
+                              return (
+                                <tr className="bg-slate-800/70 border-t-2 border-slate-600">
+                                  <td className="px-4 py-3 text-white text-sm font-bold">Gross Earnings</td>
+                                  <td className="px-4 py-3 text-right text-white text-sm font-bold">
+                                    {totalActual.toFixed(2)}
+                                  </td>
+                                  <td className="px-4 py-3 text-right text-white text-sm font-bold">
+                                    {totalEarned.toFixed(2)}
+                                  </td>
+                                </tr>
+                              );
+                            })()}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
