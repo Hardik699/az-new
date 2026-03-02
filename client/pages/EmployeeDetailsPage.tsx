@@ -1306,7 +1306,7 @@ export default function EmployeeDetailsPage() {
                       const salary = parseFloat(employee?.salary || "0");
                       const pf = parseFloat(employee?.pf || "0");
                       const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = (salary - pf - esic) * 0.5;
+                      const basicAmount = salary - pf - esic;
 
                       // Auto-calculate dependent values
                       const calculations = calculateSalaryComponents(basicAmount);
@@ -1367,7 +1367,7 @@ export default function EmployeeDetailsPage() {
                           const salary = parseFloat(employee?.salary || "0");
                           const pf = parseFloat(employee?.pf || "0");
                           const esic = parseFloat(employee?.esic || "0");
-                          const basicAmount = (salary - pf - esic) * 0.5;
+                          const basicAmount = salary - pf - esic;
 
                           // Auto-calculate dependent values
                           const calculations = calculateSalaryComponents(basicAmount);
@@ -1460,27 +1460,12 @@ export default function EmployeeDetailsPage() {
                     <div className="space-y-3">
                       <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
 
-                      {/* Basic Salary Input - Auto-calculates other components */}
+                      {/* Basic Salary Input - Auto-calculated as Salary - PF - ESIC */}
                       <div className="bg-slate-800/30 border border-slate-700 rounded p-4">
-                        <Label className="text-slate-300 text-sm font-medium block mb-2">Basic Salary (Auto-calculates HRA, Conveyance & Special Allowance)</Label>
-                        <Input
-                          type="number"
-                          value={salaryForm.basic}
-                          onChange={(e) => {
-                            const basicValue = parseFloat(e.target.value) || 0;
-                            const calculations = calculateSalaryComponents(basicValue);
-
-                            setSalaryForm({
-                              ...salaryForm,
-                              basic: e.target.value,
-                              hra: calculations.hra.toString(),
-                              conveyance: calculations.conveyance.toString(),
-                              specialAllowance: calculations.specialAllowance.toString(),
-                            });
-                          }}
-                          className="bg-slate-800/50 border-slate-700 text-white font-medium text-lg"
-                          placeholder="Enter basic salary"
-                        />
+                        <Label className="text-slate-300 text-sm font-medium block mb-2">Basic Salary = Salary - PF - ESIC (Auto-calculates HRA, Conveyance & Special Allowance)</Label>
+                        <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                          {salaryForm.basic}
+                        </div>
                         {parseFloat(salaryForm.basic) > 0 && (
                           <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                             <div className="bg-slate-700/50 p-2 rounded">
