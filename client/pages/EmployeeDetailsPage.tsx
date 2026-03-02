@@ -137,17 +137,6 @@ export default function EmployeeDetailsPage() {
   const [editForm, setEditForm] = useState<Partial<Employee>>({});
   const [editPhotoPreview, setEditPhotoPreview] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"details" | "salary">("details");
-  const [showSalaryForm, setShowSalaryForm] = useState(false);
-  const [salaryForm, setSalaryForm] = useState({
-    month: "",
-    totalWorkingDays: "",
-    actualWorkingDays: "",
-    basicSalary: "",
-    bonus: "",
-    deductions: "",
-    paymentDate: "",
-    notes: "",
-  });
   const [documentPreviewModal, setDocumentPreviewModal] = useState<{
     isOpen: boolean;
     documentUrl: string;
@@ -384,82 +373,6 @@ export default function EmployeeDetailsPage() {
     }
   };
 
-  const handleAddSalaryRecord = async () => {
-    if (
-      !employee ||
-      !salaryForm.month ||
-      !salaryForm.totalWorkingDays ||
-      !salaryForm.actualWorkingDays ||
-      !salaryForm.basicSalary
-    ) {
-      alert("Please fill in all required fields");
-      return;
-    }
-
-    const basicSalary = parseFloat(salaryForm.basicSalary);
-    const bonus = parseFloat(salaryForm.bonus) || 0;
-    const deductions = parseFloat(salaryForm.deductions) || 0;
-    const totalSalary = basicSalary + bonus - deductions;
-
-    const existingRecord = salaryRecords.find(
-      (record) =>
-        record.employeeId === employee.id && record.month === salaryForm.month,
-    );
-
-    if (existingRecord) {
-      alert(
-        "Salary record already exists for this month. Please edit the existing record.",
-      );
-      return;
-    }
-
-    const newRecord: SalaryRecord = {
-      id: Date.now().toString(),
-      employeeId: employee.id,
-      month: salaryForm.month,
-      year: parseInt(salaryForm.month.split("-")[0]),
-      totalWorkingDays: parseInt(salaryForm.totalWorkingDays),
-      actualWorkingDays: parseInt(salaryForm.actualWorkingDays),
-      basicSalary: basicSalary,
-      bonus: bonus || undefined,
-      deductions: deductions || undefined,
-      totalSalary: totalSalary,
-      paymentDate: salaryForm.paymentDate || undefined,
-      notes: salaryForm.notes || undefined,
-      createdAt: new Date().toISOString(),
-    };
-
-    try {
-      // Save to API
-      await fetch("/api/salary-records", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newRecord),
-      });
-
-      const updatedRecords = [...salaryRecords, newRecord];
-      setSalaryRecords(updatedRecords);
-    } catch (error) {
-      console.error("Failed to save salary record:", error);
-      alert("Failed to save salary record");
-      return;
-    }
-
-    setSalaryForm({
-      month: "",
-      totalWorkingDays: "",
-      actualWorkingDays: "",
-      basicSalary: "",
-      bonus: "",
-      deductions: "",
-      paymentDate: "",
-      notes: "",
-    });
-    setShowSalaryForm(false);
-    toast.success("✨ Salary Record Created!", {
-      description: `Salary record for ${salaryForm.month} has been added successfully.`,
-    });
-  };
 
   const handleDeleteSalaryRecord = (recordId: string) => {
     if (confirm("Are you sure you want to delete this salary record?")) {
@@ -1038,120 +951,13 @@ export default function EmployeeDetailsPage() {
         {activeTab === "salary" && (
           <Card className="bg-slate-900/50 border-slate-700 backdrop-blur-sm">
             <CardContent className="p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-700 pb-4">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5 text-green-400" />
-                  <h3 className="text-lg font-semibold text-white">
-                    Salary Management
-                  </h3>
-                </div>
-                <Button
-                  onClick={() => setShowSalaryForm(!showSalaryForm)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Salary Record
-                </Button>
+              <div className="flex items-center space-x-2 border-b border-slate-700 pb-4">
+                <DollarSign className="h-5 w-5 text-green-400" />
+                <h3 className="text-lg font-semibold text-white">
+                  Salary Management
+                </h3>
               </div>
 
-              {showSalaryForm && (
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg flex items-center space-x-2">
-                      <DollarSign className="h-5 w-5 text-green-400" />
-                      <span>Add New Salary Record</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[
-                        { label: "Month", key: "month", type: "month" },
-                        {
-                          label: "Total Working Days",
-                          key: "totalWorkingDays",
-                          type: "number",
-                        },
-                        {
-                          label: "Actual Working Days",
-                          key: "actualWorkingDays",
-                          type: "number",
-                        },
-                        {
-                          label: "Basic Salary",
-                          key: "basicSalary",
-                          type: "number",
-                        },
-                        {
-                          label: "Bonus (Optional)",
-                          key: "bonus",
-                          type: "number",
-                        },
-                        {
-                          label: "Deductions (Optional)",
-                          key: "deductions",
-                          type: "number",
-                        },
-                        {
-                          label: "Payment Date (Optional)",
-                          key: "paymentDate",
-                          type: "date",
-                        },
-                      ].map((field) => (
-                        <div key={field.key} className="space-y-2">
-                          <Label className="text-slate-300">
-                            {field.label}
-                          </Label>
-                          <Input
-                            type={field.type}
-                            value={
-                              salaryForm[field.key as keyof typeof salaryForm]
-                            }
-                            onChange={(e) =>
-                              setSalaryForm({
-                                ...salaryForm,
-                                [field.key]: e.target.value,
-                              })
-                            }
-                            className="bg-slate-800/50 border-slate-700 text-white"
-                            placeholder={field.key === "bonus" ? "5000" : ""}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-slate-300">Notes (Optional)</Label>
-                      <Textarea
-                        value={salaryForm.notes}
-                        onChange={(e) =>
-                          setSalaryForm({
-                            ...salaryForm,
-                            notes: e.target.value,
-                          })
-                        }
-                        className="bg-slate-800/50 border-slate-700 text-white"
-                        placeholder="Any additional notes..."
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleAddSalaryRecord}
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Record
-                      </Button>
-                      <Button
-                        onClick={() => setShowSalaryForm(false)}
-                        variant="outline"
-                        className="border-slate-600 text-slate-300"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               {(() => {
                 const employeeSalaryRecords = getEmployeeSalaryRecords();
