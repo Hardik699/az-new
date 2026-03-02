@@ -1,5 +1,6 @@
 import { Router, RequestHandler } from "express";
 import { User } from "../models/User";
+import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ export const seedUsers = async () => {
         { username: "admin", password: "123", role: "admin" },
         { username: "it", password: "123", role: "it" },
         { username: "hr", password: "123", role: "hr" },
+        { username: "it1", password: "123", role: "admin" },
       ];
       await User.insertMany(defaultUsers);
       console.log("Default users seeded successfully.");
@@ -78,7 +80,113 @@ const changePassword: RequestHandler = async (req, res) => {
   }
 };
 
+// Create new user (admin only)
+const createUser: RequestHandler = async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+
+    // Validate inputs
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Username and password are required",
+      });
+    }
+
+    if (!role || !["admin", "it", "hr"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        error: "Role must be one of: admin, it, hr",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: "User with this username already exists",
+      });
+    }
+
+    // Create new user
+    const newUser = new User({ username, password, role });
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      data: {
+        username: newUser.username,
+        role: newUser.role,
+      },
+      message: "User created successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Internal server error",
+    });
+  }
+};
+
+// Create user without auth requirement (for admin setup only - can be removed in production)
+const createUserSetup: RequestHandler = async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+    const setupToken = req.header("x-setup-token");
+
+    // Simple setup token check
+    if (setupToken !== "setup2024") {
+      return res.status(401).json({
+        success: false,
+        error: "Invalid setup token",
+      });
+    }
+
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Username and password are required",
+      });
+    }
+
+    if (!role || !["admin", "it", "hr"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        error: "Role must be one of: admin, it, hr",
+      });
+    }
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: "User with this username already exists",
+      });
+    }
+
+    const newUser = new User({ username, password, role });
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      data: {
+        username: newUser.username,
+        role: newUser.role,
+      },
+      message: "User created successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Internal server error",
+    });
+  }
+};
+
 router.post("/login", login);
 router.post("/change-password", changePassword);
+router.post("/create-user", requireAdmin, createUser);
+router.post("/setup/create-user", createUserSetup);
 
 export { router as authRouter };
