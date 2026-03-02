@@ -642,16 +642,19 @@ export default function EmployeeDetailsPage() {
     const salary = parseFloat(employee?.salary || "0");
     const pf = parseFloat(employee?.pf || "0");
     const esic = parseFloat(employee?.esic || "0");
-    const basicAmount = (salary - pf - esic).toString();
+    const basicAmount = salary - pf - esic;
+
+    // Auto-calculate dependent values based on basic amount
+    const calculations = calculateSalaryComponents(basicAmount);
 
     setSalaryForm({
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
-      basic: basicAmount,
-      hra: "",
-      conveyance: "",
-      specialAllowance: "",
+      basic: basicAmount.toString(),
+      hra: calculations.hra.toString(),
+      conveyance: calculations.conveyance.toString(),
+      specialAllowance: calculations.specialAllowance.toString(),
       incentive: "",
       adjustment: "",
       bonus: record.bonus?.toString() || "",
@@ -1303,16 +1306,19 @@ export default function EmployeeDetailsPage() {
                       const salary = parseFloat(employee?.salary || "0");
                       const pf = parseFloat(employee?.pf || "0");
                       const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+                      const basicAmount = (salary - pf - esic) * 0.5;
+
+                      // Auto-calculate dependent values
+                      const calculations = calculateSalaryComponents(basicAmount);
 
                       setSalaryForm({
                         month: "",
                         totalWorkingDays: "",
                         actualWorkingDays: "",
-                        basic: basicAmount,
-                        hra: "",
-                        conveyance: "",
-                        specialAllowance: "",
+                        basic: basicAmount.toString(),
+                        hra: calculations.hra.toString(),
+                        conveyance: calculations.conveyance.toString(),
+                        specialAllowance: calculations.specialAllowance.toString(),
                         incentive: "",
                         adjustment: "",
                         bonus: "",
@@ -1359,18 +1365,21 @@ export default function EmployeeDetailsPage() {
                           setShowSalaryForm(false);
                           setEditingSalaryRecordId(null);
                           const salary = parseFloat(employee?.salary || "0");
-                      const pf = parseFloat(employee?.pf || "0");
-                      const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+                          const pf = parseFloat(employee?.pf || "0");
+                          const esic = parseFloat(employee?.esic || "0");
+                          const basicAmount = (salary - pf - esic) * 0.5;
+
+                          // Auto-calculate dependent values
+                          const calculations = calculateSalaryComponents(basicAmount);
 
                           setSalaryForm({
                             month: "",
                             totalWorkingDays: "",
                             actualWorkingDays: "",
-                            basic: basicAmount,
-                            hra: "",
-                            conveyance: "",
-                            specialAllowance: "",
+                            basic: basicAmount.toString(),
+                            hra: calculations.hra.toString(),
+                            conveyance: calculations.conveyance.toString(),
+                            specialAllowance: calculations.specialAllowance.toString(),
                             incentive: "",
                             adjustment: "",
                             bonus: "",
