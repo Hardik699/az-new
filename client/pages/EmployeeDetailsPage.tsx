@@ -144,6 +144,7 @@ export default function EmployeeDetailsPage() {
   const [editPhotoPreview, setEditPhotoPreview] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"details" | "salary">("details");
   const [showSalaryForm, setShowSalaryForm] = useState(false);
+  const [editingSalaryRecordId, setEditingSalaryRecordId] = useState<string | null>(null);
   const [salaryForm, setSalaryForm] = useState({
     month: "",
     totalWorkingDays: "",
@@ -435,7 +436,7 @@ export default function EmployeeDetailsPage() {
     const totalSalary = basicEarnings - totalDeductions;
 
     const newRecord: SalaryRecord = {
-      id: Date.now().toString(),
+      id: editingSalaryRecordId || Date.now().toString(),
       employeeId: employee.id,
       month: salaryForm.month,
       year: parseInt(salaryForm.month.split("-")[0]),
@@ -451,14 +452,66 @@ export default function EmployeeDetailsPage() {
     };
 
     try {
-      const response = await fetch("/api/salary-records", {
-        method: "POST",
+      // Determine if we're creating or updating
+      const isUpdating = editingSalaryRecordId !== null;
+      const method = isUpdating ? "PUT" : "POST";
+      const url = isUpdating
+        ? `/api/salary-records/${editingSalaryRecordId}`
+        : "/api/salary-records";
+
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRecord),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        // Handle duplicate record error
+        if (errorData.isDuplicate) {
+          const existingRecord = salaryRecords.find(
+            (record) => record.employeeId === employee.id && record.month === salaryForm.month
+          );
+
+          if (existingRecord && confirm(
+            "A salary record already exists for this month. Click OK to update the existing record."
+          )) {
+            // Update existing record
+            const mongoId = (existingRecord as any)._id || existingRecord.id;
+            const updateResponse = await fetch(`/api/salary-records/${mongoId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(newRecord),
+            });
+
+            if (!updateResponse.ok) {
+              const updateError = await updateResponse.json();
+              throw new Error(updateError.error || "Failed to update salary record");
+            }
+
+            const updatedData = await updateResponse.json();
+            const updatedRecord = {
+              ...updatedData.data,
+              id: updatedData.data._id || updatedData.data.id,
+            };
+
+            const updatedRecords = salaryRecords.map((record) =>
+              record.id === existingRecord.id ? updatedRecord : record
+            );
+            setSalaryRecords(updatedRecords);
+
+            toast.success("✨ Salary Record Updated!", {
+              description: `Salary record for ${salaryForm.month} has been updated successfully.`,
+            });
+          } else {
+            toast.error("Record Already Exists", {
+              description: errorData.error || "A record for this month already exists.",
+            });
+          }
+          return;
+        }
+
         throw new Error(errorData.error || "Failed to create salary record");
       }
 
@@ -468,7 +521,23 @@ export default function EmployeeDetailsPage() {
         id: responseData.data._id || responseData.data.id,
       };
 
-      setSalaryRecords([...salaryRecords, savedRecord]);
+      if (isUpdating) {
+        // Update existing record in state
+        const updatedRecords = salaryRecords.map((record) =>
+          record.id === editingSalaryRecordId ? savedRecord : record
+        );
+        setSalaryRecords(updatedRecords);
+        toast.success("✨ Salary Record Updated!", {
+          description: `Salary record for ${salaryForm.month} has been updated successfully.`,
+        });
+      } else {
+        // Add new record
+        setSalaryRecords([...salaryRecords, savedRecord]);
+        toast.success("✨ Salary Record Created!", {
+          description: `Salary record for ${salaryForm.month} has been added successfully.`,
+        });
+      }
+
       setSalaryForm({
         month: "",
         totalWorkingDays: "",
@@ -491,13 +560,13 @@ export default function EmployeeDetailsPage() {
         paymentDate: "",
         notes: "",
       });
+      setEditingSalaryRecordId(null);
       setShowSalaryForm(false);
-      toast.success("✨ Salary Record Created!", {
-        description: `Salary record for ${salaryForm.month} has been added successfully.`,
-      });
     } catch (error) {
       console.error("Failed to save salary record:", error);
-      toast.error("Failed to save salary record");
+      toast.error("Failed to save salary record", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
     }
   };
 
@@ -532,6 +601,33 @@ export default function EmployeeDetailsPage() {
         toast.error("Failed to delete salary record");
       }
     }
+  };
+
+  const handleEditSalaryRecord = (record: SalaryRecord) => {
+    setEditingSalaryRecordId(record.id);
+    setSalaryForm({
+      month: record.month,
+      totalWorkingDays: record.totalWorkingDays.toString(),
+      actualWorkingDays: record.actualWorkingDays.toString(),
+      basic: "",
+      hra: "",
+      conveyance: "",
+      specialAllowance: "",
+      incentive: "",
+      adjustment: "",
+      bonus: record.bonus?.toString() || "",
+      retentionBonus: "",
+      advanceAny: "",
+      pf: "",
+      esic: "",
+      pt: "",
+      tds: "",
+      advanceAnyDeduction: "",
+      retention: "",
+      paymentDate: record.paymentDate || "",
+      notes: record.notes || "",
+    });
+    setShowSalaryForm(true);
   };
 
   const handleOpenDocumentPreview = (
@@ -1152,22 +1248,84 @@ export default function EmployeeDetailsPage() {
                   </h3>
                 </div>
                 <Button
-                  onClick={() => setShowSalaryForm(!showSalaryForm)}
+                  onClick={() => {
+                    setShowSalaryForm(!showSalaryForm);
+                    if (showSalaryForm) {
+                      setEditingSalaryRecordId(null);
+                      setSalaryForm({
+                        month: "",
+                        totalWorkingDays: "",
+                        actualWorkingDays: "",
+                        basic: "",
+                        hra: "",
+                        conveyance: "",
+                        specialAllowance: "",
+                        incentive: "",
+                        adjustment: "",
+                        bonus: "",
+                        retentionBonus: "",
+                        advanceAny: "",
+                        pf: "",
+                        esic: "",
+                        pt: "",
+                        tds: "",
+                        advanceAnyDeduction: "",
+                        retention: "",
+                        paymentDate: "",
+                        notes: "",
+                      });
+                    }
+                  }}
                   className="bg-blue-500 hover:bg-blue-600 text-white"
                   size="sm"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Salary Record
+                  {editingSalaryRecordId ? "Edit Salary Record" : "Add Salary Record"}
                 </Button>
               </div>
 
               {showSalaryForm && (
                 <Card className="bg-slate-800/50 border-slate-700 mb-6">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg flex items-center space-x-2">
-                      <DollarSign className="h-5 w-5 text-green-400" />
-                      <span>Add New Salary Record</span>
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-white text-lg flex items-center space-x-2">
+                        <DollarSign className="h-5 w-5 text-green-400" />
+                        <span>{editingSalaryRecordId ? "Edit Salary Record" : "Add New Salary Record"}</span>
+                      </CardTitle>
+                      <Button
+                        onClick={() => {
+                          setShowSalaryForm(false);
+                          setEditingSalaryRecordId(null);
+                          setSalaryForm({
+                            month: "",
+                            totalWorkingDays: "",
+                            actualWorkingDays: "",
+                            basic: "",
+                            hra: "",
+                            conveyance: "",
+                            specialAllowance: "",
+                            incentive: "",
+                            adjustment: "",
+                            bonus: "",
+                            retentionBonus: "",
+                            advanceAny: "",
+                            pf: "",
+                            esic: "",
+                            pt: "",
+                            tds: "",
+                            advanceAnyDeduction: "",
+                            retention: "",
+                            paymentDate: "",
+                            notes: "",
+                          });
+                        }}
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400 hover:text-white"
+                      >
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Month and Working Days */}
@@ -1383,16 +1541,28 @@ export default function EmployeeDetailsPage() {
                                     </p>
                                   )}
                                 </div>
-                                <Button
-                                  onClick={() =>
-                                    handleDeleteSalaryRecord(record.id)
-                                  }
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-red-500 text-red-400 hover:bg-red-500/20"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={() =>
+                                      handleEditSalaryRecord(record)
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-blue-500 text-blue-400 hover:bg-blue-500/20"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    onClick={() =>
+                                      handleDeleteSalaryRecord(record.id)
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-red-500 text-red-400 hover:bg-red-500/20"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </div>
                             </div>
 

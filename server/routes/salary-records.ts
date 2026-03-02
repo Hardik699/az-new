@@ -117,7 +117,16 @@ const createSalaryRecord: RequestHandler = async (req, res) => {
       data: record,
       message: "Salary record created successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        error: `A salary record already exists for employee ${recordData.employeeId} in ${recordData.month}. Please update the existing record instead.`,
+        isDuplicate: true,
+      });
+    }
+
     res.status(500).json({
       success: false,
       error:
