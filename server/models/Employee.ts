@@ -46,6 +46,14 @@ export interface IEmployee extends Document {
   resignationLetter?: string;
   deactivationDate?: string;
 
+  // PF Details
+  pf?: string;
+  esic?: string;
+  pt?: string;
+  tds?: string;
+  advanceAny?: string;
+  retention?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -93,6 +101,13 @@ const employeeSchema = new Schema<IEmployee>(
     deactivationReason: String,
     resignationLetter: String,
     deactivationDate: String,
+
+    pf: String,
+    esic: String,
+    pt: String,
+    tds: String,
+    advanceAny: String,
+    retention: String,
   },
   { timestamps: true },
 );

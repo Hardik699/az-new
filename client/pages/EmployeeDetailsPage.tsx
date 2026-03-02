@@ -84,6 +84,12 @@ interface Employee {
   deactivationReason?: string;
   resignationLetter?: string;
   deactivationDate?: string;
+  pf?: string;
+  esic?: string;
+  pt?: string;
+  tds?: string;
+  advanceAny?: string;
+  retention?: string;
 }
 
 interface SalaryRecord {
@@ -949,6 +955,49 @@ export default function EmployeeDetailsPage() {
                           onChange={(e) =>
                             handleEditFormChange(field.key, e.target.value)
                           }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      ) : (
+                        <p className="text-white p-2 bg-slate-800/30 rounded border border-slate-700">
+                          {(employee[field.key as keyof Employee] as string) ||
+                            "N/A"}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* PF Details */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 border-b border-slate-700 pb-2">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <h3 className="text-lg font-semibold text-white">
+                    PF Details
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[
+                    { label: "PF", key: "pf" },
+                    { label: "ESIC", key: "esic" },
+                    { label: "PT", key: "pt" },
+                    { label: "TDS", key: "tds" },
+                    { label: "Advance Any", key: "advanceAny" },
+                    { label: "Retention", key: "retention" },
+                  ].map((field) => (
+                    <div key={field.key} className="space-y-2">
+                      <Label className="text-slate-300">{field.label}</Label>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          value={
+                            (editForm[field.key as keyof Employee] as string) ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleEditFormChange(field.key, e.target.value)
+                          }
+                          placeholder="0"
                           className="bg-slate-800/50 border-slate-700 text-white"
                         />
                       ) : (
