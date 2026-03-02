@@ -1,7 +1,7 @@
 import AppNav from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Building2, ArrowRight, ServerCog, ArrowLeft } from "lucide-react";
+import { Users, Building2, ArrowRight, ServerCog, ArrowLeft, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
@@ -103,6 +103,31 @@ export default function Dashboard() {
                 </h3>
                 <p className="text-slate-400 text-xs sm:text-sm group-hover:text-slate-300 transition-colors duration-300">
                   Track and manage system assets
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="group bg-slate-900/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/60 hover:border-blue-500/50 transition-all duration-300 cursor-pointer">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:bg-blue-500/30 transition-colors duration-300 flex-shrink-0">
+                  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+                </div>
+                <Button
+                  onClick={() => navigate("/hr")}
+                  size="sm"
+                  className="bg-blue-500 hover:bg-blue-600 text-white opacity-0 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs sm:text-sm py-1 sm:py-2"
+                >
+                  Go <ArrowRight className="h-3 w-3 ml-1 hidden sm:inline" />
+                </Button>
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
+                  HR
+                </h3>
+                <p className="text-slate-400 text-xs sm:text-sm group-hover:text-slate-300 transition-colors duration-300">
+                  Employee management and HR operations
                 </p>
               </div>
             </CardContent>
