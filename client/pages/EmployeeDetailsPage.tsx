@@ -1665,7 +1665,11 @@ export default function EmployeeDetailsPage() {
                               let totalEarned = 0;
 
                               actualFields.forEach((field) => {
-                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                let value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                // For Basic field, use Actual Gross (50% of basic)
+                                if (field === "basic") {
+                                  value = value * 0.5;
+                                }
                                 // Subtract advanceAny instead of adding it
                                 if (field === "advanceAny") {
                                   totalActual -= value;
