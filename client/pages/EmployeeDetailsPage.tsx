@@ -254,7 +254,13 @@ export default function EmployeeDetailsPage() {
     const earnedMap: Record<string, number> = {};
 
     actualFields.forEach((field) => {
-      const actualValue = parseFloat(salaryFormData[field] as string) || 0;
+      let actualValue = parseFloat(salaryFormData[field] as string) || 0;
+
+      // For Basic field, use Actual Gross (50% of basic)
+      if (field === "basic") {
+        actualValue = actualValue * 0.5;
+      }
+
       const earnedValue = (actualValue / totalWorkingDays) * actualWorkingDays;
       const earnedKey = field === "basic" ? "basicEarned" :
                         field === "hra" ? "hraEarned" :
