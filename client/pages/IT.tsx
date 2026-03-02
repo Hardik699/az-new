@@ -549,7 +549,7 @@ export default function ITPage() {
     }
   }, [employee, isPreFilled]);
 
-  // Load provider IDs from System assets (from database)
+  // Load provider IDs from System assets (from database) with filtering for active users
   useEffect(() => {
     const vonageAssets = systemAssets.filter(
       (a) => a.category === "vonage"
@@ -562,6 +562,12 @@ export default function ITPage() {
 
     console.log("Total systemAssets loaded:", systemAssets.length);
     console.log("All categories in systemAssets:", [...new Set(systemAssets.map(a => a.category))]);
+
+    // Get IDs assigned to ACTIVE users for the current provider
+    const activeAssignedProviderIds = records
+      .filter((record) => record.status === "active")
+      .map((record) => record.vitelGlobal?.id)
+      .filter((id): id is string => !!id);
 
     let ids = systemAssets
       .filter((a) =>
@@ -576,7 +582,10 @@ export default function ITPage() {
         }
         return a.id;
       })
-      .filter((x) => typeof x === "string" && x.trim() && x.trim() !== "-");
+      .filter((x) => typeof x === "string" && x.trim() && x.trim() !== "-")
+      // Filter out IDs assigned to ACTIVE users (available for inactive users or new assignments)
+      .filter((id) => !activeAssignedProviderIds.includes(id));
+
     console.log(`Provider IDs for ${provider}:`, ids);
     console.log(`Filtered count for ${provider}:`, ids.length);
     if (preSelectedProviderId && !ids.includes(preSelectedProviderId)) {
@@ -586,7 +595,7 @@ export default function ITPage() {
     setVitel((s) => ({
       id: ids.includes(s.id) ? s.id : preSelectedProviderId || "",
     }));
-  }, [provider, preSelectedProviderId, systemAssets]);
+  }, [provider, preSelectedProviderId, systemAssets, records]);
 
   // Ensure the pre-selected System ID is present in options after URL parsing
   useEffect(() => {
