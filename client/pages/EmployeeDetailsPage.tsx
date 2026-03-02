@@ -1666,12 +1666,22 @@ export default function EmployeeDetailsPage() {
 
                               actualFields.forEach((field) => {
                                 const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
-                                totalActual += value;
+                                // Subtract advanceAny instead of adding it
+                                if (field === "advanceAny") {
+                                  totalActual -= value;
+                                } else {
+                                  totalActual += value;
+                                }
                               });
 
                               earnedFields.forEach((field) => {
                                 const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
-                                totalEarned += value;
+                                // Subtract advanceAnyEarned instead of adding it
+                                if (field === "advanceAnyEarned") {
+                                  totalEarned -= value;
+                                } else {
+                                  totalEarned += value;
+                                }
                               });
 
                               return (
