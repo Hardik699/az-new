@@ -1515,9 +1515,9 @@ export default function EmployeeDetailsPage() {
                           <tbody>
                             {[
                               { label: "Basic", key: "basic", earnedKey: "basicEarned" },
-                              { label: "HRA", key: "hra", earnedKey: "hraEarned" },
-                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
-                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
+                              { label: "HRA", key: "hra", earnedKey: "hraEarned", isReadOnly: true },
+                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned", isReadOnly: true },
+                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned", isReadOnly: true },
                               { label: "Incentive", key: "incentive", earnedKey: "incentiveEarned" },
                               { label: "Adjustment", key: "adjustment", earnedKey: "adjustmentEarned" },
                               { label: "Bonus", key: "bonus", earnedKey: "bonusEarned" },
