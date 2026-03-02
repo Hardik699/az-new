@@ -227,6 +227,59 @@ export default function EmployeeDetailsPage() {
     };
   };
 
+  // Helper function to calculate earned values based on actual values and working days
+  const calculateEarnedValues = (salaryFormData: typeof salaryForm) => {
+    const totalWorkingDays = parseFloat(salaryFormData.totalWorkingDays) || 0;
+    const actualWorkingDays = parseFloat(salaryFormData.actualWorkingDays) || 0;
+
+    if (totalWorkingDays <= 0 || actualWorkingDays <= 0) {
+      return {
+        basicEarned: "0",
+        hraEarned: "0",
+        conveyanceEarned: "0",
+        specialAllowanceEarned: "0",
+        incentiveEarned: "0",
+        adjustmentEarned: "0",
+        bonusEarned: "0",
+        retentionBonusEarned: "0",
+        advanceAnyEarned: "0",
+      };
+    }
+
+    const actualFields: (keyof typeof salaryForm)[] = [
+      "basic", "hra", "conveyance", "specialAllowance",
+      "incentive", "adjustment", "bonus", "retentionBonus", "advanceAny"
+    ];
+
+    const earnedMap: Record<string, number> = {};
+
+    actualFields.forEach((field) => {
+      const actualValue = parseFloat(salaryFormData[field] as string) || 0;
+      const earnedValue = (actualValue / totalWorkingDays) * actualWorkingDays;
+      const earnedKey = field === "basic" ? "basicEarned" :
+                        field === "hra" ? "hraEarned" :
+                        field === "conveyance" ? "conveyanceEarned" :
+                        field === "specialAllowance" ? "specialAllowanceEarned" :
+                        field === "incentive" ? "incentiveEarned" :
+                        field === "adjustment" ? "adjustmentEarned" :
+                        field === "bonus" ? "bonusEarned" :
+                        field === "retentionBonus" ? "retentionBonusEarned" : "advanceAnyEarned";
+      earnedMap[earnedKey] = Math.round(earnedValue * 100) / 100;
+    });
+
+    return {
+      basicEarned: earnedMap.basicEarned?.toString() || "0",
+      hraEarned: earnedMap.hraEarned?.toString() || "0",
+      conveyanceEarned: earnedMap.conveyanceEarned?.toString() || "0",
+      specialAllowanceEarned: earnedMap.specialAllowanceEarned?.toString() || "0",
+      incentiveEarned: earnedMap.incentiveEarned?.toString() || "0",
+      adjustmentEarned: earnedMap.adjustmentEarned?.toString() || "0",
+      bonusEarned: earnedMap.bonusEarned?.toString() || "0",
+      retentionBonusEarned: earnedMap.retentionBonusEarned?.toString() || "0",
+      advanceAnyEarned: earnedMap.advanceAnyEarned?.toString() || "0",
+    };
+  };
+
   useEffect(() => {
     const loadData = async () => {
       const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -648,7 +701,7 @@ export default function EmployeeDetailsPage() {
     // Auto-calculate dependent values based on basic amount
     const calculations = calculateSalaryComponents(basicAmount);
 
-    setSalaryForm({
+    const newForm = {
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
@@ -678,6 +731,13 @@ export default function EmployeeDetailsPage() {
       retention: employee?.retention || "",
       paymentDate: record.paymentDate || "",
       notes: record.notes || "",
+    };
+
+    // Auto-calculate earned values
+    const earnedValues = calculateEarnedValues(newForm);
+    setSalaryForm({
+      ...newForm,
+      ...earnedValues,
     });
     setShowSalaryForm(true);
   };
@@ -1432,12 +1492,17 @@ export default function EmployeeDetailsPage() {
                         <Input
                           type="number"
                           value={salaryForm.totalWorkingDays}
-                          onChange={(e) =>
-                            setSalaryForm({
+                          onChange={(e) => {
+                            const updatedForm = {
                               ...salaryForm,
                               totalWorkingDays: e.target.value,
-                            })
-                          }
+                            };
+                            const earnedValues = calculateEarnedValues(updatedForm);
+                            setSalaryForm({
+                              ...updatedForm,
+                              ...earnedValues,
+                            });
+                          }}
                           className="bg-slate-800/50 border-slate-700 text-white"
                         />
                       </div>
@@ -1446,12 +1511,17 @@ export default function EmployeeDetailsPage() {
                         <Input
                           type="number"
                           value={salaryForm.actualWorkingDays}
-                          onChange={(e) =>
-                            setSalaryForm({
+                          onChange={(e) => {
+                            const updatedForm = {
                               ...salaryForm,
                               actualWorkingDays: e.target.value,
-                            })
-                          }
+                            };
+                            const earnedValues = calculateEarnedValues(updatedForm);
+                            setSalaryForm({
+                              ...updatedForm,
+                              ...earnedValues,
+                            });
+                          }}
                           className="bg-slate-800/50 border-slate-700 text-white"
                         />
                       </div>
@@ -1533,17 +1603,31 @@ export default function EmployeeDetailsPage() {
                                             const basicValue = parseFloat(value) || 0;
                                             const calculations = calculateSalaryComponents(basicValue);
 
-                                            setSalaryForm({
+                                            const updatedForm = {
                                               ...salaryForm,
                                               basic: value,
                                               hra: calculations.hra.toString(),
                                               conveyance: calculations.conveyance.toString(),
                                               specialAllowance: calculations.specialAllowance.toString(),
+                                            };
+
+                                            // Auto-calculate earned values
+                                            const earnedValues = calculateEarnedValues(updatedForm);
+                                            setSalaryForm({
+                                              ...updatedForm,
+                                              ...earnedValues,
                                             });
                                           } else {
-                                            setSalaryForm({
+                                            const updatedForm = {
                                               ...salaryForm,
                                               [field.key]: value,
+                                            };
+
+                                            // Auto-calculate earned values for any actual field change
+                                            const earnedValues = calculateEarnedValues(updatedForm);
+                                            setSalaryForm({
+                                              ...updatedForm,
+                                              ...earnedValues,
                                             });
                                           }
                                         }}
