@@ -445,13 +445,24 @@ export default function EmployeeDetailsPage() {
     };
 
     try {
-      await fetch("/api/salary-records", {
+      const response = await fetch("/api/salary-records", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRecord),
       });
 
-      setSalaryRecords([...salaryRecords, newRecord]);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create salary record");
+      }
+
+      const responseData = await response.json();
+      const savedRecord = {
+        ...responseData.data,
+        id: responseData.data._id || responseData.data.id,
+      };
+
+      setSalaryRecords([...salaryRecords, savedRecord]);
       setSalaryForm({
         month: "",
         totalWorkingDays: "",
@@ -484,13 +495,29 @@ export default function EmployeeDetailsPage() {
     }
   };
 
-  const handleDeleteSalaryRecord = (recordId: string) => {
+  const handleDeleteSalaryRecord = async (recordId: string) => {
     if (confirm("Are you sure you want to delete this salary record?")) {
-      const updatedRecords = salaryRecords.filter(
-        (record) => record.id !== recordId,
-      );
-      setSalaryRecords(updatedRecords);
-      // TODO: Call API to delete salary record from MongoDB
+      try {
+        const response = await fetch(`/api/salary-records/${recordId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to delete salary record");
+        }
+
+        const updatedRecords = salaryRecords.filter(
+          (record) => record.id !== recordId,
+        );
+        setSalaryRecords(updatedRecords);
+        toast.success("✨ Salary Record Deleted!", {
+          description: "The salary record has been removed successfully.",
+        });
+      } catch (error) {
+        console.error("Failed to delete salary record:", error);
+        toast.error("Failed to delete salary record");
+      }
     }
   };
 
