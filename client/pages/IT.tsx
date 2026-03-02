@@ -577,8 +577,18 @@ export default function ITPage() {
       )
       .map((a) => {
         if (provider === "vonage") {
-          console.log(`Vonage asset - ExtCode: "${a.vonageExtCode}", Number: "${a.vonageNumber}", ID: "${a.id}"`);
-          return a.vonageExtCode || a.vonageNumber || a.id;
+          // Prefer vonageExtCode, then vonageNumber, but always fallback to id
+          // Trim and filter out empty values and "-"
+          const extCode = (a.vonageExtCode || "").trim();
+          const number = (a.vonageNumber || "").trim();
+          const id = (a.id || "").trim();
+
+          // Use extension code if valid, otherwise use number, otherwise use id
+          const selected = (extCode && extCode !== "-") ? extCode :
+                          (number && number !== "-") ? number : id;
+
+          console.log(`Vonage asset ${a.id} - ExtCode: "${extCode}", Number: "${number}", Selected: "${selected}"`);
+          return selected;
         }
         return a.id;
       })
@@ -619,18 +629,24 @@ export default function ITPage() {
       return;
     }
     if (provider === "vonage") {
-      const match = systemAssets.find(
-        (a) =>
-          a.category === "vonage" &&
-          (a.vonageExtCode === vitel.id ||
-            a.vonageNumber === vitel.id ||
-            a.id === vitel.id),
-      );
+      // Match using the same logic as the ID selection: prefer ext code, then number, then id
+      const match = systemAssets.find((a) => {
+        if (a.category !== "vonage") return false;
+
+        const extCode = (a.vonageExtCode || "").trim();
+        const number = (a.vonageNumber || "").trim();
+        const id = (a.id || "").trim();
+
+        const selected = (extCode && extCode !== "-") ? extCode :
+                        (number && number !== "-") ? number : id;
+
+        return selected === vitel.id;
+      });
       setProviderPreview(match || null);
     } else {
       const match = systemAssets.find(
         (a) =>
-          (a.category === "vitel" || a.category === "vitel-global") &&
+          (a.category === "vitel" || a.category === "vitel-global" || a.category === "vitel-vital") &&
           a.id === vitel.id,
       );
       setProviderPreview(match || null);
