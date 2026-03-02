@@ -19,7 +19,7 @@ import { leaveRequestsRouter } from "./routes/leave-requests";
 import { salaryRecordsRouter } from "./routes/salary-records";
 import { systemAssetsRouter } from "./routes/system-assets";
 import { clearDataRouter } from "./routes/clear-data";
-import { authRouter, seedUsers } from "./routes/auth";
+import { authRouter, seedUsers, seedSalaryRecords } from "./routes/auth";
 
 export function createServer() {
   const app = express();
@@ -28,6 +28,7 @@ export function createServer() {
   connectDB()
     .then(() => {
       seedUsers();
+      seedSalaryRecords();
     })
     .catch((error) => {
       console.error("Failed to initialize MongoDB:", error);

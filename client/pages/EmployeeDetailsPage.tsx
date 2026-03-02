@@ -142,9 +142,24 @@ export default function EmployeeDetailsPage() {
     month: "",
     totalWorkingDays: "",
     actualWorkingDays: "",
-    basicSalary: "",
+    // Earnings
+    basic: "",
+    hra: "",
+    conveyance: "",
+    specialAllowance: "",
+    incentive: "",
+    adjustment: "",
     bonus: "",
-    deductions: "",
+    retentionBonus: "",
+    advanceAny: "",
+    // Deductions
+    pf: "",
+    esic: "",
+    pt: "",
+    tds: "",
+    advanceAnyDeduction: "",
+    retention: "",
+    // Other
     paymentDate: "",
     notes: "",
   });
@@ -384,45 +399,45 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+
   const handleAddSalaryRecord = async () => {
-    if (
-      !employee ||
-      !salaryForm.month ||
-      !salaryForm.totalWorkingDays ||
-      !salaryForm.actualWorkingDays ||
-      !salaryForm.basicSalary
-    ) {
-      alert("Please fill in all required fields");
+    if (!employee || !salaryForm.month) {
+      alert("Please fill in required fields");
       return;
     }
 
-    const basicSalary = parseFloat(salaryForm.basicSalary);
-    const bonus = parseFloat(salaryForm.bonus) || 0;
-    const deductions = parseFloat(salaryForm.deductions) || 0;
-    const totalSalary = basicSalary + bonus - deductions;
+    // Calculate totals
+    const basicEarnings =
+      (parseFloat(salaryForm.basic) || 0) +
+      (parseFloat(salaryForm.hra) || 0) +
+      (parseFloat(salaryForm.conveyance) || 0) +
+      (parseFloat(salaryForm.specialAllowance) || 0) +
+      (parseFloat(salaryForm.incentive) || 0) +
+      (parseFloat(salaryForm.adjustment) || 0) +
+      (parseFloat(salaryForm.bonus) || 0) +
+      (parseFloat(salaryForm.retentionBonus) || 0) +
+      (parseFloat(salaryForm.advanceAny) || 0);
 
-    const existingRecord = salaryRecords.find(
-      (record) =>
-        record.employeeId === employee.id && record.month === salaryForm.month,
-    );
+    const totalDeductions =
+      (parseFloat(salaryForm.pf) || 0) +
+      (parseFloat(salaryForm.esic) || 0) +
+      (parseFloat(salaryForm.pt) || 0) +
+      (parseFloat(salaryForm.tds) || 0) +
+      (parseFloat(salaryForm.advanceAnyDeduction) || 0) +
+      (parseFloat(salaryForm.retention) || 0);
 
-    if (existingRecord) {
-      alert(
-        "Salary record already exists for this month. Please edit the existing record.",
-      );
-      return;
-    }
+    const totalSalary = basicEarnings - totalDeductions;
 
     const newRecord: SalaryRecord = {
       id: Date.now().toString(),
       employeeId: employee.id,
       month: salaryForm.month,
       year: parseInt(salaryForm.month.split("-")[0]),
-      totalWorkingDays: parseInt(salaryForm.totalWorkingDays),
-      actualWorkingDays: parseInt(salaryForm.actualWorkingDays),
-      basicSalary: basicSalary,
-      bonus: bonus || undefined,
-      deductions: deductions || undefined,
+      totalWorkingDays: parseInt(salaryForm.totalWorkingDays) || 0,
+      actualWorkingDays: parseInt(salaryForm.actualWorkingDays) || 0,
+      basicSalary: basicEarnings,
+      bonus: parseFloat(salaryForm.bonus) || 0,
+      deductions: totalDeductions,
       totalSalary: totalSalary,
       paymentDate: salaryForm.paymentDate || undefined,
       notes: salaryForm.notes || undefined,
@@ -430,35 +445,43 @@ export default function EmployeeDetailsPage() {
     };
 
     try {
-      // Save to API
       await fetch("/api/salary-records", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRecord),
       });
 
-      const updatedRecords = [...salaryRecords, newRecord];
-      setSalaryRecords(updatedRecords);
+      setSalaryRecords([...salaryRecords, newRecord]);
+      setSalaryForm({
+        month: "",
+        totalWorkingDays: "",
+        actualWorkingDays: "",
+        basic: "",
+        hra: "",
+        conveyance: "",
+        specialAllowance: "",
+        incentive: "",
+        adjustment: "",
+        bonus: "",
+        retentionBonus: "",
+        advanceAny: "",
+        pf: "",
+        esic: "",
+        pt: "",
+        tds: "",
+        advanceAnyDeduction: "",
+        retention: "",
+        paymentDate: "",
+        notes: "",
+      });
+      setShowSalaryForm(false);
+      toast.success("✨ Salary Record Created!", {
+        description: `Salary record for ${salaryForm.month} has been added successfully.`,
+      });
     } catch (error) {
       console.error("Failed to save salary record:", error);
-      alert("Failed to save salary record");
-      return;
+      toast.error("Failed to save salary record");
     }
-
-    setSalaryForm({
-      month: "",
-      totalWorkingDays: "",
-      actualWorkingDays: "",
-      basicSalary: "",
-      bonus: "",
-      deductions: "",
-      paymentDate: "",
-      notes: "",
-    });
-    setShowSalaryForm(false);
-    toast.success("✨ Salary Record Created!", {
-      description: `Salary record for ${salaryForm.month} has been added successfully.`,
-    });
   };
 
   const handleDeleteSalaryRecord = (recordId: string) => {
@@ -1056,83 +1079,156 @@ export default function EmployeeDetailsPage() {
               </div>
 
               {showSalaryForm && (
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800/50 border-slate-700 mb-6">
                   <CardHeader>
                     <CardTitle className="text-white text-lg flex items-center space-x-2">
                       <DollarSign className="h-5 w-5 text-green-400" />
                       <span>Add New Salary Record</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[
-                        { label: "Month", key: "month", type: "month" },
-                        {
-                          label: "Total Working Days",
-                          key: "totalWorkingDays",
-                          type: "number",
-                        },
-                        {
-                          label: "Actual Working Days",
-                          key: "actualWorkingDays",
-                          type: "number",
-                        },
-                        {
-                          label: "Basic Salary",
-                          key: "basicSalary",
-                          type: "number",
-                        },
-                        {
-                          label: "Bonus (Optional)",
-                          key: "bonus",
-                          type: "number",
-                        },
-                        {
-                          label: "Deductions (Optional)",
-                          key: "deductions",
-                          type: "number",
-                        },
-                        {
-                          label: "Payment Date (Optional)",
-                          key: "paymentDate",
-                          type: "date",
-                        },
-                      ].map((field) => (
-                        <div key={field.key} className="space-y-2">
-                          <Label className="text-slate-300">
-                            {field.label}
-                          </Label>
-                          <Input
-                            type={field.type}
-                            value={
-                              salaryForm[field.key as keyof typeof salaryForm]
-                            }
-                            onChange={(e) =>
-                              setSalaryForm({
-                                ...salaryForm,
-                                [field.key]: e.target.value,
-                              })
-                            }
-                            className="bg-slate-800/50 border-slate-700 text-white"
-                            placeholder={field.key === "bonus" ? "5000" : ""}
-                          />
-                        </div>
-                      ))}
+                  <CardContent className="space-y-6">
+                    {/* Month and Working Days */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Month</Label>
+                        <Input
+                          type="month"
+                          value={salaryForm.month}
+                          onChange={(e) =>
+                            setSalaryForm({ ...salaryForm, month: e.target.value })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Total Working Days</Label>
+                        <Input
+                          type="number"
+                          value={salaryForm.totalWorkingDays}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              totalWorkingDays: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Actual Working Days</Label>
+                        <Input
+                          type="number"
+                          value={salaryForm.actualWorkingDays}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              actualWorkingDays: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
                     </div>
+
+                    {/* Earnings Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { label: "Basic", key: "basic" },
+                          { label: "HRA", key: "hra" },
+                          { label: "Conveyance", key: "conveyance" },
+                          { label: "Special Allowance", key: "specialAllowance" },
+                          { label: "Incentive", key: "incentive" },
+                          { label: "Adjustment", key: "adjustment" },
+                          { label: "Bonus", key: "bonus" },
+                          { label: "Retention Bonus", key: "retentionBonus" },
+                          { label: "Advance Any", key: "advanceAny" },
+                        ].map((field) => (
+                          <div key={field.key} className="space-y-1">
+                            <Label className="text-slate-300 text-xs">
+                              {field.label}
+                            </Label>
+                            <Input
+                              type="number"
+                              value={salaryForm[field.key as keyof typeof salaryForm]}
+                              onChange={(e) =>
+                                setSalaryForm({
+                                  ...salaryForm,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Deductions Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-slate-200 font-semibold text-sm">Deductions</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { label: "PF", key: "pf" },
+                          { label: "ESIC", key: "esic" },
+                          { label: "PT", key: "pt" },
+                          { label: "TDS", key: "tds" },
+                          { label: "Advance Any", key: "advanceAnyDeduction" },
+                          { label: "Retention", key: "retention" },
+                        ].map((field) => (
+                          <div key={field.key} className="space-y-1">
+                            <Label className="text-slate-300 text-xs">
+                              {field.label}
+                            </Label>
+                            <Input
+                              type="number"
+                              value={salaryForm[field.key as keyof typeof salaryForm]}
+                              onChange={(e) =>
+                                setSalaryForm({
+                                  ...salaryForm,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Payment Date and Notes */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Payment Date (Optional)</Label>
+                        <Input
+                          type="date"
+                          value={salaryForm.paymentDate}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              paymentDate: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <Label className="text-slate-300">Notes (Optional)</Label>
                       <Textarea
                         value={salaryForm.notes}
                         onChange={(e) =>
-                          setSalaryForm({
-                            ...salaryForm,
-                            notes: e.target.value,
-                          })
+                          setSalaryForm({ ...salaryForm, notes: e.target.value })
                         }
                         className="bg-slate-800/50 border-slate-700 text-white"
                         placeholder="Any additional notes..."
                       />
                     </div>
+
                     <div className="flex gap-2">
                       <Button
                         onClick={handleAddSalaryRecord}
@@ -1153,6 +1249,7 @@ export default function EmployeeDetailsPage() {
                 </Card>
               )}
 
+
               {(() => {
                 const employeeSalaryRecords = getEmployeeSalaryRecords();
                 return employeeSalaryRecords.length === 0 ? (
@@ -1168,96 +1265,142 @@ export default function EmployeeDetailsPage() {
                 ) : (
                   <div className="space-y-3">
                     {employeeSalaryRecords.map((record) => (
-                      <Card
-                        key={record.id}
-                        className="bg-slate-800/30 border-slate-700"
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                              <div>
-                                <h4 className="text-white font-medium">
-                                  {new Date(
-                                    record.month + "-01",
-                                  ).toLocaleDateString("en-US", {
-                                    month: "long",
-                                    year: "numeric",
-                                  })}
-                                </h4>
-                                <p className="text-slate-400 text-sm">
-                                  {record.actualWorkingDays}/
-                                  {record.totalWorkingDays} working days
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                              <div className="text-right">
-                                <p className="text-white font-bold text-lg">
-                                  ₹{record.totalSalary.toLocaleString()}
-                                </p>
-                                {record.paymentDate && (
+                      <div key={record.id} className="space-y-4">
+                        {/* Summary Card */}
+                        <Card
+                          className="bg-slate-800/30 border-slate-700"
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <div>
+                                  <h4 className="text-white font-medium">
+                                    {new Date(
+                                      record.month + "-01",
+                                    ).toLocaleDateString("en-US", {
+                                      month: "long",
+                                      year: "numeric",
+                                    })}
+                                  </h4>
                                   <p className="text-slate-400 text-sm">
-                                    Paid: {record.paymentDate}
+                                    {record.actualWorkingDays}/
+                                    {record.totalWorkingDays} working days
                                   </p>
-                                )}
+                                </div>
                               </div>
-                              <Button
-                                onClick={() =>
-                                  handleDeleteSalaryRecord(record.id)
-                                }
-                                variant="outline"
-                                size="sm"
-                                className="border-red-500 text-red-400 hover:bg-red-500/20"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center space-x-3">
+                                <div className="text-right">
+                                  <p className="text-white font-bold text-lg">
+                                    ₹{record.totalSalary.toLocaleString()}
+                                  </p>
+                                  {record.paymentDate && (
+                                    <p className="text-slate-400 text-sm">
+                                      Paid: {record.paymentDate}
+                                    </p>
+                                  )}
+                                </div>
+                                <Button
+                                  onClick={() =>
+                                    handleDeleteSalaryRecord(record.id)
+                                  }
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-red-500 text-red-400 hover:bg-red-500/20"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-slate-400">Basic Salary</p>
-                              <p className="text-white font-medium">
-                                ₹{record.basicSalary.toLocaleString()}
-                              </p>
-                            </div>
-                            {record.bonus && record.bonus > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
-                                <p className="text-slate-400">Bonus</p>
-                                <p className="text-green-400 font-medium">
-                                  +₹{record.bonus.toLocaleString()}
+                                <p className="text-slate-400">Basic Salary</p>
+                                <p className="text-white font-medium">
+                                  ₹{record.basicSalary.toLocaleString()}
+                                </p>
+                              </div>
+                              {record.bonus && record.bonus > 0 && (
+                                <div>
+                                  <p className="text-slate-400">Bonus</p>
+                                  <p className="text-green-400 font-medium">
+                                    +₹{record.bonus.toLocaleString()}
+                                  </p>
+                                </div>
+                              )}
+                              {record.deductions && record.deductions > 0 && (
+                                <div>
+                                  <p className="text-slate-400">Deductions</p>
+                                  <p className="text-red-400 font-medium">
+                                    -₹{record.deductions.toLocaleString()}
+                                  </p>
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-slate-400">Added On</p>
+                                <p className="text-white font-medium">
+                                  {new Date(
+                                    record.createdAt,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+
+                            {record.notes && (
+                              <div className="mt-3 pt-3 border-t border-slate-700">
+                                <p className="text-slate-400 text-sm">Notes:</p>
+                                <p className="text-slate-300 text-sm mt-1">
+                                  {record.notes}
                                 </p>
                               </div>
                             )}
-                            {record.deductions && record.deductions > 0 && (
-                              <div>
-                                <p className="text-slate-400">Deductions</p>
-                                <p className="text-red-400 font-medium">
-                                  -₹{record.deductions.toLocaleString()}
-                                </p>
-                              </div>
-                            )}
-                            <div>
-                              <p className="text-slate-400">Added On</p>
-                              <p className="text-white font-medium">
-                                {new Date(
-                                  record.createdAt,
-                                ).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
+                          </CardContent>
+                        </Card>
 
-                          {record.notes && (
-                            <div className="mt-3 pt-3 border-t border-slate-700">
-                              <p className="text-slate-400 text-sm">Notes:</p>
-                              <p className="text-slate-300 text-sm mt-1">
-                                {record.notes}
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                        {/* Salary Details Table */}
+                        <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-slate-800/50 border-b border-slate-700">
+                                  <th className="px-4 py-3 text-left text-slate-300 font-semibold">Salary Details</th>
+                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Amount</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                  <td className="px-4 py-2 text-slate-300">Basic Salary</td>
+                                  <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
+                                </tr>
+                                {(record.bonus && record.bonus > 0) ? (
+                                  <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                    <td className="px-4 py-2 text-slate-300">Bonus</td>
+                                    <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
+                                  </tr>
+                                ) : null}
+                                <tr className="border-b border-slate-700/50 bg-slate-800/30">
+                                  <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
+                                  <td className="px-4 py-2 text-right text-white font-bold">
+                                    ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
+                                  </td>
+                                </tr>
+                                {(record.deductions && record.deductions > 0) ? (
+                                  <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                    <td className="px-4 py-2 text-slate-300">Deductions</td>
+                                    <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
+                                  </tr>
+                                ) : null}
+                                <tr className="bg-green-500/10 border-t-2 border-green-500/30">
+                                  <td className="px-4 py-2 text-green-400 font-semibold">Net Salary</td>
+                                  <td className="px-4 py-2 text-right text-green-400 font-bold text-lg">
+                                    ₹{record.totalSalary.toLocaleString()}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 );
