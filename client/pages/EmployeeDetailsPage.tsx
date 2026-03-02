@@ -202,6 +202,30 @@ export default function EmployeeDetailsPage() {
     message: "Data saved successfully!",
   });
 
+  // Helper function to auto-calculate salary components
+  const calculateSalaryComponents = (basicSalary: number) => {
+    if (basicSalary <= 0) return { hra: 0, conveyance: 1600, actualBasic: 0, specialAllowance: 0 };
+
+    // Actual Basic for Gross calculation = Basic Salary * 50%
+    const actualBasic = basicSalary * 0.5;
+
+    // HRA = Actual Basic * 40%
+    const hra = actualBasic * 0.4;
+
+    // Conveyance = fixed 1600
+    const conveyance = 1600;
+
+    // Special Allowance = Actual Basic - HRA - Conveyance
+    const specialAllowance = actualBasic - hra - conveyance;
+
+    return {
+      hra: Math.round(hra * 100) / 100,
+      conveyance,
+      actualBasic: Math.round(actualBasic * 100) / 100,
+      specialAllowance: Math.round(specialAllowance * 100) / 100,
+    };
+  };
+
   useEffect(() => {
     const loadData = async () => {
       const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -618,16 +642,19 @@ export default function EmployeeDetailsPage() {
     const salary = parseFloat(employee?.salary || "0");
     const pf = parseFloat(employee?.pf || "0");
     const esic = parseFloat(employee?.esic || "0");
-    const basicAmount = (salary - pf - esic).toString();
+    const basicAmount = salary - pf - esic;
+
+    // Auto-calculate dependent values based on basic amount
+    const calculations = calculateSalaryComponents(basicAmount);
 
     setSalaryForm({
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
-      basic: basicAmount,
-      hra: "",
-      conveyance: "",
-      specialAllowance: "",
+      basic: basicAmount.toString(),
+      hra: calculations.hra.toString(),
+      conveyance: calculations.conveyance.toString(),
+      specialAllowance: calculations.specialAllowance.toString(),
       incentive: "",
       adjustment: "",
       bonus: record.bonus?.toString() || "",
@@ -1279,16 +1306,19 @@ export default function EmployeeDetailsPage() {
                       const salary = parseFloat(employee?.salary || "0");
                       const pf = parseFloat(employee?.pf || "0");
                       const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+                      const basicAmount = salary - pf - esic;
+
+                      // Auto-calculate dependent values
+                      const calculations = calculateSalaryComponents(basicAmount);
 
                       setSalaryForm({
                         month: "",
                         totalWorkingDays: "",
                         actualWorkingDays: "",
-                        basic: basicAmount,
-                        hra: "",
-                        conveyance: "",
-                        specialAllowance: "",
+                        basic: basicAmount.toString(),
+                        hra: calculations.hra.toString(),
+                        conveyance: calculations.conveyance.toString(),
+                        specialAllowance: calculations.specialAllowance.toString(),
                         incentive: "",
                         adjustment: "",
                         bonus: "",
@@ -1335,18 +1365,21 @@ export default function EmployeeDetailsPage() {
                           setShowSalaryForm(false);
                           setEditingSalaryRecordId(null);
                           const salary = parseFloat(employee?.salary || "0");
-                      const pf = parseFloat(employee?.pf || "0");
-                      const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
+                          const pf = parseFloat(employee?.pf || "0");
+                          const esic = parseFloat(employee?.esic || "0");
+                          const basicAmount = salary - pf - esic;
+
+                          // Auto-calculate dependent values
+                          const calculations = calculateSalaryComponents(basicAmount);
 
                           setSalaryForm({
                             month: "",
                             totalWorkingDays: "",
                             actualWorkingDays: "",
-                            basic: basicAmount,
-                            hra: "",
-                            conveyance: "",
-                            specialAllowance: "",
+                            basic: basicAmount.toString(),
+                            hra: calculations.hra.toString(),
+                            conveyance: calculations.conveyance.toString(),
+                            specialAllowance: calculations.specialAllowance.toString(),
                             incentive: "",
                             adjustment: "",
                             bonus: "",
@@ -1426,6 +1459,35 @@ export default function EmployeeDetailsPage() {
                     {/* Earnings Section */}
                     <div className="space-y-3">
                       <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
+
+                      {/* Basic Salary Input - Auto-calculated as Salary - PF - ESIC */}
+                      <div className="bg-slate-800/30 border border-slate-700 rounded p-4">
+                        <Label className="text-slate-300 text-sm font-medium block mb-2">Basic Salary = Salary - PF - ESIC (Auto-calculates HRA, Conveyance & Special Allowance)</Label>
+                        <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                          {salaryForm.basic}
+                        </div>
+                        {parseFloat(salaryForm.basic) > 0 && (
+                          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Actual Basic (50%)</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5).toFixed(2)}</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">HRA (40%)</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5 * 0.4).toFixed(2)}</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Conveyance</div>
+                              <div className="text-white font-semibold">1,600</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Sp. Allowance</div>
+                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).specialAllowance.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="overflow-x-auto border border-slate-700 rounded">
                         <table className="w-full">
                           <thead>
@@ -1437,10 +1499,10 @@ export default function EmployeeDetailsPage() {
                           </thead>
                           <tbody>
                             {[
-                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true },
-                              { label: "HRA", key: "hra", earnedKey: "hraEarned" },
-                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
-                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true, displayAsActualBasic: true },
+                              { label: "HRA", key: "hra", earnedKey: "hraEarned", isReadOnly: true },
+                              { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned", isReadOnly: true },
+                              { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned", isReadOnly: true },
                               { label: "Incentive", key: "incentive", earnedKey: "incentiveEarned" },
                               { label: "Adjustment", key: "adjustment", earnedKey: "adjustmentEarned" },
                               { label: "Bonus", key: "bonus", earnedKey: "bonusEarned" },
@@ -1456,18 +1518,34 @@ export default function EmployeeDetailsPage() {
                                   <td className="px-4 py-3 text-right">
                                     {field.isReadOnly ? (
                                       <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
-                                        {actualValue.toFixed(2)}
+                                        {field.displayAsActualBasic ? (actualValue * 0.5).toFixed(2) : actualValue.toFixed(2)}
                                       </div>
                                     ) : (
                                       <Input
                                         type="number"
                                         value={salaryForm[field.key as keyof typeof salaryForm]}
-                                        onChange={(e) =>
-                                          setSalaryForm({
-                                            ...salaryForm,
-                                            [field.key]: e.target.value,
-                                          })
-                                        }
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+
+                                          // If Basic field is changed, auto-calculate dependent fields
+                                          if (field.key === "basic") {
+                                            const basicValue = parseFloat(value) || 0;
+                                            const calculations = calculateSalaryComponents(basicValue);
+
+                                            setSalaryForm({
+                                              ...salaryForm,
+                                              basic: value,
+                                              hra: calculations.hra.toString(),
+                                              conveyance: calculations.conveyance.toString(),
+                                              specialAllowance: calculations.specialAllowance.toString(),
+                                            });
+                                          } else {
+                                            setSalaryForm({
+                                              ...salaryForm,
+                                              [field.key]: value,
+                                            });
+                                          }
+                                        }}
                                         className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
                                         placeholder="0"
                                       />
