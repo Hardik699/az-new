@@ -1279,7 +1279,7 @@ export default function EmployeeDetailsPage() {
                       const salary = parseFloat(employee?.salary || "0");
                       const pf = parseFloat(employee?.pf || "0");
                       const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = (salary - pf - esic).toString();
+                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
 
                       setSalaryForm({
                         month: "",
@@ -1335,9 +1335,9 @@ export default function EmployeeDetailsPage() {
                           setShowSalaryForm(false);
                           setEditingSalaryRecordId(null);
                           const salary = parseFloat(employee?.salary || "0");
-                          const pf = parseFloat(employee?.pf || "0");
-                          const esic = parseFloat(employee?.esic || "0");
-                          const basicAmount = (salary - pf - esic).toString();
+                      const pf = parseFloat(employee?.pf || "0");
+                      const esic = parseFloat(employee?.esic || "0");
+                      const basicAmount = ((salary - pf - esic) * 0.5).toString();
 
                           setSalaryForm({
                             month: "",
