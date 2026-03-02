@@ -159,7 +159,7 @@ export default function ITPage() {
   // --- HELPER FUNCTIONS ---
 
   // Load and filter available PC/Laptop IDs from database
-  const loadAvailableSystemIds = async () => {
+  const loadAvailableSystemIds = async (currentRecords?: ITRecord[]) => {
     try {
       const response = await fetch("/api/pc-laptop");
       const result = await response.json();
@@ -170,7 +170,8 @@ export default function ITPage() {
 
         // Get system IDs assigned to ACTIVE users only
         // If a user is inactive, their system ID becomes available for reuse
-        const activeAssignedIds = records
+        const recordsToFilter = currentRecords !== undefined ? currentRecords : records;
+        const activeAssignedIds = recordsToFilter
           .filter((record) => record.status === "active")
           .map((record) => record.systemId);
 
@@ -245,8 +246,8 @@ export default function ITPage() {
       alert("Some errors occurred while saving:\n" + errors.join("\n"));
     }
 
-    // Refresh available system IDs after saving
-    await loadAvailableSystemIds();
+    // Refresh available system IDs after saving (pass the updated records)
+    await loadAvailableSystemIds(next);
     return errors.length === 0;
   };
 
@@ -384,6 +385,8 @@ export default function ITPage() {
                 _id: rec._id, // Keep _id for database operations
               }));
               setRecords(mappedRecords);
+              // Load available PC/Laptop IDs immediately with the fetched records
+              await loadAvailableSystemIds(mappedRecords);
             }
           } catch (e) {
             console.error("Failed to parse IT accounts response:", e);
@@ -393,8 +396,6 @@ export default function ITPage() {
         console.error("Failed to load IT data:", error);
       }
 
-      // Load available PC/Laptop IDs
-      await loadAvailableSystemIds();
       setIsLoading(false);
     };
 
@@ -589,8 +590,8 @@ export default function ITPage() {
 
   // Ensure the pre-selected System ID is present in options after URL parsing
   useEffect(() => {
-    loadAvailableSystemIds();
-  }, [preSelectedSystemId]);
+    loadAvailableSystemIds(records);
+  }, [preSelectedSystemId, records]);
 
   // Auto-load PC/Laptop details when System ID changes
   useEffect(() => {
@@ -737,7 +738,7 @@ export default function ITPage() {
                   </div>
                   <Button
                     type="button"
-                    onClick={loadAvailableSystemIds}
+                    onClick={() => loadAvailableSystemIds(records)}
                     size="sm"
                     variant="outline"
                     className="border-slate-600 text-slate-300 hover:bg-slate-700 w-full sm:w-auto"
@@ -1236,9 +1237,8 @@ export default function ITPage() {
                               size="sm"
                               className="border-red-600 text-red-400"
                               onClick={() => {
-                                saveRecords(records.filter((x) => x.id !== r.id));
-                                // Refresh available IDs after deletion
-                                setTimeout(loadAvailableSystemIds, 100);
+                                const filtered = records.filter((x) => x.id !== r.id);
+                                saveRecords(filtered);
                               }}
                             >
                               <Trash2 className="h-4 w-4" />
