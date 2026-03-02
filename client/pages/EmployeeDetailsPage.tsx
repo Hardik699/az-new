@@ -209,8 +209,9 @@ export default function EmployeeDetailsPage() {
     // Actual Basic for Gross calculation = Basic Salary * 50%
     const actualBasic = basicSalary * 0.5;
 
-    // HRA = Actual Basic * 40%
-    const hra = actualBasic * 0.4;
+    // HRA = Actual Basic * 40%, with minimum of 1600
+    const calculatedHra = actualBasic * 0.4;
+    const hra = Math.max(calculatedHra, 1600);
 
     // Conveyance = fixed 1600
     const conveyance = 1600;
@@ -223,6 +224,138 @@ export default function EmployeeDetailsPage() {
       conveyance,
       actualBasic: Math.round(actualBasic * 100) / 100,
       specialAllowance: Math.round(specialAllowance * 100) / 100,
+    };
+  };
+
+  // Helper function to convert numbers to words
+  const convertNumberToWords = (num: number): string => {
+    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+    const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    const scales = ["", "Thousand", "Lakh", "Crore"];
+
+    if (num === 0) return "Zero";
+
+    const integerPart = Math.floor(num);
+    const decimalPart = Math.round((num % 1) * 100);
+
+    let result = "";
+    let scaleIndex = 0;
+
+    const convertHundreds = (n: number): string => {
+      let words = "";
+      const hundred = Math.floor(n / 100);
+      const remainder = n % 100;
+
+      if (hundred > 0) {
+        words += ones[hundred] + " Hundred";
+      }
+
+      if (remainder >= 10 && remainder < 20) {
+        if (words) words += " ";
+        words += teens[remainder - 10];
+      } else {
+        const ten = Math.floor(remainder / 10);
+        const one = remainder % 10;
+
+        if (ten > 0) {
+          if (words) words += " ";
+          words += tens[ten];
+        }
+
+        if (one > 0) {
+          if (words) words += " ";
+          words += ones[one];
+        }
+      }
+
+      return words;
+    };
+
+    let temp = integerPart;
+    while (temp > 0) {
+      let chunk = temp % 100;
+      if (scaleIndex === 0) {
+        chunk = temp % 1000;
+      }
+
+      if (chunk !== 0) {
+        const chunkWords = convertHundreds(chunk);
+        if (result) result = chunkWords + " " + scales[scaleIndex] + " " + result;
+        else result = chunkWords + (scales[scaleIndex] ? " " + scales[scaleIndex] : "");
+      }
+
+      if (scaleIndex === 0) {
+        temp = Math.floor(temp / 1000);
+      } else {
+        temp = Math.floor(temp / 100);
+      }
+      scaleIndex++;
+    }
+
+    if (decimalPart > 0) {
+      result += " and " + decimalPart + " Paise";
+    }
+
+    return result.trim();
+  };
+
+  // Helper function to calculate earned values based on actual values and working days
+  const calculateEarnedValues = (salaryFormData: typeof salaryForm) => {
+    const totalWorkingDays = parseFloat(salaryFormData.totalWorkingDays) || 0;
+    const actualWorkingDays = parseFloat(salaryFormData.actualWorkingDays) || 0;
+
+    if (totalWorkingDays <= 0 || actualWorkingDays <= 0) {
+      return {
+        basicEarned: "0",
+        hraEarned: "0",
+        conveyanceEarned: "0",
+        specialAllowanceEarned: "0",
+        incentiveEarned: "0",
+        adjustmentEarned: "0",
+        bonusEarned: "0",
+        retentionBonusEarned: "0",
+        advanceAnyEarned: "0",
+      };
+    }
+
+    const actualFields: (keyof typeof salaryForm)[] = [
+      "basic", "hra", "conveyance", "specialAllowance",
+      "incentive", "adjustment", "bonus", "retentionBonus", "advanceAny"
+    ];
+
+    const earnedMap: Record<string, number> = {};
+
+    actualFields.forEach((field) => {
+      let actualValue = parseFloat(salaryFormData[field] as string) || 0;
+
+      // For Basic field, use Actual Gross (50% of basic)
+      if (field === "basic") {
+        actualValue = actualValue * 0.5;
+      }
+
+      const earnedValue = (actualValue / totalWorkingDays) * actualWorkingDays;
+      const earnedKey = field === "basic" ? "basicEarned" :
+                        field === "hra" ? "hraEarned" :
+                        field === "conveyance" ? "conveyanceEarned" :
+                        field === "specialAllowance" ? "specialAllowanceEarned" :
+                        field === "incentive" ? "incentiveEarned" :
+                        field === "adjustment" ? "adjustmentEarned" :
+                        field === "bonus" ? "bonusEarned" :
+                        field === "retentionBonus" ? "retentionBonusEarned" : "advanceAnyEarned";
+      earnedMap[earnedKey] = Math.round(earnedValue * 100) / 100;
+    });
+
+    return {
+      basicEarned: earnedMap.basicEarned?.toString() || "0",
+      hraEarned: earnedMap.hraEarned?.toString() || "0",
+      conveyanceEarned: earnedMap.conveyanceEarned?.toString() || "0",
+      specialAllowanceEarned: earnedMap.specialAllowanceEarned?.toString() || "0",
+      incentiveEarned: earnedMap.incentiveEarned?.toString() || "0",
+      adjustmentEarned: earnedMap.adjustmentEarned?.toString() || "0",
+      bonusEarned: earnedMap.bonusEarned?.toString() || "0",
+      retentionBonusEarned: earnedMap.retentionBonusEarned?.toString() || "0",
+      advanceAnyEarned: earnedMap.advanceAnyEarned?.toString() || "0",
     };
   };
 
@@ -647,7 +780,7 @@ export default function EmployeeDetailsPage() {
     // Auto-calculate dependent values based on basic amount
     const calculations = calculateSalaryComponents(basicAmount);
 
-    setSalaryForm({
+    const newForm = {
       month: record.month,
       totalWorkingDays: record.totalWorkingDays.toString(),
       actualWorkingDays: record.actualWorkingDays.toString(),
@@ -677,6 +810,13 @@ export default function EmployeeDetailsPage() {
       retention: employee?.retention || "",
       paymentDate: record.paymentDate || "",
       notes: record.notes || "",
+    };
+
+    // Auto-calculate earned values
+    const earnedValues = calculateEarnedValues(newForm);
+    setSalaryForm({
+      ...newForm,
+      ...earnedValues,
     });
     setShowSalaryForm(true);
   };
@@ -1431,12 +1571,17 @@ export default function EmployeeDetailsPage() {
                         <Input
                           type="number"
                           value={salaryForm.totalWorkingDays}
-                          onChange={(e) =>
-                            setSalaryForm({
+                          onChange={(e) => {
+                            const updatedForm = {
                               ...salaryForm,
                               totalWorkingDays: e.target.value,
-                            })
-                          }
+                            };
+                            const earnedValues = calculateEarnedValues(updatedForm);
+                            setSalaryForm({
+                              ...updatedForm,
+                              ...earnedValues,
+                            });
+                          }}
                           className="bg-slate-800/50 border-slate-700 text-white"
                         />
                       </div>
@@ -1445,12 +1590,17 @@ export default function EmployeeDetailsPage() {
                         <Input
                           type="number"
                           value={salaryForm.actualWorkingDays}
-                          onChange={(e) =>
-                            setSalaryForm({
+                          onChange={(e) => {
+                            const updatedForm = {
                               ...salaryForm,
                               actualWorkingDays: e.target.value,
-                            })
-                          }
+                            };
+                            const earnedValues = calculateEarnedValues(updatedForm);
+                            setSalaryForm({
+                              ...updatedForm,
+                              ...earnedValues,
+                            });
+                          }}
                           className="bg-slate-800/50 border-slate-700 text-white"
                         />
                       </div>
@@ -1466,26 +1616,6 @@ export default function EmployeeDetailsPage() {
                         <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
                           {salaryForm.basic}
                         </div>
-                        {parseFloat(salaryForm.basic) > 0 && (
-                          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Actual Basic (50%)</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5).toFixed(2)}</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">HRA (40%)</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5 * 0.4).toFixed(2)}</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Conveyance</div>
-                              <div className="text-white font-semibold">1,600</div>
-                            </div>
-                            <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Sp. Allowance</div>
-                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).specialAllowance.toFixed(2)}</div>
-                            </div>
-                          </div>
-                        )}
                       </div>
 
                       <div className="overflow-x-auto border border-slate-700 rounded">
@@ -1532,17 +1662,31 @@ export default function EmployeeDetailsPage() {
                                             const basicValue = parseFloat(value) || 0;
                                             const calculations = calculateSalaryComponents(basicValue);
 
-                                            setSalaryForm({
+                                            const updatedForm = {
                                               ...salaryForm,
                                               basic: value,
                                               hra: calculations.hra.toString(),
                                               conveyance: calculations.conveyance.toString(),
                                               specialAllowance: calculations.specialAllowance.toString(),
+                                            };
+
+                                            // Auto-calculate earned values
+                                            const earnedValues = calculateEarnedValues(updatedForm);
+                                            setSalaryForm({
+                                              ...updatedForm,
+                                              ...earnedValues,
                                             });
                                           } else {
-                                            setSalaryForm({
+                                            const updatedForm = {
                                               ...salaryForm,
                                               [field.key]: value,
+                                            };
+
+                                            // Auto-calculate earned values for any actual field change
+                                            const earnedValues = calculateEarnedValues(updatedForm);
+                                            setSalaryForm({
+                                              ...updatedForm,
+                                              ...earnedValues,
                                             });
                                           }
                                         }}
@@ -1552,18 +1696,9 @@ export default function EmployeeDetailsPage() {
                                     )}
                                   </td>
                                   <td className="px-4 py-3 text-right">
-                                    <Input
-                                      type="number"
-                                      value={earnedValue}
-                                      onChange={(e) =>
-                                        setSalaryForm({
-                                          ...salaryForm,
-                                          [field.earnedKey]: e.target.value,
-                                        })
-                                      }
-                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
-                                      placeholder="0"
-                                    />
+                                    <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
+                                      {earnedValue.toFixed(2)}
+                                    </div>
                                   </td>
                                 </tr>
                               );
@@ -1583,13 +1718,27 @@ export default function EmployeeDetailsPage() {
                               let totalEarned = 0;
 
                               actualFields.forEach((field) => {
-                                const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
-                                totalActual += value;
+                                let value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                                // For Basic field, use Actual Gross (50% of basic)
+                                if (field === "basic") {
+                                  value = value * 0.5;
+                                }
+                                // Subtract advanceAny instead of adding it
+                                if (field === "advanceAny") {
+                                  totalActual -= value;
+                                } else {
+                                  totalActual += value;
+                                }
                               });
 
                               earnedFields.forEach((field) => {
                                 const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
-                                totalEarned += value;
+                                // Subtract advanceAnyEarned instead of adding it
+                                if (field === "advanceAnyEarned") {
+                                  totalEarned -= value;
+                                } else {
+                                  totalEarned += value;
+                                }
                               });
 
                               return (
@@ -1670,6 +1819,42 @@ export default function EmployeeDetailsPage() {
                         className="bg-slate-800/50 border-slate-700 text-white"
                         placeholder="Any additional notes..."
                       />
+                    </div>
+
+                    {/* Net Salary Credited - Auto-calculated */}
+                    <div className="space-y-2">
+                      <Label className="text-slate-300">Net Salary Credited</Label>
+                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                        {(() => {
+                          // Calculate total earned gross
+                          const earnedFields = [
+                            "basicEarned", "hraEarned", "conveyanceEarned", "specialAllowanceEarned",
+                            "incentiveEarned", "adjustmentEarned", "bonusEarned", "retentionBonusEarned", "advanceAnyEarned"
+                          ];
+                          let totalEarnedGross = 0;
+                          earnedFields.forEach((field) => {
+                            const value = parseFloat(salaryForm[field as keyof typeof salaryForm] as string) || 0;
+                            if (field === "advanceAnyEarned") {
+                              totalEarnedGross -= value;
+                            } else {
+                              totalEarnedGross += value;
+                            }
+                          });
+
+                          // Calculate deductions
+                          const pf = parseFloat(salaryForm.pf as string) || 0;
+                          const esic = parseFloat(salaryForm.esic as string) || 0;
+                          const pt = parseFloat(salaryForm.pt as string) || 0;
+                          const tds = parseFloat(salaryForm.tds as string) || 0;
+                          const advanceAnyDeduction = parseFloat(salaryForm.advanceAnyDeduction as string) || 0;
+                          const retention = parseFloat(salaryForm.retention as string) || 0;
+
+                          const totalDeductions = pf + esic + pt + tds + advanceAnyDeduction + retention;
+                          const netSalaryCredited = totalEarnedGross - totalDeductions;
+
+                          return netSalaryCredited.toFixed(2);
+                        })()}
+                      </div>
                     </div>
 
                     <div className="flex gap-2">
