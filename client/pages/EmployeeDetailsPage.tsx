@@ -204,24 +204,24 @@ export default function EmployeeDetailsPage() {
 
   // Helper function to auto-calculate salary components
   const calculateSalaryComponents = (basicSalary: number) => {
-    if (basicSalary <= 0) return { hra: 0, conveyance: 1600, actualGross: 0, specialAllowance: 0 };
+    if (basicSalary <= 0) return { hra: 0, conveyance: 1600, actualBasic: 0, specialAllowance: 0 };
 
-    // HRA = Basic / 40% (Basic / 0.4)
-    const hra = basicSalary / 0.4;
+    // Actual Basic for Gross calculation = Basic Salary * 50%
+    const actualBasic = basicSalary * 0.5;
+
+    // HRA = Actual Basic * 40%
+    const hra = actualBasic * 0.4;
 
     // Conveyance = fixed 1600
     const conveyance = 1600;
 
-    // Actual Gross = Basic / 50% (Basic / 0.5)
-    const actualGross = basicSalary / 0.5;
-
-    // Special Allowance = Actual Gross - Basic - HRA - Conveyance
-    const specialAllowance = actualGross - basicSalary - hra - conveyance;
+    // Special Allowance = Actual Basic - HRA - Conveyance
+    const specialAllowance = actualBasic - hra - conveyance;
 
     return {
       hra: Math.round(hra * 100) / 100,
       conveyance,
-      actualGross: Math.round(actualGross * 100) / 100,
+      actualBasic: Math.round(actualBasic * 100) / 100,
       specialAllowance: Math.round(specialAllowance * 100) / 100,
     };
   };
@@ -1469,12 +1469,12 @@ export default function EmployeeDetailsPage() {
                         {parseFloat(salaryForm.basic) > 0 && (
                           <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                             <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">Actual Gross</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) / 0.5).toFixed(2)}</div>
+                              <div className="text-slate-400">Actual Basic (50%)</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5).toFixed(2)}</div>
                             </div>
                             <div className="bg-slate-700/50 p-2 rounded">
-                              <div className="text-slate-400">HRA (Calc)</div>
-                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) / 0.4).toFixed(2)}</div>
+                              <div className="text-slate-400">HRA (40%)</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) * 0.5 * 0.4).toFixed(2)}</div>
                             </div>
                             <div className="bg-slate-700/50 p-2 rounded">
                               <div className="text-slate-400">Conveyance</div>
@@ -1499,7 +1499,7 @@ export default function EmployeeDetailsPage() {
                           </thead>
                           <tbody>
                             {[
-                              { label: "Basic", key: "basic", earnedKey: "basicEarned" },
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true, displayAsActualBasic: true },
                               { label: "HRA", key: "hra", earnedKey: "hraEarned", isReadOnly: true },
                               { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned", isReadOnly: true },
                               { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned", isReadOnly: true },
@@ -1518,7 +1518,7 @@ export default function EmployeeDetailsPage() {
                                   <td className="px-4 py-3 text-right">
                                     {field.isReadOnly ? (
                                       <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
-                                        {actualValue.toFixed(2)}
+                                        {field.displayAsActualBasic ? (actualValue * 0.5).toFixed(2) : actualValue.toFixed(2)}
                                       </div>
                                     ) : (
                                       <Input
