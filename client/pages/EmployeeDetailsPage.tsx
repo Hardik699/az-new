@@ -1374,36 +1374,94 @@ export default function EmployeeDetailsPage() {
                     {/* Earnings Section */}
                     <div className="space-y-3">
                       <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {[
-                          { label: "Basic", key: "basic" },
-                          { label: "HRA", key: "hra" },
-                          { label: "Conveyance", key: "conveyance" },
-                          { label: "Special Allowance", key: "specialAllowance" },
-                          { label: "Incentive", key: "incentive" },
-                          { label: "Adjustment", key: "adjustment" },
-                          { label: "Bonus", key: "bonus" },
-                          { label: "Retention Bonus", key: "retentionBonus" },
-                          { label: "Advance Any", key: "advanceAny" },
-                        ].map((field) => (
-                          <div key={field.key} className="space-y-1">
-                            <Label className="text-slate-300 text-xs">
-                              {field.label}
-                            </Label>
-                            <Input
-                              type="number"
-                              value={salaryForm[field.key as keyof typeof salaryForm]}
-                              onChange={(e) =>
-                                setSalaryForm({
-                                  ...salaryForm,
-                                  [field.key]: e.target.value,
-                                })
-                              }
-                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
-                              placeholder="0"
-                            />
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto border border-slate-700 rounded">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-slate-800/50 border-b border-slate-700">
+                              <th className="px-4 py-2 text-left text-slate-300 font-semibold text-sm">Earning</th>
+                              <th className="px-4 py-2 text-right text-slate-300 font-semibold text-sm">Actual Gross</th>
+                              <th className="px-4 py-2 text-right text-slate-300 font-semibold text-sm">Earned Gross</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              { label: "Basic", key: "basic" },
+                              { label: "HRA", key: "hra" },
+                              { label: "Conveyance", key: "conveyance" },
+                              { label: "Sp. Allowance", key: "specialAllowance" },
+                              { label: "Incentive", key: "incentive" },
+                              { label: "Adjustment", key: "adjustment" },
+                              { label: "Bonus", key: "bonus" },
+                              { label: "Retention Bonus", key: "retentionBonus" },
+                              { label: "Advance Any", key: "advanceAny" },
+                            ].map((field) => {
+                              const actualValue = parseFloat(salaryForm[field.key as keyof typeof salaryForm] as string) || 0;
+                              const totalDays = parseFloat(salaryForm.totalWorkingDays) || 1;
+                              const actualDays = parseFloat(salaryForm.actualWorkingDays) || totalDays;
+                              const earnedValue = (actualValue / totalDays) * actualDays;
+
+                              return (
+                                <tr key={field.key} className="border-b border-slate-700 hover:bg-slate-800/30">
+                                  <td className="px-4 py-3 text-slate-300 text-sm font-medium">{field.label}</td>
+                                  <td className="px-4 py-3 text-right">
+                                    <Input
+                                      type="number"
+                                      value={salaryForm[field.key as keyof typeof salaryForm]}
+                                      onChange={(e) =>
+                                        setSalaryForm({
+                                          ...salaryForm,
+                                          [field.key]: e.target.value,
+                                        })
+                                      }
+                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
+                                      placeholder="0"
+                                    />
+                                  </td>
+                                  <td className="px-4 py-3 text-right text-slate-300 text-sm font-medium">
+                                    {earnedValue.toFixed(2)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            {/* Gross Earnings Total Row */}
+                            {(() => {
+                              const fields = [
+                                { label: "Basic", key: "basic" },
+                                { label: "HRA", key: "hra" },
+                                { label: "Conveyance", key: "conveyance" },
+                                { label: "Sp. Allowance", key: "specialAllowance" },
+                                { label: "Incentive", key: "incentive" },
+                                { label: "Adjustment", key: "adjustment" },
+                                { label: "Bonus", key: "bonus" },
+                                { label: "Retention Bonus", key: "retentionBonus" },
+                                { label: "Advance Any", key: "advanceAny" },
+                              ];
+                              const totalDays = parseFloat(salaryForm.totalWorkingDays) || 1;
+                              const actualDays = parseFloat(salaryForm.actualWorkingDays) || totalDays;
+
+                              let totalActual = 0;
+                              let totalEarned = 0;
+
+                              fields.forEach((field) => {
+                                const value = parseFloat(salaryForm[field.key as keyof typeof salaryForm] as string) || 0;
+                                totalActual += value;
+                                totalEarned += (value / totalDays) * actualDays;
+                              });
+
+                              return (
+                                <tr className="bg-slate-800/70 border-t-2 border-slate-600">
+                                  <td className="px-4 py-3 text-white text-sm font-bold">Gross Earnings</td>
+                                  <td className="px-4 py-3 text-right text-white text-sm font-bold">
+                                    {totalActual.toFixed(2)}
+                                  </td>
+                                  <td className="px-4 py-3 text-right text-white text-sm font-bold">
+                                    {totalEarned.toFixed(2)}
+                                  </td>
+                                </tr>
+                              );
+                            })()}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
