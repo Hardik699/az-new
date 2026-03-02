@@ -202,6 +202,30 @@ export default function EmployeeDetailsPage() {
     message: "Data saved successfully!",
   });
 
+  // Helper function to auto-calculate salary components
+  const calculateSalaryComponents = (basicSalary: number) => {
+    if (basicSalary <= 0) return { hra: 0, conveyance: 1600, actualGross: 0, specialAllowance: 0 };
+
+    // HRA = Basic / 40% (Basic / 0.4)
+    const hra = basicSalary / 0.4;
+
+    // Conveyance = fixed 1600
+    const conveyance = 1600;
+
+    // Actual Gross = Basic / 50% (Basic / 0.5)
+    const actualGross = basicSalary / 0.5;
+
+    // Special Allowance = Actual Gross - Basic - HRA - Conveyance
+    const specialAllowance = actualGross - basicSalary - hra - conveyance;
+
+    return {
+      hra: Math.round(hra * 100) / 100,
+      conveyance,
+      actualGross: Math.round(actualGross * 100) / 100,
+      specialAllowance: Math.round(specialAllowance * 100) / 100,
+    };
+  };
+
   useEffect(() => {
     const loadData = async () => {
       const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -1426,6 +1450,50 @@ export default function EmployeeDetailsPage() {
                     {/* Earnings Section */}
                     <div className="space-y-3">
                       <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
+
+                      {/* Basic Salary Input - Auto-calculates other components */}
+                      <div className="bg-slate-800/30 border border-slate-700 rounded p-4">
+                        <Label className="text-slate-300 text-sm font-medium block mb-2">Basic Salary (Auto-calculates HRA, Conveyance & Special Allowance)</Label>
+                        <Input
+                          type="number"
+                          value={salaryForm.basic}
+                          onChange={(e) => {
+                            const basicValue = parseFloat(e.target.value) || 0;
+                            const calculations = calculateSalaryComponents(basicValue);
+
+                            setSalaryForm({
+                              ...salaryForm,
+                              basic: e.target.value,
+                              hra: calculations.hra.toString(),
+                              conveyance: calculations.conveyance.toString(),
+                              specialAllowance: calculations.specialAllowance.toString(),
+                            });
+                          }}
+                          className="bg-slate-800/50 border-slate-700 text-white font-medium text-lg"
+                          placeholder="Enter basic salary"
+                        />
+                        {parseFloat(salaryForm.basic) > 0 && (
+                          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Actual Gross</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) / 0.5).toFixed(2)}</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">HRA (Calc)</div>
+                              <div className="text-white font-semibold">{(parseFloat(salaryForm.basic) / 0.4).toFixed(2)}</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Conveyance</div>
+                              <div className="text-white font-semibold">1,600</div>
+                            </div>
+                            <div className="bg-slate-700/50 p-2 rounded">
+                              <div className="text-slate-400">Sp. Allowance</div>
+                              <div className="text-white font-semibold">{calculateSalaryComponents(parseFloat(salaryForm.basic) || 0).specialAllowance.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="overflow-x-auto border border-slate-700 rounded">
                         <table className="w-full">
                           <thead>
@@ -1437,7 +1505,7 @@ export default function EmployeeDetailsPage() {
                           </thead>
                           <tbody>
                             {[
-                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true },
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned" },
                               { label: "HRA", key: "hra", earnedKey: "hraEarned" },
                               { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
                               { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
@@ -1462,12 +1530,28 @@ export default function EmployeeDetailsPage() {
                                       <Input
                                         type="number"
                                         value={salaryForm[field.key as keyof typeof salaryForm]}
-                                        onChange={(e) =>
-                                          setSalaryForm({
-                                            ...salaryForm,
-                                            [field.key]: e.target.value,
-                                          })
-                                        }
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+
+                                          // If Basic field is changed, auto-calculate dependent fields
+                                          if (field.key === "basic") {
+                                            const basicValue = parseFloat(value) || 0;
+                                            const calculations = calculateSalaryComponents(basicValue);
+
+                                            setSalaryForm({
+                                              ...salaryForm,
+                                              basic: value,
+                                              hra: calculations.hra.toString(),
+                                              conveyance: calculations.conveyance.toString(),
+                                              specialAllowance: calculations.specialAllowance.toString(),
+                                            });
+                                          } else {
+                                            setSalaryForm({
+                                              ...salaryForm,
+                                              [field.key]: value,
+                                            });
+                                          }
+                                        }}
                                         className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
                                         placeholder="0"
                                       />
