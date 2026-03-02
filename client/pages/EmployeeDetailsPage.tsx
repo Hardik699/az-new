@@ -1437,7 +1437,7 @@ export default function EmployeeDetailsPage() {
                           </thead>
                           <tbody>
                             {[
-                              { label: "Basic", key: "basic", earnedKey: "basicEarned" },
+                              { label: "Basic", key: "basic", earnedKey: "basicEarned", isReadOnly: true },
                               { label: "HRA", key: "hra", earnedKey: "hraEarned" },
                               { label: "Conveyance", key: "conveyance", earnedKey: "conveyanceEarned" },
                               { label: "Sp. Allowance", key: "specialAllowance", earnedKey: "specialAllowanceEarned" },
@@ -1454,18 +1454,24 @@ export default function EmployeeDetailsPage() {
                                 <tr key={field.key} className="border-b border-slate-700 hover:bg-slate-800/30">
                                   <td className="px-4 py-3 text-slate-300 text-sm font-medium">{field.label}</td>
                                   <td className="px-4 py-3 text-right">
-                                    <Input
-                                      type="number"
-                                      value={salaryForm[field.key as keyof typeof salaryForm]}
-                                      onChange={(e) =>
-                                        setSalaryForm({
-                                          ...salaryForm,
-                                          [field.key]: e.target.value,
-                                        })
-                                      }
-                                      className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
-                                      placeholder="0"
-                                    />
+                                    {field.isReadOnly ? (
+                                      <div className="px-3 py-2 bg-slate-900/50 border border-slate-700 rounded text-white text-sm font-medium text-right">
+                                        {actualValue.toFixed(2)}
+                                      </div>
+                                    ) : (
+                                      <Input
+                                        type="number"
+                                        value={salaryForm[field.key as keyof typeof salaryForm]}
+                                        onChange={(e) =>
+                                          setSalaryForm({
+                                            ...salaryForm,
+                                            [field.key]: e.target.value,
+                                          })
+                                        }
+                                        className="bg-slate-800/50 border-slate-700 text-white text-sm w-full text-right"
+                                        placeholder="0"
+                                      />
+                                    )}
                                   </td>
                                   <td className="px-4 py-3 text-right">
                                     <Input
