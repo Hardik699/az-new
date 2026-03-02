@@ -1652,6 +1652,165 @@ export default function EmployeeDetailsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Leave Details Table */}
+                    <div className="space-y-2 overflow-x-auto">
+                      <Label className="text-slate-300">Leave Details</Label>
+                      <div className="border border-slate-700 rounded overflow-hidden bg-slate-900/50">
+                        <table className="w-full text-sm">
+                          <thead className="bg-slate-800 border-b border-slate-700">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-slate-300 font-medium">Leave Type</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Total In Account</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Leave Availed</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Subsisting Leave</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">LWP</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-700">
+                            {/* PL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">PL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.plTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, plTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.plAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, plAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.plTotal) || 0) - (parseFloat(salaryForm.plAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
+                            </tr>
+
+                            {/* CL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">CL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.clTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, clTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.clAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, clAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.clTotal) || 0) - (parseFloat(salaryForm.clAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.lwp}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, lwp: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                            </tr>
+
+                            {/* SL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">SL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.slTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, slTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.slAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, slAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.slTotal) || 0) - (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        {/* Leave Summary Footer */}
+                        <div className="border-t border-slate-700 bg-slate-800/50 px-3 py-2">
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <div className="text-slate-400">Total Leaves Taken</div>
+                              <div className="text-white font-medium">
+                                {((parseFloat(salaryForm.plAvailed) || 0) + (parseFloat(salaryForm.clAvailed) || 0) + (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Leave Without Pay</div>
+                              <div className="text-white font-medium">
+                                {(parseFloat(salaryForm.lwp) || 0).toFixed(1)}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Present Days</div>
+                              <div className="text-white font-medium">
+                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Days Payable</div>
+                              <div className="text-white font-medium">
+                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Month and Working Days */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
@@ -1918,165 +2077,6 @@ export default function EmployeeDetailsPage() {
                         className="bg-slate-800/50 border-slate-700 text-white"
                         placeholder="Any additional notes..."
                       />
-                    </div>
-
-                    {/* Leave Details Table */}
-                    <div className="space-y-2 overflow-x-auto">
-                      <Label className="text-slate-300">Leave Details</Label>
-                      <div className="border border-slate-700 rounded overflow-hidden bg-slate-900/50">
-                        <table className="w-full text-sm">
-                          <thead className="bg-slate-800 border-b border-slate-700">
-                            <tr>
-                              <th className="px-3 py-2 text-left text-slate-300 font-medium">Leave Type</th>
-                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Total In Account</th>
-                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Leave Availed</th>
-                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Subsisting Leave</th>
-                              <th className="px-3 py-2 text-center text-slate-300 font-medium">LWP</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-700">
-                            {/* PL Row */}
-                            <tr className="hover:bg-slate-800/50">
-                              <td className="px-3 py-2 text-white font-medium">PL</td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.plTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, plTotal: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.plAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, plAvailed: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.plTotal) || 0) - (parseFloat(salaryForm.plAvailed) || 0)).toFixed(1)}
-                              </td>
-                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
-                            </tr>
-
-                            {/* CL Row */}
-                            <tr className="hover:bg-slate-800/50">
-                              <td className="px-3 py-2 text-white font-medium">CL</td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.clTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, clTotal: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.clAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, clAvailed: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.clTotal) || 0) - (parseFloat(salaryForm.clAvailed) || 0)).toFixed(1)}
-                              </td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.lwp}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, lwp: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                            </tr>
-
-                            {/* SL Row */}
-                            <tr className="hover:bg-slate-800/50">
-                              <td className="px-3 py-2 text-white font-medium">SL</td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.slTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, slTotal: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  value={salaryForm.slAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, slAvailed: e.target.value })
-                                  }
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
-                                  placeholder="0.0"
-                                />
-                              </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.slTotal) || 0) - (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
-                              </td>
-                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        {/* Leave Summary Footer */}
-                        <div className="border-t border-slate-700 bg-slate-800/50 px-3 py-2">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <div className="text-slate-400">Total Leaves Taken</div>
-                              <div className="text-white font-medium">
-                                {((parseFloat(salaryForm.plAvailed) || 0) + (parseFloat(salaryForm.clAvailed) || 0) + (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-slate-400">Total Leave Without Pay</div>
-                              <div className="text-white font-medium">
-                                {(parseFloat(salaryForm.lwp) || 0).toFixed(1)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-slate-400">Total Present Days</div>
-                              <div className="text-white font-medium">
-                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-slate-400">Total Days Payable</div>
-                              <div className="text-white font-medium">
-                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
 
                     {/* Net Salary Credited - Auto-calculated */}
