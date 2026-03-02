@@ -589,8 +589,19 @@ export default function ITPage() {
 
           console.log(`Vonage asset ${a.id} - ExtCode: "${extCode}", Number: "${number}", Selected: "${selected}"`);
           return selected;
+        } else {
+          // For Vitel: prefer vitelExt, then vitelGlobalNumber, then id
+          const ext = (a.vitelExt || "").trim();
+          const number = (a.vitelGlobalNumber || "").trim();
+          const id = (a.id || "").trim();
+
+          // Use ext if valid, otherwise use number, otherwise use id
+          const selected = (ext && ext !== "-") ? ext :
+                          (number && number !== "-") ? number : id;
+
+          console.log(`Vitel asset ${a.id} - Ext: "${ext}", Number: "${number}", Selected: "${selected}"`);
+          return selected;
         }
-        return a.id;
       })
       .filter((x) => typeof x === "string" && x.trim() && x.trim() !== "-")
       // Filter out IDs assigned to ACTIVE users (available for inactive users or new assignments)
@@ -644,11 +655,19 @@ export default function ITPage() {
       });
       setProviderPreview(match || null);
     } else {
-      const match = systemAssets.find(
-        (a) =>
-          (a.category === "vitel" || a.category === "vitel-global" || a.category === "vitel-vital") &&
-          a.id === vitel.id,
-      );
+      // Match using the same logic as the ID selection: prefer ext, then number, then id
+      const match = systemAssets.find((a) => {
+        if (!(a.category === "vitel" || a.category === "vitel-global" || a.category === "vitel-vital")) return false;
+
+        const ext = (a.vitelExt || "").trim();
+        const number = (a.vitelGlobalNumber || "").trim();
+        const id = (a.id || "").trim();
+
+        const selected = (ext && ext !== "-") ? ext :
+                        (number && number !== "-") ? number : id;
+
+        return selected === vitel.id;
+      });
       setProviderPreview(match || null);
     }
   }, [provider, vitel.id, systemAssets]);
@@ -1060,7 +1079,11 @@ export default function ITPage() {
                           <div>ID: {providerPreview?.id || "-"}</div>
                         </div>
                       ) : (
-                        <div>ID: {providerPreview?.id || "-"}</div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          <div>ID: {providerPreview?.id || "-"}</div>
+                          <div>Ext: {providerPreview?.vitelExt || "-"}</div>
+                          <div>Number: {providerPreview?.vitelGlobalNumber || "-"}</div>
+                        </div>
                       )}
                     </div>
                   )}
