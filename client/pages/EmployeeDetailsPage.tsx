@@ -137,6 +137,32 @@ export default function EmployeeDetailsPage() {
   const [editForm, setEditForm] = useState<Partial<Employee>>({});
   const [editPhotoPreview, setEditPhotoPreview] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"details" | "salary">("details");
+  const [showSalaryForm, setShowSalaryForm] = useState(false);
+  const [salaryForm, setSalaryForm] = useState({
+    month: "",
+    totalWorkingDays: "",
+    actualWorkingDays: "",
+    // Earnings
+    basic: "",
+    hra: "",
+    conveyance: "",
+    specialAllowance: "",
+    incentive: "",
+    adjustment: "",
+    bonus: "",
+    retentionBonus: "",
+    advanceAny: "",
+    // Deductions
+    pf: "",
+    esic: "",
+    pt: "",
+    tds: "",
+    advanceAnyDeduction: "",
+    retention: "",
+    // Other
+    paymentDate: "",
+    notes: "",
+  });
   const [documentPreviewModal, setDocumentPreviewModal] = useState<{
     isOpen: boolean;
     documentUrl: string;
@@ -373,6 +399,90 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+
+  const handleAddSalaryRecord = async () => {
+    if (!employee || !salaryForm.month) {
+      alert("Please fill in required fields");
+      return;
+    }
+
+    // Calculate totals
+    const basicEarnings =
+      (parseFloat(salaryForm.basic) || 0) +
+      (parseFloat(salaryForm.hra) || 0) +
+      (parseFloat(salaryForm.conveyance) || 0) +
+      (parseFloat(salaryForm.specialAllowance) || 0) +
+      (parseFloat(salaryForm.incentive) || 0) +
+      (parseFloat(salaryForm.adjustment) || 0) +
+      (parseFloat(salaryForm.bonus) || 0) +
+      (parseFloat(salaryForm.retentionBonus) || 0) +
+      (parseFloat(salaryForm.advanceAny) || 0);
+
+    const totalDeductions =
+      (parseFloat(salaryForm.pf) || 0) +
+      (parseFloat(salaryForm.esic) || 0) +
+      (parseFloat(salaryForm.pt) || 0) +
+      (parseFloat(salaryForm.tds) || 0) +
+      (parseFloat(salaryForm.advanceAnyDeduction) || 0) +
+      (parseFloat(salaryForm.retention) || 0);
+
+    const totalSalary = basicEarnings - totalDeductions;
+
+    const newRecord: SalaryRecord = {
+      id: Date.now().toString(),
+      employeeId: employee.id,
+      month: salaryForm.month,
+      year: parseInt(salaryForm.month.split("-")[0]),
+      totalWorkingDays: parseInt(salaryForm.totalWorkingDays) || 0,
+      actualWorkingDays: parseInt(salaryForm.actualWorkingDays) || 0,
+      basicSalary: basicEarnings,
+      bonus: parseFloat(salaryForm.bonus) || 0,
+      deductions: totalDeductions,
+      totalSalary: totalSalary,
+      paymentDate: salaryForm.paymentDate || undefined,
+      notes: salaryForm.notes || undefined,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      await fetch("/api/salary-records", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRecord),
+      });
+
+      setSalaryRecords([...salaryRecords, newRecord]);
+      setSalaryForm({
+        month: "",
+        totalWorkingDays: "",
+        actualWorkingDays: "",
+        basic: "",
+        hra: "",
+        conveyance: "",
+        specialAllowance: "",
+        incentive: "",
+        adjustment: "",
+        bonus: "",
+        retentionBonus: "",
+        advanceAny: "",
+        pf: "",
+        esic: "",
+        pt: "",
+        tds: "",
+        advanceAnyDeduction: "",
+        retention: "",
+        paymentDate: "",
+        notes: "",
+      });
+      setShowSalaryForm(false);
+      toast.success("✨ Salary Record Created!", {
+        description: `Salary record for ${salaryForm.month} has been added successfully.`,
+      });
+    } catch (error) {
+      console.error("Failed to save salary record:", error);
+      toast.error("Failed to save salary record");
+    }
+  };
 
   const handleDeleteSalaryRecord = (recordId: string) => {
     if (confirm("Are you sure you want to delete this salary record?")) {
@@ -951,12 +1061,193 @@ export default function EmployeeDetailsPage() {
         {activeTab === "salary" && (
           <Card className="bg-slate-900/50 border-slate-700 backdrop-blur-sm">
             <CardContent className="p-6 space-y-6">
-              <div className="flex items-center space-x-2 border-b border-slate-700 pb-4">
-                <DollarSign className="h-5 w-5 text-green-400" />
-                <h3 className="text-lg font-semibold text-white">
-                  Salary Management
-                </h3>
+              <div className="flex items-center justify-between border-b border-slate-700 pb-4">
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <h3 className="text-lg font-semibold text-white">
+                    Salary Management
+                  </h3>
+                </div>
+                <Button
+                  onClick={() => setShowSalaryForm(!showSalaryForm)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Salary Record
+                </Button>
               </div>
+
+              {showSalaryForm && (
+                <Card className="bg-slate-800/50 border-slate-700 mb-6">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg flex items-center space-x-2">
+                      <DollarSign className="h-5 w-5 text-green-400" />
+                      <span>Add New Salary Record</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Month and Working Days */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Month</Label>
+                        <Input
+                          type="month"
+                          value={salaryForm.month}
+                          onChange={(e) =>
+                            setSalaryForm({ ...salaryForm, month: e.target.value })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Total Working Days</Label>
+                        <Input
+                          type="number"
+                          value={salaryForm.totalWorkingDays}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              totalWorkingDays: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Actual Working Days</Label>
+                        <Input
+                          type="number"
+                          value={salaryForm.actualWorkingDays}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              actualWorkingDays: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Earnings Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-slate-200 font-semibold text-sm">Earnings</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { label: "Basic", key: "basic" },
+                          { label: "HRA", key: "hra" },
+                          { label: "Conveyance", key: "conveyance" },
+                          { label: "Special Allowance", key: "specialAllowance" },
+                          { label: "Incentive", key: "incentive" },
+                          { label: "Adjustment", key: "adjustment" },
+                          { label: "Bonus", key: "bonus" },
+                          { label: "Retention Bonus", key: "retentionBonus" },
+                          { label: "Advance Any", key: "advanceAny" },
+                        ].map((field) => (
+                          <div key={field.key} className="space-y-1">
+                            <Label className="text-slate-300 text-xs">
+                              {field.label}
+                            </Label>
+                            <Input
+                              type="number"
+                              value={salaryForm[field.key as keyof typeof salaryForm]}
+                              onChange={(e) =>
+                                setSalaryForm({
+                                  ...salaryForm,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Deductions Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-slate-200 font-semibold text-sm">Deductions</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { label: "PF", key: "pf" },
+                          { label: "ESIC", key: "esic" },
+                          { label: "PT", key: "pt" },
+                          { label: "TDS", key: "tds" },
+                          { label: "Advance Any", key: "advanceAnyDeduction" },
+                          { label: "Retention", key: "retention" },
+                        ].map((field) => (
+                          <div key={field.key} className="space-y-1">
+                            <Label className="text-slate-300 text-xs">
+                              {field.label}
+                            </Label>
+                            <Input
+                              type="number"
+                              value={salaryForm[field.key as keyof typeof salaryForm]}
+                              onChange={(e) =>
+                                setSalaryForm({
+                                  ...salaryForm,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                              className="bg-slate-800/50 border-slate-700 text-white text-sm"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Payment Date and Notes */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-slate-300">Payment Date (Optional)</Label>
+                        <Input
+                          type="date"
+                          value={salaryForm.paymentDate}
+                          onChange={(e) =>
+                            setSalaryForm({
+                              ...salaryForm,
+                              paymentDate: e.target.value,
+                            })
+                          }
+                          className="bg-slate-800/50 border-slate-700 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-slate-300">Notes (Optional)</Label>
+                      <Textarea
+                        value={salaryForm.notes}
+                        onChange={(e) =>
+                          setSalaryForm({ ...salaryForm, notes: e.target.value })
+                        }
+                        className="bg-slate-800/50 border-slate-700 text-white"
+                        placeholder="Any additional notes..."
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleAddSalaryRecord}
+                        className="bg-green-500 hover:bg-green-600 text-white"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Record
+                      </Button>
+                      <Button
+                        onClick={() => setShowSalaryForm(false)}
+                        variant="outline"
+                        className="border-slate-600 text-slate-300"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
 
               {(() => {
