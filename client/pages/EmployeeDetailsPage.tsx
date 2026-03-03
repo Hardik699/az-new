@@ -212,75 +212,69 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Basic</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.basic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.basicEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PF</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">HRA</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.hra || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.hraEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pf || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Conveyance</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.conveyance || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.conveyanceEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>ESIC</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Sp. Allowance</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.specialAllowance || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.specialAllowanceEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.esic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Incentive</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.incentive || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.incentiveEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PT</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Adjustment</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.adjustment || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.adjustmentEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pt || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Bonus</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>TDS</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Retention Bonus</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Advance Any</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Advance Any</strong></td>
           </tr>
           <tr style="border: 1px solid #000; font-weight: bold;">
             <td style="border: 1px solid #000; padding: 8px;">Gross Earnings</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyDeduction || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.basic || 0) + (record.hra || 0) + (record.conveyance || 0) + (record.specialAllowance || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.basicEarned || 0) + (record.hraEarned || 0) + (record.conveyanceEarned || 0) + (record.specialAllowanceEarned || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Gross Deduction</strong></td>
           </tr>
           <tr style="border: 1px solid #000;">
             <td style="border: 1px solid #000; padding: 8px;"></td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Retention</strong></td>
-          </tr>
-          <tr style="border: 1px solid #000;">
-            <td style="border: 1px solid #000; padding: 8px;"></td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retention || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.pf || 0) + (record.esic || 0) + (record.pt || 0) + (record.tds || 0) + (record.advanceAnyDeduction || 0) + (record.retention || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr style="border: 1px solid #000; font-weight: bold;">
             <td style="border: 1px solid #000; padding: 8px;">Net Salary Credited-</td>
@@ -945,6 +939,23 @@ export default function EmployeeDetailsPage() {
       paymentDate: salaryForm.paymentDate || undefined,
       notes: salaryForm.notes || undefined,
       createdAt: new Date().toISOString(),
+      // Individual Earnings (Actual)
+      basic: parseFloat(salaryForm.basic) || 0,
+      hra: parseFloat(salaryForm.hra) || 0,
+      conveyance: parseFloat(salaryForm.conveyance) || 0,
+      specialAllowance: parseFloat(salaryForm.specialAllowance) || 0,
+      incentive: parseFloat(salaryForm.incentive) || 0,
+      adjustment: parseFloat(salaryForm.adjustment) || 0,
+      // Individual Earnings (Earned based on working days)
+      basicEarned: parseFloat(salaryForm.basicEarned) || 0,
+      hraEarned: parseFloat(salaryForm.hraEarned) || 0,
+      conveyanceEarned: parseFloat(salaryForm.conveyanceEarned) || 0,
+      specialAllowanceEarned: parseFloat(salaryForm.specialAllowanceEarned) || 0,
+      incentiveEarned: parseFloat(salaryForm.incentiveEarned) || 0,
+      adjustmentEarned: parseFloat(salaryForm.adjustmentEarned) || 0,
+      bonusEarned: parseFloat(salaryForm.bonusEarned) || 0,
+      retentionBonusEarned: parseFloat(salaryForm.retentionBonusEarned) || 0,
+      advanceAnyEarned: parseFloat(salaryForm.advanceAnyEarned) || 0,
       // Individual Deductions
       pf: parseFloat(salaryForm.pf) || 0,
       esic: parseFloat(salaryForm.esic) || 0,
