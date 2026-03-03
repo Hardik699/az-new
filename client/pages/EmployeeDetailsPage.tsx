@@ -2255,12 +2255,17 @@ export default function EmployeeDetailsPage() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                               <div>
-                                <p className="text-slate-400">Basic Salary</p>
-                                <p className="text-white font-medium">
-                                  ₹{record.basicSalary.toLocaleString()}
-                                </p>
+                                <p className="text-green-400">Net Salary Credited</p>
+                                <div className="space-y-1">
+                                  <p className="text-white font-bold text-lg">
+                                    ₹{record.totalSalary.toLocaleString()}
+                                  </p>
+                                  <p className="text-green-300 text-xs">
+                                    {numberToWords(Math.floor(record.totalSalary))}
+                                  </p>
+                                </div>
                               </div>
                               {record.bonus && record.bonus > 0 && (
                                 <div>
