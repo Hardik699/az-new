@@ -206,13 +206,13 @@ export function Payslip({ data }: { data: PayslipData }) {
               <td className="border border-gray-300 px-3 py-2 text-black">Gross Deduction</td>
               <td className="border border-gray-300 px-3 py-2 text-black text-right font-bold">{formatCurrency(data.totalDeduction)}</td>
             </tr>
-            <tr className="border-t-2 border-gray-400">
-              <td colSpan={3} className="px-3 py-3 text-black font-bold">Net Salary Credited-</td>
-              <td colSpan={2} className="px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
+            <tr className="font-bold bg-gray-50">
+              <td colSpan={3} className="border border-gray-300 px-3 py-3 text-black font-bold">Net Salary Credited-</td>
+              <td colSpan={2} className="border border-gray-300 px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
-            <tr className="bg-gray-50 border-b-2 border-gray-400">
-              <td colSpan={3} className="px-3 py-3 text-black font-bold">Amount (in words) -</td>
-              <td colSpan={2} className="px-3 py-3 text-black font-bold text-right">{data.amountInWords}</td>
+            <tr className="font-bold bg-gray-50">
+              <td colSpan={3} className="border border-gray-300 px-3 py-3 text-black font-bold">Amount (in words) -</td>
+              <td colSpan={2} className="border border-gray-300 px-3 py-3 text-black font-bold text-right">{data.amountInWords}</td>
             </tr>
           </tfoot>
         </table>
