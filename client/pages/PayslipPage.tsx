@@ -3,6 +3,8 @@ import AppNav from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface SalaryRecord {
   month: string;
@@ -216,14 +218,28 @@ export default function PayslipPage() {
           {/* Action Buttons */}
           <div className="flex gap-3 justify-center mt-8">
             <Button
-              onClick={() => window.print()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Print Payslip
-            </Button>
-            <Button
-              variant="outline"
-              className="text-white border-slate-600 hover:bg-slate-700"
+              onClick={async () => {
+                try {
+                  const element = document.querySelector('.bg-white.rounded-lg.shadow-2xl');
+                  if (!element) {
+                    alert('Payslip not found');
+                    return;
+                  }
+                  const canvas = await html2canvas(element as HTMLElement);
+                  const pdf = new jsPDF('p', 'mm', 'a4');
+                  const imgData = canvas.toDataURL('image/png');
+                  pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                  const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
+                    month: 'long',
+                    year: 'numeric'
+                  });
+                  pdf.save(`Payslip_${monthName}.pdf`);
+                } catch (error) {
+                  console.error('Error generating PDF:', error);
+                  alert('Failed to generate PDF');
+                }
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               Download PDF
             </Button>
