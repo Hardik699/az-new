@@ -201,11 +201,11 @@ const deleteSalaryRecord: RequestHandler = async (req, res) => {
   }
 };
 
+router.post("/", createSalaryRecord);
 router.get("/", getSalaryRecords);
 router.get("/employee/:employeeId", getSalaryRecordsByEmployeeId);
 router.get("/month/:month/:year", getSalaryRecordsByMonth);
 router.get("/:id", getSalaryRecordById);
-router.post("/", createSalaryRecord);
 router.put("/:id", updateSalaryRecord);
 router.delete("/:id", deleteSalaryRecord);
 

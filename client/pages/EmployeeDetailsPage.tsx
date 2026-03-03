@@ -45,6 +45,69 @@ import { uploadFileToSupabase, uploadBase64ToSupabase } from "@/lib/supabase";
 import AppNav from "@/components/Navigation";
 import SuccessModal from "@/components/SuccessModal";
 
+// Helper function to convert numbers to words
+const numberToWords = (num: number): string => {
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const scales = ["", "Thousand", "Lakh", "Crore"];
+
+  if (num === 0) return "Zero";
+
+  const parts: string[] = [];
+  let scaleIndex = 0;
+
+  while (num > 0 && scaleIndex < scales.length) {
+    let divisor = scaleIndex === 0 ? 1000 : (scaleIndex === 1 ? 100 : 100);
+    let groupValue = num % (scaleIndex === 0 ? 1000 : 1000000);
+
+    if (scaleIndex === 0) {
+      groupValue = num % 1000;
+    } else if (scaleIndex === 1) {
+      groupValue = Math.floor((num % 100000) / 1000);
+    } else if (scaleIndex === 2) {
+      groupValue = Math.floor((num % 10000000) / 100000);
+    } else {
+      groupValue = Math.floor(num / 10000000);
+    }
+
+    if (groupValue > 0) {
+      let groupText = "";
+      const hundreds = Math.floor(groupValue / 100);
+      const remainder = groupValue % 100;
+
+      if (hundreds > 0) {
+        groupText += ones[hundreds] + " Hundred";
+      }
+
+      if (remainder >= 20) {
+        if (hundreds > 0) groupText += " ";
+        groupText += tens[Math.floor(remainder / 10)];
+        if (remainder % 10 > 0) {
+          groupText += " " + ones[remainder % 10];
+        }
+      } else if (remainder >= 10) {
+        if (hundreds > 0) groupText += " ";
+        groupText += teens[remainder - 10];
+      } else if (remainder > 0) {
+        if (hundreds > 0) groupText += " ";
+        groupText += ones[remainder];
+      }
+
+      if (scales[scaleIndex]) {
+        groupText += " " + scales[scaleIndex];
+      }
+
+      parts.unshift(groupText);
+    }
+
+    num = Math.floor(num / (scaleIndex === 0 ? 1000 : 100000));
+    scaleIndex++;
+  }
+
+  return parts.join(" ");
+};
+
 interface Employee {
   id: string;
   employeeId: string;
@@ -179,6 +242,20 @@ export default function EmployeeDetailsPage() {
     // Other
     paymentDate: "",
     notes: "",
+    // Leave Details
+    plTotal: "",
+    plAvailed: "",
+    plSubsisting: "",
+    clTotal: "",
+    clAvailed: "",
+    clSubsisting: "",
+    slTotal: "",
+    slAvailed: "",
+    slSubsisting: "",
+    lwp: "",
+    totalLeavesTaken: "",
+    totalLeaveWithoutPay: "",
+    totalWorkingDaysPayable: "",
   });
   const [documentPreviewModal, setDocumentPreviewModal] = useState<{
     isOpen: boolean;
@@ -580,17 +657,18 @@ export default function EmployeeDetailsPage() {
       return;
     }
 
-    // Calculate totals
-    const basicEarnings =
-      (parseFloat(salaryForm.basic) || 0) +
-      (parseFloat(salaryForm.hra) || 0) +
-      (parseFloat(salaryForm.conveyance) || 0) +
-      (parseFloat(salaryForm.specialAllowance) || 0) +
-      (parseFloat(salaryForm.incentive) || 0) +
-      (parseFloat(salaryForm.adjustment) || 0) +
-      (parseFloat(salaryForm.bonus) || 0) +
-      (parseFloat(salaryForm.retentionBonus) || 0) +
-      (parseFloat(salaryForm.advanceAny) || 0);
+    // Calculate totals using EARNED values (based on actual working days)
+    const basicEarned =
+      (parseFloat(salaryForm.basicEarned) || 0) +
+      (parseFloat(salaryForm.hraEarned) || 0) +
+      (parseFloat(salaryForm.conveyanceEarned) || 0) +
+      (parseFloat(salaryForm.specialAllowanceEarned) || 0) +
+      (parseFloat(salaryForm.incentiveEarned) || 0) +
+      (parseFloat(salaryForm.adjustmentEarned) || 0) +
+      (parseFloat(salaryForm.retentionBonusEarned) || 0) -
+      (parseFloat(salaryForm.advanceAnyEarned) || 0);
+
+    const bonusEarned = parseFloat(salaryForm.bonusEarned) || 0;
 
     const totalDeductions =
       (parseFloat(salaryForm.pf) || 0) +
@@ -600,22 +678,30 @@ export default function EmployeeDetailsPage() {
       (parseFloat(salaryForm.advanceAnyDeduction) || 0) +
       (parseFloat(salaryForm.retention) || 0);
 
-    const totalSalary = basicEarnings - totalDeductions;
+    const totalSalary = basicEarned + bonusEarned - totalDeductions;
 
-    const newRecord: SalaryRecord = {
+    const newRecord: any = {
       id: editingSalaryRecordId || Date.now().toString(),
       employeeId: employee.id,
       month: salaryForm.month,
       year: parseInt(salaryForm.month.split("-")[0]),
       totalWorkingDays: parseInt(salaryForm.totalWorkingDays) || 0,
       actualWorkingDays: parseInt(salaryForm.actualWorkingDays) || 0,
-      basicSalary: basicEarnings,
-      bonus: parseFloat(salaryForm.bonus) || 0,
+      basicSalary: basicEarned,
+      bonus: bonusEarned,
       deductions: totalDeductions,
       totalSalary: totalSalary,
       paymentDate: salaryForm.paymentDate || undefined,
       notes: salaryForm.notes || undefined,
       createdAt: new Date().toISOString(),
+      // Leave Details
+      plTotal: parseFloat(salaryForm.plTotal) || 0,
+      plAvailed: parseFloat(salaryForm.plAvailed) || 0,
+      clTotal: parseFloat(salaryForm.clTotal) || 0,
+      clAvailed: parseFloat(salaryForm.clAvailed) || 0,
+      slTotal: parseFloat(salaryForm.slTotal) || 0,
+      slAvailed: parseFloat(salaryForm.slAvailed) || 0,
+      lwp: parseFloat(salaryForm.lwp) || 0,
     };
 
     try {
@@ -749,11 +835,21 @@ export default function EmployeeDetailsPage() {
         const mongoId = (record as any)._id || recordId;
         const response = await fetch(`/api/salary-records/${mongoId}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to delete salary record");
+          let errorMessage = "Failed to delete salary record";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (e) {
+            // If response is not JSON, use the status text
+            errorMessage = response.statusText || errorMessage;
+          }
+          throw new Error(errorMessage);
         }
 
         const updatedRecords = salaryRecords.filter(
@@ -765,7 +861,9 @@ export default function EmployeeDetailsPage() {
         });
       } catch (error) {
         console.error("Failed to delete salary record:", error);
-        toast.error("Failed to delete salary record");
+        toast.error("Failed to delete salary record", {
+          description: error instanceof Error ? error.message : "Unknown error occurred",
+        });
       }
     }
   };
@@ -810,6 +908,20 @@ export default function EmployeeDetailsPage() {
       retention: employee?.retention || "",
       paymentDate: record.paymentDate || "",
       notes: record.notes || "",
+      // Leave Details
+      plTotal: (record as any)?.plTotal?.toString() || "",
+      plAvailed: (record as any)?.plAvailed?.toString() || "",
+      plSubsisting: (record as any)?.plSubsisting?.toString() || "",
+      clTotal: (record as any)?.clTotal?.toString() || "",
+      clAvailed: (record as any)?.clAvailed?.toString() || "",
+      clSubsisting: (record as any)?.clSubsisting?.toString() || "",
+      slTotal: (record as any)?.slTotal?.toString() || "",
+      slAvailed: (record as any)?.slAvailed?.toString() || "",
+      slSubsisting: (record as any)?.slSubsisting?.toString() || "",
+      lwp: (record as any)?.lwp?.toString() || "",
+      totalLeavesTaken: (record as any)?.totalLeavesTaken?.toString() || "",
+      totalLeaveWithoutPay: (record as any)?.totalLeaveWithoutPay?.toString() || "",
+      totalWorkingDaysPayable: (record as any)?.totalWorkingDaysPayable?.toString() || "",
     };
 
     // Auto-calculate earned values
@@ -1553,6 +1665,193 @@ export default function EmployeeDetailsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Employee Information Table (Pay Check) */}
+                    <div className="overflow-x-auto border border-slate-700 rounded bg-slate-900/50">
+                      <table className="w-full border-collapse">
+                        <tbody>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Name: <span className="text-white font-bold">{employee?.fullName}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">UAN No. : <span className="text-white font-bold">{employee?.uanNumber || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Department : <span className="text-white font-bold">{employee?.department}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">ESIC No. : <span className="text-white font-bold">{employee?.esic || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Designation : <span className="text-white font-bold">{employee?.position}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Bank A/C No. : <span className="text-white font-bold">{employee?.accountNumber || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Date Of Joining : <span className="text-white font-bold">{employee?.joiningDate ? new Date(employee.joiningDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "N/A"}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Days In Month : <span className="text-white font-bold">{salaryForm.totalWorkingDays || "0"}</span><span className="text-slate-500 text-xs ml-2">(on probation)</span></td>
+                          </tr>
+                          <tr>
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Employee Code : <span className="text-white font-bold">{employee?.employeeId}</span></td>
+                            <td className="w-1/2 px-4 py-3"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Leave Details Table */}
+                    <div className="space-y-2 overflow-x-auto">
+                      <Label className="text-slate-300">Leave Details</Label>
+                      <div className="border border-slate-700 rounded overflow-hidden bg-slate-900/50">
+                        <table className="w-full text-sm">
+                          <thead className="bg-slate-800 border-b border-slate-700">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-slate-300 font-medium">Leave Type</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Total In Account</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Leave Availed</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Subsisting Leave</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">LWP</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-700">
+                            {/* PL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">PL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.plTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, plTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.plAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, plAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.plTotal) || 0) - (parseFloat(salaryForm.plAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
+                            </tr>
+
+                            {/* CL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">CL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.clTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, clTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.clAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, clAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.clTotal) || 0) - (parseFloat(salaryForm.clAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.lwp}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, lwp: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                            </tr>
+
+                            {/* SL Row */}
+                            <tr className="hover:bg-slate-800/50">
+                              <td className="px-3 py-2 text-white font-medium">SL</td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.slTotal}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, slTotal: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={salaryForm.slAvailed}
+                                  onChange={(e) =>
+                                    setSalaryForm({ ...salaryForm, slAvailed: e.target.value })
+                                  }
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">
+                                {((parseFloat(salaryForm.slTotal) || 0) - (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-slate-400">0.0</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        {/* Leave Summary Footer */}
+                        <div className="border-t border-slate-700 bg-slate-800/50 px-3 py-2">
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <div className="text-slate-400">Total Leaves Taken</div>
+                              <div className="text-white font-medium">
+                                {((parseFloat(salaryForm.plAvailed) || 0) + (parseFloat(salaryForm.clAvailed) || 0) + (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Leave Without Pay</div>
+                              <div className="text-white font-medium">
+                                {(parseFloat(salaryForm.lwp) || 0).toFixed(1)}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Present Days</div>
+                              <div className="text-white font-medium">
+                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-slate-400">Total Days Payable</div>
+                              <div className="text-white font-medium">
+                                {(parseInt(salaryForm.actualWorkingDays) || 0).toString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Month and Working Days */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
@@ -1824,7 +2123,7 @@ export default function EmployeeDetailsPage() {
                     {/* Net Salary Credited - Auto-calculated */}
                     <div className="space-y-2">
                       <Label className="text-slate-300">Net Salary Credited</Label>
-                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium text-lg">
+                      <div className="px-3 py-3 bg-slate-900/50 border border-slate-700 rounded text-white font-medium">
                         {(() => {
                           // Calculate total earned gross
                           const earnedFields = [
@@ -1852,7 +2151,12 @@ export default function EmployeeDetailsPage() {
                           const totalDeductions = pf + esic + pt + tds + advanceAnyDeduction + retention;
                           const netSalaryCredited = totalEarnedGross - totalDeductions;
 
-                          return netSalaryCredited.toFixed(2);
+                          return (
+                            <div className="space-y-1">
+                              <div className="text-lg">{netSalaryCredited.toFixed(2)}</div>
+                              <div className="text-sm text-slate-400">{numberToWords(Math.floor(netSalaryCredited))}</div>
+                            </div>
+                          );
                         })()}
                       </div>
                     </div>
@@ -1876,7 +2180,6 @@ export default function EmployeeDetailsPage() {
                   </CardContent>
                 </Card>
               )}
-
 
               {(() => {
                 const employeeSalaryRecords = getEmployeeSalaryRecords();
@@ -1953,12 +2256,17 @@ export default function EmployeeDetailsPage() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                               <div>
-                                <p className="text-slate-400">Basic Salary</p>
-                                <p className="text-white font-medium">
-                                  ₹{record.basicSalary.toLocaleString()}
-                                </p>
+                                <p className="text-green-400">Net Salary Credited</p>
+                                <div className="space-y-1">
+                                  <p className="text-white font-bold text-lg">
+                                    ₹{record.totalSalary.toLocaleString()}
+                                  </p>
+                                  <p className="text-green-300 text-xs">
+                                    {numberToWords(Math.floor(record.totalSalary))}
+                                  </p>
+                                </div>
                               </div>
                               {record.bonus && record.bonus > 0 && (
                                 <div>
@@ -1998,48 +2306,53 @@ export default function EmployeeDetailsPage() {
                         </Card>
 
                         {/* Salary Details Table */}
-                        <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="bg-slate-800/50 border-b border-slate-700">
-                                  <th className="px-4 py-3 text-left text-slate-300 font-semibold">Salary Details</th>
-                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Amount</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                  <td className="px-4 py-2 text-slate-300">Basic Salary</td>
-                                  <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
-                                </tr>
-                                {(record.bonus && record.bonus > 0) ? (
-                                  <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                    <td className="px-4 py-2 text-slate-300">Bonus</td>
-                                    <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
+                        {record.basicSalary > 0 || record.totalSalary > 0 ? (
+                          <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="bg-slate-800/50 border-b border-slate-700">
+                                    <th className="px-4 py-3 text-left text-slate-300 font-semibold">Salary Details</th>
+                                    <th className="px-4 py-3 text-right text-slate-300 font-semibold">Amount</th>
                                   </tr>
-                                ) : null}
-                                <tr className="border-b border-slate-700/50 bg-slate-800/30">
-                                  <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
-                                  <td className="px-4 py-2 text-right text-white font-bold">
-                                    ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
-                                  </td>
-                                </tr>
-                                {(record.deductions && record.deductions > 0) ? (
+                                </thead>
+                                <tbody>
                                   <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                    <td className="px-4 py-2 text-slate-300">Deductions</td>
-                                    <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
+                                    <td className="px-4 py-2 text-slate-300">Basic Salary</td>
+                                    <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
                                   </tr>
-                                ) : null}
-                                <tr className="bg-green-500/10 border-t-2 border-green-500/30">
-                                  <td className="px-4 py-2 text-green-400 font-semibold">Net Salary</td>
-                                  <td className="px-4 py-2 text-right text-green-400 font-bold text-lg">
-                                    ₹{record.totalSalary.toLocaleString()}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                                  {(record.bonus && record.bonus > 0) ? (
+                                    <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                      <td className="px-4 py-2 text-slate-300">Bonus</td>
+                                      <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
+                                    </tr>
+                                  ) : null}
+                                  <tr className="border-b border-slate-700/50 bg-slate-800/30">
+                                    <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
+                                    <td className="px-4 py-2 text-right text-white font-bold">
+                                      ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
+                                    </td>
+                                  </tr>
+                                  {(record.deductions && record.deductions > 0) ? (
+                                    <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                      <td className="px-4 py-2 text-slate-300">Deductions</td>
+                                      <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
+                                    </tr>
+                                  ) : null}
+                                  <tr className="bg-green-500/10 border-t-2 border-green-500/30">
+                                    <td className="px-4 py-2 text-green-400 font-semibold">Net Salary Credited</td>
+                                    <td className="px-4 py-2 text-right text-green-400 font-bold">
+                                      <div className="space-y-1">
+                                        <div className="text-lg">₹{record.totalSalary.toLocaleString()}</div>
+                                        <div className="text-xs text-green-300">{numberToWords(Math.floor(record.totalSalary))}</div>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
-                        </div>
+                        ) : null}
                       </div>
                     ))}
                   </div>
