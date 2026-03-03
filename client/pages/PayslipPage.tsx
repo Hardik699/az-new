@@ -226,13 +226,20 @@ export default function PayslipPage() {
                     return;
                   }
                   const canvas = await html2canvas(element as HTMLElement, {
-                    scale: 2,
+                    scale: 4,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
-                    allowTaint: true
+                    allowTaint: true,
+                    dpi: 300,
+                    letterRendering: true
                   });
-                  const pdf = new jsPDF('p', 'mm', 'a4');
+                  const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: false
+                  });
                   const imgData = canvas.toDataURL('image/png');
                   const pdfWidth = pdf.internal.pageSize.getWidth();
                   const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -240,7 +247,17 @@ export default function PayslipPage() {
                   const canvasHeight = canvas.height;
                   const ratio = pdfWidth / canvasWidth;
                   const scaledHeight = canvasHeight * ratio;
-                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+
+                  if (scaledHeight > pdfHeight) {
+                    const pageCount = Math.ceil(scaledHeight / pdfHeight);
+                    for (let i = 0; i < pageCount; i++) {
+                      if (i > 0) pdf.addPage();
+                      pdf.addImage(imgData, 'PNG', 0, -i * pdfHeight, pdfWidth, scaledHeight);
+                    }
+                  } else {
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+                  }
+
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric'
