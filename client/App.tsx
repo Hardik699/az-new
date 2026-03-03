@@ -6,6 +6,7 @@ import HRDashboard from "./pages/HRDashboard";
 import EmployeeDetailsPage from "./pages/EmployeeDetailsPage";
 import NotFound from "./pages/NotFound";
 import Salary from "./pages/Salary";
+import PayslipPage from "./pages/PayslipPage";
 import Dashboard from "./pages/Dashboard";
 import IT from "./pages/IT";
 import ITDashboard from "./pages/ITDashboard";
@@ -26,6 +27,7 @@ export default function App() {
       <Route path="/hr" element={<HRDashboard />} />
       <Route path="/employee/:employeeId" element={<EmployeeDetailsPage />} />
       <Route path="/salary" element={<Salary />} />
+      <Route path="/payslip" element={<PayslipPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/deshbord" element={<Dashboard />} />
       <Route path="/it" element={<IT />} />
