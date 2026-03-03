@@ -11,13 +11,15 @@ interface SalaryRecord {
   hra: number;
   conveyance: number;
   specialAllowance: number;
-  bonus: number;
+  bonus?: number;
   totalSalary: number;
   pf: number;
   esic: number;
   pt: number;
   tds: number;
   retention: number;
+  incentive?: number;
+  adjustment?: number;
   actualWorkingDays: number;
   totalWorkingDays: number;
   createdAt: string;
@@ -94,8 +96,8 @@ export default function PayslipPage() {
       const totalDeductions = pf + esic + pt + tds + retention;
 
       return {
-        companyName: "Company HR System",
-        companyAddress: "Your Company Address",
+        companyName: employee.companyName || "Company HR System",
+        companyAddress: employee.companyAddress || "Your Company Address",
         employeeName: employee.fullName || "N/A",
         uanNo: employee.uanNumber || "N/A",
         department: employee.department || "N/A",
@@ -140,55 +142,42 @@ export default function PayslipPage() {
       };
     }
 
-    // Fallback sample data
-    return {
-      companyName: "INFOSEUM IT OPC PVT LTD.",
-      companyAddress: "Imperial Heights -701, Near Akshar Chowk, Atladra, Vadodara-390012,Gujarat",
-      employeeName: "HARDIK uyuftu",
-      uanNo: "15218810654",
-      department: "IT & ADMINISTRATION",
-      designation: "Associate - IT & Administration",
-      dateOfJoining: "21.04.2025",
-      employeeCode: "1455",
-      esicNo: "N/A",
-      bankAccountNo: "50100725455754",
-      daysInMonth: 30,
-      leaves: [
-        { type: "PL", total: 0.0, availed: 0.0, subsisting: 0.0, lwp: 0.0 },
-        { type: "CL", total: 0.0, availed: 2.0, subsisting: -2.0, lwp: 2.0 },
-        { type: "SL", total: 0.0, availed: 0.0, subsisting: 0.0, lwp: 0.0 },
-      ],
-      totalLeavesTaken: 2.0,
-      totalLeaveWithoutPay: 2.0,
-      totalPresentDays: 28.0,
-      totalDaysPayable: 28.0,
-      earnings: [
-        { name: "Basic", actualGross: 11850.00, earnedGross: 11060.00 },
-        { name: "HRA", actualGross: 4740.00, earnedGross: 4424.00 },
-        { name: "Conveyance", actualGross: 1600.00, earnedGross: 1493.33 },
-        { name: "Sp. Allowance", actualGross: 5510.00, earnedGross: 5142.67 },
-        { name: "Incentive", actualGross: 0.00, earnedGross: 0.00 },
-        { name: "Adjustment", actualGross: 0.00, earnedGross: 0.00 },
-      ],
-      deductions: [
-        { name: "PF", amount: 1800 },
-        { name: "ESIC", amount: 0 },
-        { name: "PT", amount: 200 },
-        { name: "TDS", amount: 0 },
-        { name: "Advance Any", amount: 0 },
-        { name: "Retention", amount: 1500 },
-      ],
-      grossEarnings: 23700.00,
-      earnedGrossEarnings: 22120.00,
-      totalDeduction: 3500.0,
-      netSalaryCredited: 18620.00,
-      month: 6,
-      year: 2025,
-      amountInWords: "Eighteen Thousand Six Hundred Twenty Rupees only",
-    };
+    return null;
   };
 
   const payslipData = getPayslipData();
+
+  if (!payslipData) {
+    return (
+      <>
+        <AppNav />
+        <div className="min-h-screen bg-gradient-to-br from-blue-deep-900 via-blue-deep-800 to-slate-900 py-8">
+          <div className="w-full max-w-5xl mx-auto px-4">
+            <div className="flex items-center gap-3 mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+                title="Go back"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white">
+                No Salary Data
+              </h1>
+            </div>
+            <div className="bg-white rounded-lg shadow-2xl overflow-hidden p-8">
+              <p className="text-center text-gray-700 text-lg">
+                Please select a salary record from the Employee Details page to view the payslip.
+              </p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
     month: 'long',
     year: 'numeric'
