@@ -182,33 +182,6 @@ export function Payslip({ data }: { data: PayslipData }) {
         </table>
       </div>
 
-      {/* Deductions Table */}
-      <div className="p-6 border-b border-gray-300">
-        <h3 className="text-lg font-extrabold text-black mb-3">Deduction</h3>
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Deduction Type</th>
-              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.deductions.map((deduction, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-3 py-2 text-black">{deduction.name}</td>
-                <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(deduction.amount || 0)}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-300 px-3 py-2 text-black">Gross Deduction</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.totalDeduction)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
       {/* Footer */}
       <div className="p-6 text-center border-t border-gray-300">
         <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-16 mx-auto mb-4" />
