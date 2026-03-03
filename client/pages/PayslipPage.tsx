@@ -130,7 +130,7 @@ export default function PayslipPage() {
       const retentionBonusEarned = record.retentionBonusEarned || 0;
       const advanceAnyEarned = record.advanceAnyEarned || 0;
 
-      const totalEarningsActual = basicSalary + hra + conveyance + specialAllowance + bonus + incentive + adjustment + retentionBonus + advanceAny;
+      const totalEarningsActual = (basicSalary * 0.5) + hra + conveyance + specialAllowance + bonus + incentive + adjustment + retentionBonus + advanceAny;
       const totalEarningsEarned = basicEarned + hraEarned + conveyanceEarned + specialAllowanceEarned + incentiveEarned + adjustmentEarned + bonusEarned + retentionBonusEarned + advanceAnyEarned;
 
       // Deductions - use database values directly
@@ -164,7 +164,7 @@ export default function PayslipPage() {
         totalPresentDays: record.actualWorkingDays,
         totalDaysPayable: record.totalWorkingDaysPayable || record.actualWorkingDays,
         earnings: [
-          { name: "Basic", actualGross: basicSalary, earnedGross: basicEarned },
+          { name: "Basic", actualGross: basicSalary * 0.5, earnedGross: basicEarned },
           { name: "HRA", actualGross: hra, earnedGross: hraEarned },
           { name: "Conveyance", actualGross: conveyance, earnedGross: conveyanceEarned },
           { name: "Sp. Allowance", actualGross: specialAllowance, earnedGross: specialAllowanceEarned },
