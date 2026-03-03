@@ -2300,51 +2300,53 @@ export default function EmployeeDetailsPage() {
                         </Card>
 
                         {/* Salary Details Table */}
-                        <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="bg-slate-800/50 border-b border-slate-700">
-                                  <th className="px-4 py-3 text-left text-slate-300 font-semibold">Salary Details</th>
-                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Amount</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                  <td className="px-4 py-2 text-slate-300">Basic Salary</td>
-                                  <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
-                                </tr>
-                                {(record.bonus && record.bonus > 0) ? (
-                                  <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                    <td className="px-4 py-2 text-slate-300">Bonus</td>
-                                    <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
+                        {record.basicSalary > 0 || record.totalSalary > 0 ? (
+                          <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="bg-slate-800/50 border-b border-slate-700">
+                                    <th className="px-4 py-3 text-left text-slate-300 font-semibold">Salary Details</th>
+                                    <th className="px-4 py-3 text-right text-slate-300 font-semibold">Amount</th>
                                   </tr>
-                                ) : null}
-                                <tr className="border-b border-slate-700/50 bg-slate-800/30">
-                                  <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
-                                  <td className="px-4 py-2 text-right text-white font-bold">
-                                    ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
-                                  </td>
-                                </tr>
-                                {(record.deductions && record.deductions > 0) ? (
+                                </thead>
+                                <tbody>
                                   <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
-                                    <td className="px-4 py-2 text-slate-300">Deductions</td>
-                                    <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
+                                    <td className="px-4 py-2 text-slate-300">Basic Salary</td>
+                                    <td className="px-4 py-2 text-right text-white font-medium">₹{record.basicSalary.toLocaleString()}</td>
                                   </tr>
-                                ) : null}
-                                <tr className="bg-green-500/10 border-t-2 border-green-500/30">
-                                  <td className="px-4 py-2 text-green-400 font-semibold">Net Salary Credited</td>
-                                  <td className="px-4 py-2 text-right text-green-400 font-bold">
-                                    <div className="space-y-1">
-                                      <div className="text-lg">₹{record.totalSalary.toLocaleString()}</div>
-                                      <div className="text-xs text-green-300">{numberToWords(Math.floor(record.totalSalary))}</div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                                  {(record.bonus && record.bonus > 0) ? (
+                                    <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                      <td className="px-4 py-2 text-slate-300">Bonus</td>
+                                      <td className="px-4 py-2 text-right text-green-400 font-medium">+₹{record.bonus.toLocaleString()}</td>
+                                    </tr>
+                                  ) : null}
+                                  <tr className="border-b border-slate-700/50 bg-slate-800/30">
+                                    <td className="px-4 py-2 text-white font-semibold">Gross Earnings</td>
+                                    <td className="px-4 py-2 text-right text-white font-bold">
+                                      ₹{(record.basicSalary + (record.bonus || 0)).toLocaleString()}
+                                    </td>
+                                  </tr>
+                                  {(record.deductions && record.deductions > 0) ? (
+                                    <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                      <td className="px-4 py-2 text-slate-300">Deductions</td>
+                                      <td className="px-4 py-2 text-right text-red-400 font-medium">-₹{record.deductions.toLocaleString()}</td>
+                                    </tr>
+                                  ) : null}
+                                  <tr className="bg-green-500/10 border-t-2 border-green-500/30">
+                                    <td className="px-4 py-2 text-green-400 font-semibold">Net Salary Credited</td>
+                                    <td className="px-4 py-2 text-right text-green-400 font-bold">
+                                      <div className="space-y-1">
+                                        <div className="text-lg">₹{record.totalSalary.toLocaleString()}</div>
+                                        <div className="text-xs text-green-300">{numberToWords(Math.floor(record.totalSalary))}</div>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
-                        </div>
+                        ) : null}
                       </div>
                     ))}
                   </div>
