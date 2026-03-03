@@ -66,7 +66,6 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
-          <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-black mb-2">{data.companyName}</h1>
           <p className="text-sm text-gray-700 mb-4">{data.companyAddress}</p>
           <p className="text-lg font-semibold text-black">Pay Check - {monthName}</p>
@@ -219,7 +218,8 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Footer */}
-      <div className="p-4 text-center">
+      <div className="p-6 text-center border-t border-gray-300">
+        <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-10 mx-auto mb-3" />
         <p className="text-xs text-gray-600">This is a system generated slip</p>
       </div>
     </div>
