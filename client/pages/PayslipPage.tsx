@@ -142,7 +142,7 @@ export default function PayslipPage() {
         netSalaryCredited: record.totalSalary,
         month: monthNum,
         year: year,
-        amountInWords: numberToWords(Math.floor(record.totalSalary)),
+        amountInWords: numberToWords(Math.round(record.totalSalary)),
       };
     }
 
