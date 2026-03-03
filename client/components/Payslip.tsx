@@ -219,8 +219,8 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Footer */}
       <div className="p-6 text-center border-t border-gray-300">
-        <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-10 mx-auto mb-3" />
-        <p className="text-xs text-gray-600">This is a system generated slip</p>
+        <p className="text-xs text-gray-600 mb-4">This is a system generated slip</p>
+        <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-10 mx-auto" />
       </div>
     </div>
   );
