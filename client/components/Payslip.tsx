@@ -62,8 +62,8 @@ export function Payslip({ data }: { data: PayslipData }) {
   };
 
   return (
-    <div className="w-full p-0 bg-white">
-      <div className="w-full bg-white p-0">
+    <div className="w-full p-0 bg-white" style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", lineHeight: '1.4'}}>
+      <div className="w-full bg-white p-0" style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}>
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">

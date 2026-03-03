@@ -232,7 +232,10 @@ export default function PayslipPage() {
                     backgroundColor: '#ffffff',
                     allowTaint: true,
                     dpi: 300,
-                    letterRendering: true
+                    letterRendering: true,
+                    fontEmbedCss: true,
+                    windowWidth: 1024,
+                    windowHeight: 1400
                   });
                   const pdf = new jsPDF({
                     orientation: 'p',
