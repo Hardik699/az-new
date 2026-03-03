@@ -62,7 +62,8 @@ export function Payslip({ data }: { data: PayslipData }) {
   };
 
   return (
-    <div className="w-full bg-white p-0">
+    <div className="w-full p-0" style={{backgroundImage: 'url(https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F3b68409135dd481283aaaf1548b4d0fc?format=webp&width=800&height=1200)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
+      <div className="w-full bg-white/97 p-0">
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
@@ -221,6 +222,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       <div className="p-6 text-center border-t border-gray-300">
         <p className="text-xs text-gray-600 mb-4">This is a system generated slip</p>
         <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-16 mx-auto" />
+      </div>
       </div>
     </div>
   );
