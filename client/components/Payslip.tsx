@@ -66,9 +66,9 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
-          <h1 className="text-base font-bold text-black mb-1">{data.companyName}</h1>
-          <p className="text-xs text-gray-700">{data.companyAddress}</p>
-          <p className="text-sm font-semibold text-black mt-3">Pay Check - {monthName}</p>
+          <h1 className="text-2xl font-bold text-black mb-2">{data.companyName}</h1>
+          <p className="text-sm text-gray-700 mb-4">{data.companyAddress}</p>
+          <p className="text-lg font-semibold text-black">Pay Check - {monthName}</p>
         </div>
       </div>
 
