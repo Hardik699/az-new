@@ -152,15 +152,17 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
 
-      {/* Earnings Table */}
+      {/* Earnings Table with Deductions */}
       <div className="p-6 border-b border-gray-300">
-        <h3 className="text-lg font-extrabold text-black mb-3">Earnings</h3>
+        <h3 className="text-lg font-extrabold text-black mb-3">Salary Details</h3>
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Earning</th>
               <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Actual Gross</th>
               <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Earned Gross</th>
+              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Deduction</th>
+              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold"></th>
             </tr>
           </thead>
           <tbody>
@@ -169,6 +171,18 @@ export function Payslip({ data }: { data: PayslipData }) {
                 <td className="border border-gray-300 px-3 py-2 text-black">{earning.name}</td>
                 <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(earning.actualGross || 0)}</td>
                 <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(earning.earnedGross || 0)}</td>
+                <td className="border border-gray-300 px-3 py-2 text-black">{idx < data.deductions.length ? data.deductions[idx].name : ""}</td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right">{idx < data.deductions.length ? formatCurrency(data.deductions[idx].amount || 0) : ""}</td>
+              </tr>
+            ))}
+            {/* Additional deduction rows if there are more deductions than earnings */}
+            {data.deductions.length > data.earnings.length && data.deductions.slice(data.earnings.length).map((deduction, idx) => (
+              <tr key={`extra-${idx}`} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-3 py-2 text-black"></td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right"></td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right"></td>
+                <td className="border border-gray-300 px-3 py-2 text-black">{deduction.name}</td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(deduction.amount || 0)}</td>
               </tr>
             ))}
           </tbody>
@@ -177,6 +191,12 @@ export function Payslip({ data }: { data: PayslipData }) {
               <td className="border border-gray-300 px-3 py-2 text-black">Gross Earnings</td>
               <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.grossEarnings)}</td>
               <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.earnedGrossEarnings)}</td>
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Gross Deduction</td>
+              <td className="border border-gray-300 px-3 py-2 text-black text-right font-bold">{formatCurrency(data.totalDeduction)}</td>
+            </tr>
+            <tr className="font-bold bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black">Net Salary Credited-</td>
+              <td colSpan={4} className="border border-gray-300 px-3 py-2 text-black text-right">₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
           </tfoot>
         </table>
