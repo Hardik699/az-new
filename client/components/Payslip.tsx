@@ -209,16 +209,12 @@ export function Payslip({ data }: { data: PayslipData }) {
               <td colSpan={3} className="px-3 py-3 text-black font-bold">Net Salary Credited-</td>
               <td colSpan={2} className="px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
+            <tr className="bg-gray-50">
+              <td colSpan={3} className="px-3 py-3 text-black font-bold">Amount (in words) -</td>
+              <td colSpan={2} className="px-3 py-3 text-black font-bold text-right">{data.amountInWords}</td>
+            </tr>
           </tfoot>
         </table>
-      </div>
-
-      {/* Amount in Words */}
-      <div className="p-6 border-b border-gray-300 text-center">
-        <p className="text-sm text-black">
-          <span className="font-bold">Amount (in words) -</span>
-          <span className="ml-2">{data.amountInWords}</span>
-        </p>
       </div>
 
       {/* Footer */}
