@@ -44,6 +44,8 @@ import { toast } from "sonner";
 import { uploadFileToSupabase, uploadBase64ToSupabase } from "@/lib/supabase";
 import AppNav from "@/components/Navigation";
 import SuccessModal from "@/components/SuccessModal";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 // Helper function to convert numbers to words
 const numberToWords = (num: number): string => {
@@ -106,6 +108,175 @@ const numberToWords = (num: number): string => {
   }
 
   return parts.join(" ");
+};
+
+// Helper function to generate payslip PDF
+const generatePayslipPDF = async (employee: Employee, record: any) => {
+  const element = document.createElement("div");
+  element.innerHTML = `
+    <div style="width: 800px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #333;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="margin: 0; color: #1a365d; font-size: 24px;">Pay Slip - ${new Date(record.month + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" })}</h2>
+      </div>
+
+      <div style="margin-bottom: 30px; border-bottom: 2px solid #ddd; padding-bottom: 20px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="width: 50%; padding: 8px 0;">
+              <div style="font-weight: bold;">Name: ${employee.fullName}</div>
+              <div>Department: ${employee.department}</div>
+              <div>Designation: ${employee.position}</div>
+              <div>Date Of Joining: ${new Date(employee.joiningDate).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })}</div>
+            </td>
+            <td style="width: 50%; padding: 8px 0; text-align: right;">
+              <div>UAN No.: ${employee.uanNumber}</div>
+              <div>Bank A/C No.: ${employee.accountNumber}</div>
+              <div>Days In Month: ${record.totalWorkingDays}</div>
+              <div>Total Present Days: ${record.actualWorkingDays}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Leave Details</h4>
+        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
+          <tr style="background-color: #f5f5f5;">
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Leave Type</th>
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Total</th>
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Availed</th>
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Subsisting</th>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">PL (Paid Leave)</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.plTotal || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.plAvailed || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${(record.plTotal || 0) - (record.plAvailed || 0)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">CL (Casual Leave)</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.clTotal || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.clAvailed || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${(record.clTotal || 0) - (record.clAvailed || 0)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">SL (Sick Leave)</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.slTotal || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${record.slAvailed || 0}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${(record.slTotal || 0) - (record.slAvailed || 0)}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Salary Details</h4>
+        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
+          <tr style="background-color: #f5f5f5;">
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Earning</th>
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">Amount</th>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">Gross Earnings</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.basicSalary + record.bonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Deductions</h4>
+        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
+          <tr style="background-color: #f5f5f5;">
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Deduction Type</th>
+            <th style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">Amount</th>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">PF (Provident Fund)</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.pf || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">ESIC</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.esic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">PT (Professional Tax)</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.pt || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">TDS (Tax Deducted at Source)</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">Advance Any</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.advanceAnyDeduction || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">Retention</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.retention || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="background-color: #f5f5f5; font-weight: bold;">
+            <td style="border: 1px solid #ddd; padding: 8px;">Total Deductions</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.deductions || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 30px; background-color: #e8f5e9; padding: 20px; border-radius: 4px;">
+        <div style="font-size: 18px; font-weight: bold; color: #2e7d32;">
+          Net Salary Credited: ₹${record.totalSalary.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+        </div>
+        <div style="font-size: 12px; color: #555; margin-top: 10px;">
+          Amount (in words): ${numberToWords(Math.floor(record.totalSalary))} Rupees only
+        </div>
+      </div>
+
+      ${record.paymentDate ? `<div style="margin-bottom: 20px; text-align: right; color: #666; font-size: 12px;">
+        Payment Date: ${record.paymentDate}
+      </div>` : ""}
+
+      <div style="text-align: center; margin-top: 40px; color: #999; font-size: 11px;">
+        This is a system generated slip
+      </div>
+    </div>
+  `;
+
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const fileName = `payslip-${employee.fullName.replace(/\s+/g, "_")}-${record.month}.pdf`;
+    pdf.save(fileName);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    alert("Failed to generate PDF. Please try again.");
+  }
 };
 
 interface Employee {
@@ -872,6 +1043,24 @@ export default function EmployeeDetailsPage() {
           description: error instanceof Error ? error.message : "Unknown error occurred",
         });
       }
+    }
+  };
+
+  const handleDownloadPayslip = async (record: SalaryRecord) => {
+    if (!employee) {
+      toast.error("Employee data not available");
+      return;
+    }
+    try {
+      await generatePayslipPDF(employee, record);
+      toast.success("✨ Payslip Downloaded!", {
+        description: "Your salary slip has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to download payslip:", error);
+      toast.error("Failed to download payslip", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
     }
   };
 
@@ -2239,6 +2428,17 @@ export default function EmployeeDetailsPage() {
                                   )}
                                 </div>
                                 <div className="flex gap-2">
+                                  <Button
+                                    onClick={() =>
+                                      handleDownloadPayslip(record)
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-green-500 text-green-400 hover:bg-green-500/20"
+                                    title="Download Payslip"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
                                   <Button
                                     onClick={() =>
                                       handleEditSalaryRecord(record)
