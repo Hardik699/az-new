@@ -752,10 +752,11 @@ export default function EmployeeDetailsPage() {
           try {
             const salaryData = await salaryRes.json();
             if (salaryData.success && salaryData.data) {
-              // Normalize salary records: map _id to id
+              // Normalize salary records: keep _id and map to id for compatibility
               salary = salaryData.data.map((s: any) => ({
                 ...s,
-                id: s._id || s.id,
+                _id: s._id, // Keep original MongoDB _id
+                id: s._id || s.id, // Also set id field
               }));
             }
           } catch (e) {
@@ -1015,6 +1016,7 @@ export default function EmployeeDetailsPage() {
             const updatedData = await updateResponse.json();
             const updatedRecord = {
               ...updatedData.data,
+              _id: updatedData.data._id, // Keep MongoDB _id
               id: updatedData.data._id || updatedData.data.id,
             };
 
@@ -1040,6 +1042,7 @@ export default function EmployeeDetailsPage() {
       const responseData = await response.json();
       const savedRecord = {
         ...responseData.data,
+        _id: responseData.data._id, // Keep MongoDB _id
         id: responseData.data._id || responseData.data.id,
       };
 
@@ -1098,10 +1101,12 @@ export default function EmployeeDetailsPage() {
         // Find the record to get the MongoDB _id
         const record = salaryRecords.find((r) => r.id === recordId);
         if (!record) {
-          throw new Error("Record not found");
+          throw new Error("Record not found in local data");
         }
 
         const mongoId = (record as any)._id || recordId;
+        console.log("Deleting salary record with ID:", mongoId);
+
         const response = await fetch(`/api/salary-records/${mongoId}`, {
           method: "DELETE",
           headers: {
@@ -1116,7 +1121,7 @@ export default function EmployeeDetailsPage() {
             errorMessage = errorData.error || errorMessage;
           } catch (e) {
             // If response is not JSON, use the status text
-            errorMessage = response.statusText || errorMessage;
+            errorMessage = `${response.status} ${response.statusText}`;
           }
           throw new Error(errorMessage);
         }

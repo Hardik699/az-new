@@ -151,59 +151,32 @@ export function Payslip({ data }: { data: PayslipData }) {
         </table>
       </div>
 
-      {/* Salary Details Table */}
+
+      {/* Earnings Table */}
       <div className="p-6 border-b border-gray-300">
-        <h3 className="text-lg font-extrabold text-black mb-3">Salary Details</h3>
+        <h3 className="text-lg font-extrabold text-black mb-3">Earnings</h3>
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Earning</th>
               <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Actual Gross</th>
               <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Earned Gross</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Deduction</th>
-              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Amount</th>
             </tr>
           </thead>
           <tbody>
-            {Array.from({ length: Math.max(data.earnings.length, data.deductions.length) }).map((_, idx) => {
-              const earning = data.earnings[idx];
-              const deduction = data.deductions[idx];
-              return (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-3 py-2 text-black">
-                    {earning?.name || ''}
-                  </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                    {earning ? formatCurrency(earning.actualGross || 0) : ''}
-                  </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                    {earning ? formatCurrency(earning.earnedGross || 0) : ''}
-                  </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black">
-                    {deduction?.name || ''}
-                  </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                    {deduction ? formatCurrency(deduction.amount || 0) : ''}
-                  </td>
-                </tr>
-              );
-            })}
+            {data.earnings.map((earning, idx) => (
+              <tr key={idx} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-3 py-2 text-black">{earning.name}</td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(earning.actualGross || 0)}</td>
+                <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(earning.earnedGross || 0)}</td>
+              </tr>
+            ))}
           </tbody>
           <tfoot>
             <tr className="font-bold bg-gray-50">
               <td className="border border-gray-300 px-3 py-2 text-black">Gross Earnings</td>
               <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.grossEarnings)}</td>
               <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.earnedGrossEarnings)}</td>
-              <td className="border border-gray-300 px-3 py-2 text-black">Gross Deduction</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right font-bold">{formatCurrency(data.totalDeduction)}</td>
-            </tr>
-            <tr className="font-bold bg-gray-50">
-              <td colSpan={3} className="border border-gray-300 px-3 py-3 text-black font-bold">Net Salary Credited-</td>
-              <td colSpan={2} className="border border-gray-300 px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
-            </tr>
-            <tr className="font-bold bg-gray-50">
-              <td colSpan={3} className="border border-gray-300 px-3 py-3 text-black font-bold">Amount (in words) -</td>
-              <td colSpan={2} className="border border-gray-300 px-3 py-3 text-black font-bold text-right">{data.amountInWords}</td>
             </tr>
           </tfoot>
         </table>
