@@ -62,114 +62,133 @@ export function Payslip({ data }: { data: PayslipData }) {
   };
 
   return (
-    <div className="w-full bg-white p-0">
+    <div className="w-full bg-white" style={{ fontFamily: 'Arial, sans-serif' }}>
       {/* Header Section */}
-      <div className="border-b border-gray-300">
-        <div className="p-6 text-center">
-          <h1 className="text-base font-bold text-black mb-1">{data.companyName}</h1>
-          <p className="text-xs text-gray-700">{data.companyAddress}</p>
-          <p className="text-sm font-semibold text-black mt-3">Pay Check - {monthName}</p>
-        </div>
+      <div style={{ borderBottom: '1px solid #000', padding: '20px 16px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '16px', fontWeight: 'bold', color: '#000', margin: '0 0 4px 0' }}>
+          {data.companyName}
+        </h1>
+        <p style={{ fontSize: '11px', color: '#000', margin: '0 0 12px 0', textDecoration: 'underline' }}>
+          <a href="#" style={{ color: '#0066cc', textDecoration: 'underline' }}>
+            {data.companyAddress}
+          </a>
+        </p>
+        <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#000', margin: 0 }}>
+          Pay Check - {monthName}
+        </p>
       </div>
 
       {/* Employee Details Section */}
-      <div className="p-6 border-b border-gray-300">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-          <div>
-            <span className="font-bold text-black">Name:</span>
-            <span className="text-black ml-2">{data.employeeName}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">UAN No.:</span>
-            <span className="text-black ml-2">{data.uanNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Department :</span>
-            <span className="text-black ml-2">{data.department}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">ESIC No. :</span>
-            <span className="text-black ml-2">{data.esicNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Designation :</span>
-            <span className="text-black ml-2">{data.designation}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">Bank A/C No. :</span>
-            <span className="text-black ml-2">{data.bankAccountNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Date Of Joining :</span>
-            <span className="text-black ml-2">{data.dateOfJoining}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">Days In Month :</span>
-            <span className="text-black ml-2">{data.daysInMonth}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Employee Code :</span>
-            <span className="text-black ml-2">{data.employeeCode}</span>
-          </div>
-        </div>
+      <div style={{ borderBottom: '1px solid #000', padding: '12px 16px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #000' }}>
+              <td style={{ width: '50%', padding: '8px', borderRight: '1px solid #000' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Name:</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.employeeName}</span>
+              </td>
+              <td style={{ width: '50%', padding: '8px' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>UAN No.:</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.uanNo}</span>
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #000' }}>
+              <td style={{ width: '50%', padding: '8px', borderRight: '1px solid #000' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Department :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.department}</span>
+              </td>
+              <td style={{ width: '50%', padding: '8px' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>ESIC No. :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.esicNo}</span>
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #000' }}>
+              <td style={{ width: '50%', padding: '8px', borderRight: '1px solid #000' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Designation :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.designation}</span>
+              </td>
+              <td style={{ width: '50%', padding: '8px' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Bank A/C No. :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.bankAccountNo}</span>
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #000' }}>
+              <td style={{ width: '50%', padding: '8px', borderRight: '1px solid #000' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Date Of Joining :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.dateOfJoining}</span>
+              </td>
+              <td style={{ width: '50%', padding: '8px' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Days In Month :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.daysInMonth}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style={{ width: '50%', padding: '8px', borderRight: '1px solid #000' }}>
+                <span style={{ fontWeight: 'bold', color: '#000' }}>Employee Code :</span>
+                <span style={{ color: '#000', marginLeft: '8px' }}>{data.employeeCode}</span>
+              </td>
+              <td style={{ width: '50%', padding: '8px' }}></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Leave Details Table */}
-      <div className="p-6 border-b border-gray-300">
-        <h3 className="text-sm font-bold text-black mb-3">Leave Details</h3>
-        <table className="w-full text-sm border-collapse">
+      <div style={{ borderBottom: '1px solid #000', padding: '12px 16px' }}>
+        <h3 style={{ fontSize: '12px', fontWeight: 'bold', color: '#000', margin: '0 0 8px 0', textAlign: 'center' }}>
+          Leave Details
+        </h3>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #000' }}>
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Leave Type</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Total Leave In The Account</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Leave Availed</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Subsisting Leave</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">LWP</th>
+            <tr style={{ backgroundColor: '#fff', borderBottom: '1px solid #000' }}>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000' }}>Leave Type</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000' }}>Total Leave In The Account</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000' }}>Leave Availed</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000' }}>Subsisting Leave</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000' }}>LWP</th>
             </tr>
           </thead>
           <tbody>
             {data.leaves.map((leave, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-3 py-2 text-black">{leave.type}</td>
-                <td className="border border-gray-300 px-3 py-2 text-black text-right">{leave.total.toFixed(1)}</td>
-                <td className="border border-gray-300 px-3 py-2 text-black text-right">{leave.availed.toFixed(1)}</td>
-                <td className="border border-gray-300 px-3 py-2 text-black text-right">{leave.subsisting.toFixed(1)}</td>
-                <td className="border border-gray-300 px-3 py-2 text-black text-right">{leave.lwp.toFixed(1)}</td>
+              <tr key={idx} style={{ borderBottom: '1px solid #000' }}>
+                <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{leave.type}</td>
+                <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{leave.total.toFixed(1)}</td>
+                <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{leave.availed.toFixed(1)}</td>
+                <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{leave.subsisting.toFixed(1)}</td>
+                <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{leave.lwp.toFixed(1)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-300 px-3 py-2 text-black">Total Leaves Taken -</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{data.totalLeavesTaken.toFixed(1)}</td>
-              <td colSpan={2} className="border border-gray-300 px-3 py-2 text-black text-right">Total Leave Without Pay -</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{data.totalLeaveWithoutPay.toFixed(1)}</td>
+            <tr style={{ borderBottom: '1px solid #000', fontWeight: 'bold' }}>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>Total Leaves Taken -</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{data.totalLeavesTaken.toFixed(1)}</td>
+              <td colSpan={2} style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>Total Leave Without Pay -</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{data.totalLeaveWithoutPay.toFixed(1)}</td>
             </tr>
-            <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-300 px-3 py-2 text-black">Total Present Days -</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{data.totalPresentDays.toFixed(1)}</td>
-              <td colSpan={2} className="border border-gray-300 px-3 py-2 text-black text-right">Total Days Payable -</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{data.totalDaysPayable.toFixed(1)}</td>
+            <tr style={{ fontWeight: 'bold' }}>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>Total Present Days -</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{data.totalPresentDays.toFixed(1)}</td>
+              <td colSpan={2} style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>Total Days Payable -</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'center' }}>{data.totalDaysPayable.toFixed(1)}</td>
             </tr>
           </tfoot>
         </table>
       </div>
 
       {/* Salary Details Table */}
-      <div className="p-6 border-b border-gray-300">
-        <h3 className="text-sm font-bold text-black mb-3">Salary Details</h3>
-        <table className="w-full text-sm border-collapse">
+      <div style={{ borderBottom: '1px solid #000', padding: '12px 16px' }}>
+        <h3 style={{ fontSize: '12px', fontWeight: 'bold', color: '#000', margin: '0 0 8px 0', textAlign: 'center' }}>
+          Salary Details
+        </h3>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #000' }}>
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Earning</th>
-              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Actual Gross</th>
-              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Earned Gross</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-black font-bold">Deduction</th>
-              <th className="border border-gray-300 px-3 py-2 text-right text-black font-bold">Amount</th>
+            <tr style={{ backgroundColor: '#fff', borderBottom: '1px solid #000' }}>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000', width: '25%' }}>Earning</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', fontWeight: 'bold', color: '#000', width: '20%' }}>Actual Gross</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', fontWeight: 'bold', color: '#000', width: '20%' }}>Earned Gross</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'left', fontWeight: 'bold', color: '#000', width: '20%' }}>Deduction</th>
+              <th style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', fontWeight: 'bold', color: '#000', width: '15%' }}>Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -177,20 +196,20 @@ export function Payslip({ data }: { data: PayslipData }) {
               const earning = data.earnings[idx];
               const deduction = data.deductions[idx];
               return (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-3 py-2 text-black">
+                <tr key={idx} style={{ borderBottom: '1px solid #000' }}>
+                  <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>
                     {earning?.name || ''}
                   </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                  <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>
                     {earning ? formatCurrency(earning.actualGross || 0) : ''}
                   </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                  <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>
                     {earning ? formatCurrency(earning.earnedGross || 0) : ''}
                   </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black">
+                  <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>
                     {deduction?.name || ''}
                   </td>
-                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                  <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>
                     {deduction ? formatCurrency(deduction.amount || 0) : ''}
                   </td>
                 </tr>
@@ -198,32 +217,44 @@ export function Payslip({ data }: { data: PayslipData }) {
             })}
           </tbody>
           <tfoot>
-            <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-300 px-3 py-2 text-black">Gross Earnings</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.grossEarnings)}</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right">{formatCurrency(data.earnedGrossEarnings)}</td>
-              <td className="border border-gray-300 px-3 py-2 text-black">Gross Deduction</td>
-              <td className="border border-gray-300 px-3 py-2 text-black text-right font-bold">{formatCurrency(data.totalDeduction)}</td>
+            <tr style={{ borderBottom: '1px solid #000', fontWeight: 'bold' }}>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>Gross Earnings</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>
+                {formatCurrency(data.grossEarnings)}
+              </td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right' }}>
+                {formatCurrency(data.earnedGrossEarnings)}
+              </td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000' }}>Gross Deduction</td>
+              <td style={{ border: '1px solid #000', padding: '6px', color: '#000', textAlign: 'right', fontWeight: 'bold' }}>
+                {formatCurrency(data.totalDeduction)}
+              </td>
             </tr>
-            <tr className="border-t-2 border-gray-400">
-              <td colSpan={3} className="px-3 py-3 text-black font-bold">Net Salary Credited-</td>
-              <td colSpan={2} className="px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
+            <tr>
+              <td colSpan={3} style={{ border: '1px solid #000', padding: '8px', color: '#000', fontWeight: 'bold', fontSize: '12px' }}>
+                Net Salary Credited-
+              </td>
+              <td colSpan={2} style={{ border: '1px solid #000', padding: '8px', color: '#000', fontWeight: 'bold', fontSize: '13px', textAlign: 'right' }}>
+                ₹ {formatCurrency(data.netSalaryCredited)}
+              </td>
             </tr>
           </tfoot>
         </table>
       </div>
 
       {/* Amount in Words */}
-      <div className="p-6 border-b border-gray-300 text-center">
-        <p className="text-sm text-black">
-          <span className="font-bold">Amount (in words) -</span>
-          <span className="ml-2">{data.amountInWords}</span>
+      <div style={{ borderBottom: '1px solid #000', padding: '12px 16px', textAlign: 'center' }}>
+        <p style={{ fontSize: '11px', color: '#000', margin: 0 }}>
+          <span style={{ fontWeight: 'bold' }}>Amount (in words) -</span>
+          <span style={{ marginLeft: '8px' }}>{data.amountInWords}</span>
         </p>
       </div>
 
       {/* Footer */}
-      <div className="p-4 text-center">
-        <p className="text-xs text-gray-600">This is a system generated slip</p>
+      <div style={{ padding: '16px', textAlign: 'center' }}>
+        <p style={{ fontSize: '10px', color: '#666', margin: '0 0 8px 0' }}>
+          This is a system generated slip
+        </p>
       </div>
     </div>
   );
