@@ -657,17 +657,18 @@ export default function EmployeeDetailsPage() {
       return;
     }
 
-    // Calculate totals
-    const basicEarnings =
-      (parseFloat(salaryForm.basic) || 0) +
-      (parseFloat(salaryForm.hra) || 0) +
-      (parseFloat(salaryForm.conveyance) || 0) +
-      (parseFloat(salaryForm.specialAllowance) || 0) +
-      (parseFloat(salaryForm.incentive) || 0) +
-      (parseFloat(salaryForm.adjustment) || 0) +
-      (parseFloat(salaryForm.bonus) || 0) +
-      (parseFloat(salaryForm.retentionBonus) || 0) +
-      (parseFloat(salaryForm.advanceAny) || 0);
+    // Calculate totals using EARNED values (based on actual working days)
+    const basicEarned =
+      (parseFloat(salaryForm.basicEarned) || 0) +
+      (parseFloat(salaryForm.hraEarned) || 0) +
+      (parseFloat(salaryForm.conveyanceEarned) || 0) +
+      (parseFloat(salaryForm.specialAllowanceEarned) || 0) +
+      (parseFloat(salaryForm.incentiveEarned) || 0) +
+      (parseFloat(salaryForm.adjustmentEarned) || 0) +
+      (parseFloat(salaryForm.retentionBonusEarned) || 0) -
+      (parseFloat(salaryForm.advanceAnyEarned) || 0);
+
+    const bonusEarned = parseFloat(salaryForm.bonusEarned) || 0;
 
     const totalDeductions =
       (parseFloat(salaryForm.pf) || 0) +
@@ -677,7 +678,7 @@ export default function EmployeeDetailsPage() {
       (parseFloat(salaryForm.advanceAnyDeduction) || 0) +
       (parseFloat(salaryForm.retention) || 0);
 
-    const totalSalary = basicEarnings - totalDeductions;
+    const totalSalary = basicEarned + bonusEarned - totalDeductions;
 
     const newRecord: any = {
       id: editingSalaryRecordId || Date.now().toString(),
@@ -686,8 +687,8 @@ export default function EmployeeDetailsPage() {
       year: parseInt(salaryForm.month.split("-")[0]),
       totalWorkingDays: parseInt(salaryForm.totalWorkingDays) || 0,
       actualWorkingDays: parseInt(salaryForm.actualWorkingDays) || 0,
-      basicSalary: basicEarnings,
-      bonus: parseFloat(salaryForm.bonus) || 0,
+      basicSalary: basicEarned,
+      bonus: bonusEarned,
       deductions: totalDeductions,
       totalSalary: totalSalary,
       paymentDate: salaryForm.paymentDate || undefined,
