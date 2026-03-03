@@ -13,6 +13,10 @@ interface SalaryRecord {
   hra: number;
   conveyance: number;
   specialAllowance: number;
+  basicEarned?: number;
+  hraEarned?: number;
+  conveyanceEarned?: number;
+  specialAllowanceEarned?: number;
   bonus?: number;
   totalSalary: number;
   pf: number;
@@ -73,32 +77,30 @@ export default function PayslipPage() {
       const year = record.year || monthDate.getFullYear();
       const monthNum = parseInt(record.month.split("-")[1] || record.month);
 
-      // Extract component values with fallback calculations
-      const basicSalary = record.basicSalary || 0;
-      const hra = record.hra || (basicSalary * 0.4);  // Default 40% of basic
-      const conveyance = record.conveyance || 1600;  // Default amount
-      const specialAllowance = record.specialAllowance || (basicSalary * 0.25);  // Default 25% of basic
+      // Use direct values from database only - NO calculations or defaults
+      const basicSalary = record.basicSalary;
+      const hra = record.hra;
+      const conveyance = record.conveyance;
+      const specialAllowance = record.specialAllowance;
       const bonus = record.bonus || 0;
       const incentive = record.incentive || 0;
       const adjustment = record.adjustment || 0;
 
-      // Calculate earned amounts based on working days
-      const daysRatio = record.actualWorkingDays / record.totalWorkingDays;
-
-      const basicEarned = basicSalary * daysRatio;
-      const hraEarned = hra * daysRatio;
-      const conveyanceEarned = conveyance * daysRatio;
-      const specialAllowanceEarned = specialAllowance * daysRatio;
+      // For earned amounts, check if they exist in the database
+      const basicEarned = record.basicEarned || record.basicSalary;
+      const hraEarned = record.hraEarned || record.hra;
+      const conveyanceEarned = record.conveyanceEarned || record.conveyance;
+      const specialAllowanceEarned = record.specialAllowanceEarned || record.specialAllowance;
 
       const totalEarningsActual = basicSalary + hra + conveyance + specialAllowance + bonus + incentive + adjustment;
       const totalEarningsEarned = basicEarned + hraEarned + conveyanceEarned + specialAllowanceEarned + bonus + incentive + adjustment;
 
-      // Deductions
-      const pf = record.pf || 0;
-      const esic = record.esic || 0;
-      const pt = record.pt || 0;
-      const tds = record.tds || 0;
-      const retention = record.retention || 0;
+      // Deductions - use direct database values only
+      const pf = record.pf;
+      const esic = record.esic;
+      const pt = record.pt;
+      const tds = record.tds;
+      const retention = record.retention;
       const totalDeductions = pf + esic + pt + tds + retention;
 
       return {
