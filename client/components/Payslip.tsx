@@ -67,7 +67,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
-          <h1 className="text-2xl font-bold text-black mb-2">{data.companyName}</h1>
+          <h1 className="text-4xl font-bold text-black mb-2">{data.companyName}</h1>
           <p className="text-sm text-gray-700 mb-4">{data.companyAddress}</p>
           <p className="text-lg font-semibold text-black">Pay Check - {monthName}</p>
         </div>
@@ -75,53 +75,44 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Employee Details Section */}
       <div className="p-6 border-b border-gray-300">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-          <div>
-            <span className="font-bold text-black">Name:</span>
-            <span className="text-black ml-2">{data.employeeName}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">UAN No.:</span>
-            <span className="text-black ml-2">{data.uanNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Department :</span>
-            <span className="text-black ml-2">{data.department}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">ESIC No. :</span>
-            <span className="text-black ml-2">{data.esicNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Designation :</span>
-            <span className="text-black ml-2">{data.designation}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">Bank A/C No. :</span>
-            <span className="text-black ml-2">{data.bankAccountNo}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Date Of Joining :</span>
-            <span className="text-black ml-2">{data.dateOfJoining}</span>
-          </div>
-          <div>
-            <span className="font-bold text-black">Days In Month :</span>
-            <span className="text-black ml-2">{data.daysInMonth}</span>
-          </div>
-          
-          <div>
-            <span className="font-bold text-black">Employee Code :</span>
-            <span className="text-black ml-2">{data.employeeCode}</span>
-          </div>
-        </div>
+        <table className="w-full text-sm border-collapse">
+          <tbody>
+            <tr className="hover:bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Name:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.employeeName}</td>
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">UAN No.:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.uanNo}</td>
+            </tr>
+            <tr className="hover:bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Department:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.department}</td>
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">ESIC No.:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.esicNo}</td>
+            </tr>
+            <tr className="hover:bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Designation:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.designation}</td>
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Bank A/C No.:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.bankAccountNo}</td>
+            </tr>
+            <tr className="hover:bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Date Of Joining:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.dateOfJoining}</td>
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Days In Month:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.daysInMonth}</td>
+            </tr>
+            <tr className="hover:bg-gray-50">
+              <td className="border border-gray-300 px-3 py-2 text-black font-bold">Employee Code:</td>
+              <td className="border border-gray-300 px-3 py-2 text-black">{data.employeeCode}</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Leave Details Table */}
       <div className="p-6 border-b border-gray-300">
-        <h3 className="text-sm font-bold text-black mb-3">Leave Details</h3>
+        <h3 className="text-lg font-extrabold text-black mb-3">Leave Details</h3>
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-gray-200">
@@ -162,7 +153,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Salary Details Table */}
       <div className="p-6 border-b border-gray-300">
-        <h3 className="text-sm font-bold text-black mb-3">Salary Details</h3>
+        <h3 className="text-lg font-extrabold text-black mb-3">Salary Details</h3>
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-gray-200">
