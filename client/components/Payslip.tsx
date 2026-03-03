@@ -209,7 +209,7 @@ export function Payslip({ data }: { data: PayslipData }) {
               <td colSpan={3} className="px-3 py-3 text-black font-bold">Net Salary Credited-</td>
               <td colSpan={2} className="px-3 py-3 text-black font-bold text-right text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
-            <tr className="bg-gray-50">
+            <tr className="bg-gray-50 border-b-2 border-gray-400">
               <td colSpan={3} className="px-3 py-3 text-black font-bold">Amount (in words) -</td>
               <td colSpan={2} className="px-3 py-3 text-black font-bold text-right">{data.amountInWords}</td>
             </tr>
@@ -220,7 +220,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Footer */}
       <div className="p-6 text-center border-t border-gray-300">
         <p className="text-xs text-gray-600 mb-4">This is a system generated slip</p>
-        <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-10 mx-auto" />
+        <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-16 mx-auto" />
       </div>
     </div>
   );
