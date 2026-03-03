@@ -240,12 +240,25 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
   `;
 
   try {
+    // Append element to body so html2canvas can access it
+    element.style.position = "absolute";
+    element.style.left = "-9999px";
+    element.style.top = "-9999px";
+    document.body.appendChild(element);
+
+    // Wait for rendering
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
       logging: false,
       backgroundColor: "#ffffff",
+      allowTaint: true,
     });
+
+    // Remove element from DOM
+    document.body.removeChild(element);
 
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
@@ -275,7 +288,11 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
     pdf.save(fileName);
   } catch (error) {
     console.error("Error generating PDF:", error);
-    alert("Failed to generate PDF. Please try again.");
+    // Clean up in case of error
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    throw error;
   }
 };
 
