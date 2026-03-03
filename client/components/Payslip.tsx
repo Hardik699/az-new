@@ -182,6 +182,23 @@ export function Payslip({ data }: { data: PayslipData }) {
         </table>
       </div>
 
+      {/* Deductions Section */}
+      <div className="p-6 border-b border-gray-300">
+        <h3 className="text-lg font-extrabold text-black mb-4">Deductions</h3>
+        <div className="grid grid-cols-3 gap-4">
+          {data.deductions.map((deduction, idx) => (
+            <div key={idx} className="border border-gray-300">
+              <div className="bg-gray-100 px-3 py-2 border-b border-gray-300">
+                <p className="text-sm font-semibold text-black">{deduction.name}</p>
+              </div>
+              <div className="px-3 py-3 text-black font-medium">
+                {formatCurrency(deduction.amount || 0)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Footer */}
       <div className="p-6 text-center border-t border-gray-300">
         <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-16 mx-auto mb-4" />
