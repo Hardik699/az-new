@@ -44,6 +44,8 @@ import { toast } from "sonner";
 import { uploadFileToSupabase, uploadBase64ToSupabase } from "@/lib/supabase";
 import AppNav from "@/components/Navigation";
 import SuccessModal from "@/components/SuccessModal";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 // Helper function to convert numbers to words
 const numberToWords = (num: number): string => {
@@ -106,6 +108,249 @@ const numberToWords = (num: number): string => {
   }
 
   return parts.join(" ");
+};
+
+// Helper function to generate payslip PDF
+const generatePayslipPDF = async (employee: Employee, record: any) => {
+  const element = document.createElement("div");
+  const monthName = new Date(record.month + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const joiningDate = new Date(employee.joiningDate).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+  element.innerHTML = `
+    <div style="width: 900px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #000;">
+
+      <!-- Company Header -->
+      <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+        <h1 style="margin: 0; font-size: 18px; font-weight: bold;">INFOSEUM IT OPC PVT LTD.</h1>
+        <p style="margin: 5px 0 0 0; font-size: 11px;">Imperial Heights -701, Near Akshar Chowk, Atladra, Vadodara-390012 Gujarat</p>
+      </div>
+
+      <!-- Pay Slip Title -->
+      <div style="text-align: center; margin-bottom: 25px;">
+        <h2 style="margin: 10px 0; font-size: 14px; font-weight: bold;">Pay Check - ${monthName}</h2>
+      </div>
+
+      <!-- Employee Info Section -->
+      <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="border: 1px solid #000;">
+          <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 50%;">
+            <div>Name: ${employee.fullName}</div>
+            <div>Department: ${employee.department}</div>
+            <div>Designation: ${employee.position}</div>
+            <div>Date Of Joining: ${joiningDate}</div>
+            <div>Employee Code: ${employee.employeeId}</div>
+          </td>
+          <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 50%;">
+            <div>UAN No.: ${employee.uanNumber}</div>
+            <div>ESIC No.: ${employee.esic ? employee.esic : "N/A"}</div>
+            <div>Bank A/C No.: ${employee.accountNumber}</div>
+            <div>Days In Month: ${record.totalWorkingDays}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Leave Details Section -->
+      <div style="margin-bottom: 20px;">
+        <table style="width: 100%; border: 2px solid #000; border-collapse: collapse;">
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td colspan="5" style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0;">Leave Details</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold; background-color: #f0f0f0;">
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Leave Type</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Total Leave In The Account</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Leave Availed</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Subsisting Leave</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">LWP</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">PL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.plTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.plAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.plTotal || 0) - (record.plAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">CL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.clTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.clAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.clTotal || 0) - (record.clAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">SL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.slTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.slAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.slTotal || 0) - (record.slAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Total Leaves Taken -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.plAvailed || 0) + (record.clAvailed || 0) + (record.slAvailed || 0)}</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;">Total Leave Without Pay -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.lwp || 0.0}</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Total Present Days -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.actualWorkingDays}</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;">Total Days Payable -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.actualWorkingDays}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Salary Details Section -->
+      <div style="margin-bottom: 20px;">
+        <table style="width: 100%; border: 2px solid #000; border-collapse: collapse;">
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td colspan="4" style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0;">Salary Details</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold; background-color: #f0f0f0;">
+            <td style="border: 1px solid #000; padding: 8px; width: 25%;">Earning</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Actual Gross</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Earned Gross</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Deduction</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Basic</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.basic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.basicEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PF</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">HRA</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.hra || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.hraEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pf || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Conveyance</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.conveyance || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.conveyanceEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>ESIC</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Sp. Allowance</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.specialAllowance || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.specialAllowanceEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.esic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Incentive</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.incentive || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.incentiveEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PT</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Adjustment</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.adjustment || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.adjustmentEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pt || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Bonus</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>TDS</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Retention Bonus</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Advance Any</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Advance Any</strong></td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Gross Earnings</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.basic || 0) + (record.hra || 0) + (record.conveyance || 0) + (record.specialAllowance || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.basicEarned || 0) + (record.hraEarned || 0) + (record.conveyanceEarned || 0) + (record.specialAllowanceEarned || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Gross Deduction</strong></td>
+          </tr>
+          <tr style="border: 1px solid #000;">
+            <td style="border: 1px solid #000; padding: 8px;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${((record.pf || 0) + (record.esic || 0) + (record.pt || 0) + (record.tds || 0) + (record.advanceAnyDeduction || 0) + (record.retention || 0)).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Net Salary Credited-</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">₹ ${record.totalSalary.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="border: 1px solid #000;">
+            <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Amount (in words) -</td>
+            <td colspan="3" style="border: 1px solid #000; padding: 8px; text-align: right;">${numberToWords(Math.floor(record.totalSalary))} Rupees only</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div style="text-align: center; margin-top: 40px;">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Ctext x='10' y='30' font-size='12' font-weight='bold'%3EInfoseum%3C/text%3E%3C/svg%3E" style="height: 30px; margin: 10px 0;" />
+        <p style="margin: 15px 0 0 0; font-size: 11px; color: #666;">This is a system generated slip</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    // Append element to body so html2canvas can access it
+    element.style.position = "absolute";
+    element.style.left = "-9999px";
+    element.style.top = "-9999px";
+    document.body.appendChild(element);
+
+    // Wait for rendering
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+      allowTaint: true,
+    });
+
+    // Remove element from DOM
+    document.body.removeChild(element);
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const fileName = `payslip-${employee.fullName.replace(/\s+/g, "_")}-${record.month}.pdf`;
+    pdf.save(fileName);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    // Clean up in case of error
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    throw error;
+  }
 };
 
 interface Employee {
@@ -694,6 +939,30 @@ export default function EmployeeDetailsPage() {
       paymentDate: salaryForm.paymentDate || undefined,
       notes: salaryForm.notes || undefined,
       createdAt: new Date().toISOString(),
+      // Individual Earnings (Actual)
+      basic: parseFloat(salaryForm.basic) || 0,
+      hra: parseFloat(salaryForm.hra) || 0,
+      conveyance: parseFloat(salaryForm.conveyance) || 0,
+      specialAllowance: parseFloat(salaryForm.specialAllowance) || 0,
+      incentive: parseFloat(salaryForm.incentive) || 0,
+      adjustment: parseFloat(salaryForm.adjustment) || 0,
+      // Individual Earnings (Earned based on working days)
+      basicEarned: parseFloat(salaryForm.basicEarned) || 0,
+      hraEarned: parseFloat(salaryForm.hraEarned) || 0,
+      conveyanceEarned: parseFloat(salaryForm.conveyanceEarned) || 0,
+      specialAllowanceEarned: parseFloat(salaryForm.specialAllowanceEarned) || 0,
+      incentiveEarned: parseFloat(salaryForm.incentiveEarned) || 0,
+      adjustmentEarned: parseFloat(salaryForm.adjustmentEarned) || 0,
+      bonusEarned: parseFloat(salaryForm.bonusEarned) || 0,
+      retentionBonusEarned: parseFloat(salaryForm.retentionBonusEarned) || 0,
+      advanceAnyEarned: parseFloat(salaryForm.advanceAnyEarned) || 0,
+      // Individual Deductions
+      pf: parseFloat(salaryForm.pf) || 0,
+      esic: parseFloat(salaryForm.esic) || 0,
+      pt: parseFloat(salaryForm.pt) || 0,
+      tds: parseFloat(salaryForm.tds) || 0,
+      advanceAnyDeduction: parseFloat(salaryForm.advanceAnyDeduction) || 0,
+      retention: parseFloat(salaryForm.retention) || 0,
       // Leave Details
       plTotal: parseFloat(salaryForm.plTotal) || 0,
       plAvailed: parseFloat(salaryForm.plAvailed) || 0,
@@ -868,6 +1137,24 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+  const handleDownloadPayslip = async (record: SalaryRecord) => {
+    if (!employee) {
+      toast.error("Employee data not available");
+      return;
+    }
+    try {
+      await generatePayslipPDF(employee, record);
+      toast.success("✨ Payslip Downloaded!", {
+        description: "Your salary slip has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to download payslip:", error);
+      toast.error("Failed to download payslip", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+    }
+  };
+
   const handleEditSalaryRecord = (record: SalaryRecord) => {
     setEditingSalaryRecordId(record.id);
     const salary = parseFloat(employee?.salary || "0");
@@ -900,12 +1187,12 @@ export default function EmployeeDetailsPage() {
       bonusEarned: "",
       retentionBonusEarned: "",
       advanceAnyEarned: "",
-      pf: employee?.pf || "",
-      esic: employee?.esic || "",
-      pt: employee?.pt || "",
-      tds: employee?.tds || "",
-      advanceAnyDeduction: "",
-      retention: employee?.retention || "",
+      pf: (record as any)?.pf?.toString() || employee?.pf || "",
+      esic: (record as any)?.esic?.toString() || employee?.esic || "",
+      pt: (record as any)?.pt?.toString() || employee?.pt || "",
+      tds: (record as any)?.tds?.toString() || employee?.tds || "",
+      advanceAnyDeduction: (record as any)?.advanceAnyDeduction?.toString() || "",
+      retention: (record as any)?.retention?.toString() || employee?.retention || "",
       paymentDate: record.paymentDate || "",
       notes: record.notes || "",
       // Leave Details
@@ -2232,6 +2519,17 @@ export default function EmployeeDetailsPage() {
                                   )}
                                 </div>
                                 <div className="flex gap-2">
+                                  <Button
+                                    onClick={() =>
+                                      handleDownloadPayslip(record)
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-green-500 text-green-400 hover:bg-green-500/20"
+                                    title="Download Payslip"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
                                   <Button
                                     onClick={() =>
                                       handleEditSalaryRecord(record)
