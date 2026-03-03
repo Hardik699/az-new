@@ -36,6 +36,10 @@ interface Employee {
   accountNumber?: string;
 }
 
+// Company Information (Fixed for all payslips)
+const COMPANY_NAME = "INFOSEUM IT OPC PVT LTD.";
+const COMPANY_ADDRESS = "Imperial Heights -701, Near Akshar Chowk, Atladra, Vadodara-390012,Gujarat";
+
 function numberToWords(num: number): string {
   const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
   const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -96,8 +100,8 @@ export default function PayslipPage() {
       const totalDeductions = pf + esic + pt + tds + retention;
 
       return {
-        companyName: employee.companyName || "Company HR System",
-        companyAddress: employee.companyAddress || "Your Company Address",
+        companyName: COMPANY_NAME,
+        companyAddress: COMPANY_ADDRESS,
         employeeName: employee.fullName || "N/A",
         uanNo: employee.uanNumber || "N/A",
         department: employee.department || "N/A",
