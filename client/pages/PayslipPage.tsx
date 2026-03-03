@@ -225,10 +225,22 @@ export default function PayslipPage() {
                     alert('Payslip not found');
                     return;
                   }
-                  const canvas = await html2canvas(element as HTMLElement);
+                  const canvas = await html2canvas(element as HTMLElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    allowTaint: true
+                  });
                   const pdf = new jsPDF('p', 'mm', 'a4');
                   const imgData = canvas.toDataURL('image/png');
-                  pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                  const pdfWidth = pdf.internal.pageSize.getWidth();
+                  const pdfHeight = pdf.internal.pageSize.getHeight();
+                  const canvasWidth = canvas.width;
+                  const canvasHeight = canvas.height;
+                  const ratio = pdfWidth / canvasWidth;
+                  const scaledHeight = canvasHeight * ratio;
+                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric'
