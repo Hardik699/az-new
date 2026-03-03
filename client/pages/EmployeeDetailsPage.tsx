@@ -1652,6 +1652,34 @@ export default function EmployeeDetailsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Employee Information Table (Pay Check) */}
+                    <div className="overflow-x-auto border border-slate-700 rounded bg-slate-900/50">
+                      <table className="w-full border-collapse">
+                        <tbody>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Name: <span className="text-white font-bold">{employee?.fullName}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">UAN No. : <span className="text-white font-bold">{employee?.uanNumber || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Department : <span className="text-white font-bold">{employee?.department}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">ESIC No. : <span className="text-white font-bold">{employee?.esic || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Designation : <span className="text-white font-bold">{employee?.position}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Bank A/C No. : <span className="text-white font-bold">{employee?.accountNumber || "N/A"}</span></td>
+                          </tr>
+                          <tr className="border-b border-slate-700">
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Date Of Joining : <span className="text-white font-bold">{employee?.joiningDate ? new Date(employee.joiningDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "N/A"}</span></td>
+                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Days In Month : <span className="text-white font-bold">{salaryForm.totalWorkingDays || "0"}</span><span className="text-slate-500 text-xs ml-2">(on probation)</span></td>
+                          </tr>
+                          <tr>
+                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Employee Code : <span className="text-white font-bold">{employee?.employeeId}</span></td>
+                            <td className="w-1/2 px-4 py-3"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
                     {/* Leave Details Table */}
                     <div className="space-y-2 overflow-x-auto">
                       <Label className="text-slate-300">Leave Details</Label>
@@ -2135,45 +2163,6 @@ export default function EmployeeDetailsPage() {
                       >
                         Cancel
                       </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {showSalaryForm && (
-                <Card className="bg-slate-800/50 border-slate-700 mb-6">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg flex items-center space-x-2">
-                      <FileText className="h-5 w-5 text-blue-400" />
-                      <span>Pay Check - {salaryForm.month || "MM/YYYY"}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto border border-slate-700 rounded bg-slate-900/50">
-                      <table className="w-full border-collapse">
-                        <tbody>
-                          <tr className="border-b border-slate-700">
-                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Name: <span className="text-white font-bold">{employee?.fullName}</span></td>
-                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">UAN No. : <span className="text-white font-bold">{employee?.uanNumber || "N/A"}</span></td>
-                          </tr>
-                          <tr className="border-b border-slate-700">
-                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Department : <span className="text-white font-bold">{employee?.department}</span></td>
-                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">ESIC No. : <span className="text-white font-bold">{employee?.esic || "N/A"}</span></td>
-                          </tr>
-                          <tr className="border-b border-slate-700">
-                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Designation : <span className="text-white font-bold">{employee?.position}</span></td>
-                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Bank A/C No. : <span className="text-white font-bold">{employee?.accountNumber || "N/A"}</span></td>
-                          </tr>
-                          <tr className="border-b border-slate-700">
-                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Date Of Joining : <span className="text-white font-bold">{employee?.joiningDate ? new Date(employee.joiningDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "N/A"}</span></td>
-                            <td className="w-1/2 px-4 py-3 text-slate-300 font-medium">Days In Month : <span className="text-white font-bold">{salaryForm.totalWorkingDays || "0"}</span><span className="text-slate-500 text-xs ml-2">(on probation)</span></td>
-                          </tr>
-                          <tr>
-                            <td className="w-1/2 px-4 py-3 border-r border-slate-700 text-slate-300 font-medium">Employee Code : <span className="text-white font-bold">{employee?.employeeId}</span></td>
-                            <td className="w-1/2 px-4 py-3"></td>
-                          </tr>
-                        </tbody>
-                      </table>
                     </div>
                   </CardContent>
                 </Card>
