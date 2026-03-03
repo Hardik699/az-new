@@ -65,8 +65,33 @@ export default function PayslipPage() {
       const year = record.year || monthDate.getFullYear();
       const monthNum = parseInt(record.month.split("-")[1] || record.month);
 
-      const totalEarnings = record.basicSalary + (record.hra || 0) + (record.conveyance || 0) + (record.specialAllowance || 0) + (record.bonus || 0);
-      const totalDeductions = (record.pf || 0) + (record.esic || 0) + (record.pt || 0) + (record.tds || 0) + (record.retention || 0);
+      // Extract component values with fallback calculations
+      const basicSalary = record.basicSalary || 0;
+      const hra = record.hra || (basicSalary * 0.4);  // Default 40% of basic
+      const conveyance = record.conveyance || 1600;  // Default amount
+      const specialAllowance = record.specialAllowance || (basicSalary * 0.25);  // Default 25% of basic
+      const bonus = record.bonus || 0;
+      const incentive = record.incentive || 0;
+      const adjustment = record.adjustment || 0;
+
+      // Calculate earned amounts based on working days
+      const daysRatio = record.actualWorkingDays / record.totalWorkingDays;
+
+      const basicEarned = basicSalary * daysRatio;
+      const hraEarned = hra * daysRatio;
+      const conveyanceEarned = conveyance * daysRatio;
+      const specialAllowanceEarned = specialAllowance * daysRatio;
+
+      const totalEarningsActual = basicSalary + hra + conveyance + specialAllowance + bonus + incentive + adjustment;
+      const totalEarningsEarned = basicEarned + hraEarned + conveyanceEarned + specialAllowanceEarned + bonus + incentive + adjustment;
+
+      // Deductions
+      const pf = record.pf || 0;
+      const esic = record.esic || 0;
+      const pt = record.pt || 0;
+      const tds = record.tds || 0;
+      const retention = record.retention || 0;
+      const totalDeductions = pf + esic + pt + tds + retention;
 
       return {
         companyName: "Company HR System",
@@ -90,21 +115,23 @@ export default function PayslipPage() {
         totalPresentDays: record.actualWorkingDays,
         totalDaysPayable: record.actualWorkingDays,
         earnings: [
-          { name: "Basic", actualGross: record.basicSalary, earnedGross: (record.basicSalary / record.totalWorkingDays) * record.actualWorkingDays },
-          { name: "HRA", actualGross: record.hra || 0, earnedGross: ((record.hra || 0) / record.totalWorkingDays) * record.actualWorkingDays },
-          { name: "Conveyance", actualGross: record.conveyance || 0, earnedGross: ((record.conveyance || 0) / record.totalWorkingDays) * record.actualWorkingDays },
-          { name: "Sp. Allowance", actualGross: record.specialAllowance || 0, earnedGross: ((record.specialAllowance || 0) / record.totalWorkingDays) * record.actualWorkingDays },
-          { name: "Bonus", actualGross: record.bonus || 0, earnedGross: record.bonus || 0 },
+          { name: "Basic", actualGross: basicSalary, earnedGross: basicEarned },
+          { name: "HRA", actualGross: hra, earnedGross: hraEarned },
+          { name: "Conveyance", actualGross: conveyance, earnedGross: conveyanceEarned },
+          { name: "Sp. Allowance", actualGross: specialAllowance, earnedGross: specialAllowanceEarned },
+          { name: "Bonus", actualGross: bonus, earnedGross: bonus },
+          { name: "Incentive", actualGross: incentive, earnedGross: incentive },
+          { name: "Adjustment", actualGross: adjustment, earnedGross: adjustment },
         ],
         deductions: [
-          { name: "PF", amount: record.pf || 0 },
-          { name: "ESIC", amount: record.esic || 0 },
-          { name: "PT", amount: record.pt || 0 },
-          { name: "TDS", amount: record.tds || 0 },
-          { name: "Retention", amount: record.retention || 0 },
+          { name: "PF", amount: pf },
+          { name: "ESIC", amount: esic },
+          { name: "PT", amount: pt },
+          { name: "TDS", amount: tds },
+          { name: "Retention", amount: retention },
         ],
-        grossEarnings: totalEarnings,
-        earnedGrossEarnings: record.totalSalary + totalDeductions,
+        grossEarnings: totalEarningsActual,
+        earnedGrossEarnings: totalEarningsEarned,
         totalDeduction: totalDeductions,
         netSalaryCredited: record.totalSalary,
         month: monthNum,

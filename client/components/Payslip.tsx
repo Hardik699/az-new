@@ -173,31 +173,29 @@ export function Payslip({ data }: { data: PayslipData }) {
             </tr>
           </thead>
           <tbody>
-            {Math.max(data.earnings.length, data.deductions.length) > 0 && (
-              Array.from({ length: Math.max(data.earnings.length, data.deductions.length) }).map((_, idx) => {
-                const earning = data.earnings[idx];
-                const deduction = data.deductions[idx];
-                return (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 px-3 py-2 text-black">
-                      {earning?.name || ''}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                      {earning?.actualGross ? formatCurrency(earning.actualGross) : ''}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                      {earning?.earnedGross ? formatCurrency(earning.earnedGross) : ''}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 text-black">
-                      {deduction?.name || ''}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 text-black text-right">
-                      {deduction?.amount ? formatCurrency(deduction.amount) : ''}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            {Array.from({ length: Math.max(data.earnings.length, data.deductions.length) }).map((_, idx) => {
+              const earning = data.earnings[idx];
+              const deduction = data.deductions[idx];
+              return (
+                <tr key={idx} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-3 py-2 text-black">
+                    {earning?.name || ''}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                    {earning ? formatCurrency(earning.actualGross || 0) : ''}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                    {earning ? formatCurrency(earning.earnedGross || 0) : ''}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-black">
+                    {deduction?.name || ''}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-black text-right">
+                    {deduction ? formatCurrency(deduction.amount || 0) : ''}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr className="font-bold bg-gray-50">
