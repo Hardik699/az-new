@@ -113,128 +113,191 @@ const numberToWords = (num: number): string => {
 // Helper function to generate payslip PDF
 const generatePayslipPDF = async (employee: Employee, record: any) => {
   const element = document.createElement("div");
+  const monthName = new Date(record.month + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const joiningDate = new Date(employee.joiningDate).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+
   element.innerHTML = `
-    <div style="width: 800px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #333;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="margin: 0; color: #1a365d; font-size: 24px;">Pay Slip - ${new Date(record.month + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" })}</h2>
+    <div style="width: 900px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #000;">
+
+      <!-- Company Header -->
+      <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+        <h1 style="margin: 0; font-size: 18px; font-weight: bold;">INFOSEUM IT OPC PVT LTD.</h1>
+        <p style="margin: 5px 0 0 0; font-size: 11px;">Imperial Heights -701, Near Akshar Chowk, Atladra, Vadodara-390012 Gujarat</p>
       </div>
 
-      <div style="margin-bottom: 30px; border-bottom: 2px solid #ddd; padding-bottom: 20px;">
-        <table style="width: 100%; border-collapse: collapse;">
+      <!-- Pay Slip Title -->
+      <div style="text-align: center; margin-bottom: 25px;">
+        <h2 style="margin: 10px 0; font-size: 14px; font-weight: bold;">Pay Check - ${monthName}</h2>
+      </div>
+
+      <!-- Employee Info Section -->
+      <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="border: 1px solid #000;">
+          <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 50%;">
+            <div>Name: ${employee.fullName}</div>
+            <div>Department: ${employee.department}</div>
+            <div>Designation: ${employee.position}</div>
+            <div>Date Of Joining: ${joiningDate}</div>
+            <div>Employee Code: ${employee.employeeId}</div>
+          </td>
+          <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 50%;">
+            <div>UAN No.: ${employee.uanNumber}</div>
+            <div>ESIC No.: ${employee.esic ? employee.esic : "N/A"}</div>
+            <div>Bank A/C No.: ${employee.accountNumber}</div>
+            <div>Days In Month: ${record.totalWorkingDays}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Leave Details Section -->
+      <div style="margin-bottom: 20px;">
+        <table style="width: 100%; border: 2px solid #000; border-collapse: collapse;">
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td colspan="5" style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0;">Leave Details</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold; background-color: #f0f0f0;">
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Leave Type</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Total Leave In The Account</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Leave Availed</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">Subsisting Leave</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">LWP</td>
+          </tr>
           <tr>
-            <td style="width: 50%; padding: 8px 0;">
-              <div style="font-weight: bold;">Name: ${employee.fullName}</div>
-              <div>Department: ${employee.department}</div>
-              <div>Designation: ${employee.position}</div>
-              <div>Date Of Joining: ${new Date(employee.joiningDate).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })}</div>
-            </td>
-            <td style="width: 50%; padding: 8px 0; text-align: right;">
-              <div>UAN No.: ${employee.uanNumber}</div>
-              <div>Bank A/C No.: ${employee.accountNumber}</div>
-              <div>Days In Month: ${record.totalWorkingDays}</div>
-              <div>Total Present Days: ${record.actualWorkingDays}</div>
-            </td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">PL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.plTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.plAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.plTotal || 0) - (record.plAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">CL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.clTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.clAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.clTotal || 0) - (record.clAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">SL</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.slTotal || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.slAvailed || 0.0}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.slTotal || 0) - (record.slAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">0.0</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Total Leaves Taken -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${(record.plAvailed || 0) + (record.clAvailed || 0) + (record.slAvailed || 0)}</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;">Total Leave Without Pay -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.lwp || 0.0}</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Total Present Days -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.actualWorkingDays}</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;">Total Days Payable -</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${record.actualWorkingDays}</td>
           </tr>
         </table>
       </div>
 
-      <div style="margin-bottom: 30px;">
-        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Leave Details</h4>
-        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
-          <tr style="background-color: #f5f5f5;">
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Leave Type</th>
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Total</th>
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Availed</th>
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Subsisting</th>
+      <!-- Salary Details Section -->
+      <div style="margin-bottom: 20px;">
+        <table style="width: 100%; border: 2px solid #000; border-collapse: collapse;">
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td colspan="4" style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0;">Salary Details</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold; background-color: #f0f0f0;">
+            <td style="border: 1px solid #000; padding: 8px; width: 25%;">Earning</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Actual Gross</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Earned Gross</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right; width: 25%;">Deduction</td>
           </tr>
           <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">PL (Paid Leave)</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.plTotal || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.plAvailed || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${(record.plTotal || 0) - (record.plAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px;">Basic</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PF</strong></td>
           </tr>
           <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">CL (Casual Leave)</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.clTotal || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.clAvailed || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${(record.clTotal || 0) - (record.clAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px;">HRA</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pf || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
           </tr>
           <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">SL (Sick Leave)</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.slTotal || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${record.slAvailed || 0}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${(record.slTotal || 0) - (record.slAvailed || 0)}</td>
+            <td style="border: 1px solid #000; padding: 8px;">Conveyance</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>ESIC</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Sp. Allowance</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.esic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Incentive</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>PT</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Adjustment</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.pt || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Bonus</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>TDS</strong></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Retention Bonus</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">Advance Any</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Advance Any</strong></td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Gross Earnings</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyDeduction || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="border: 1px solid #000;">
+            <td style="border: 1px solid #000; padding: 8px;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Retention</strong></td>
+          </tr>
+          <tr style="border: 1px solid #000;">
+            <td style="border: 1px solid #000; padding: 8px;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retention || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="border: 1px solid #000; font-weight: bold;">
+            <td style="border: 1px solid #000; padding: 8px;">Net Salary Credited-</td>
+            <td colspan="2" style="border: 1px solid #000; padding: 8px;"></td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">₹ ${record.totalSalary.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+          </tr>
+          <tr style="border: 1px solid #000;">
+            <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Amount (in words) -</td>
+            <td colspan="3" style="border: 1px solid #000; padding: 8px; text-align: right;">${numberToWords(Math.floor(record.totalSalary))} Rupees only</td>
           </tr>
         </table>
       </div>
 
-      <div style="margin-bottom: 30px;">
-        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Salary Details</h4>
-        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
-          <tr style="background-color: #f5f5f5;">
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Earning</th>
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">Amount</th>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">Gross Earnings</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.basicSalary + record.bonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="margin-bottom: 30px;">
-        <h4 style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold;">Deductions</h4>
-        <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
-          <tr style="background-color: #f5f5f5;">
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Deduction Type</th>
-            <th style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">Amount</th>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">PF (Provident Fund)</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.pf || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">ESIC</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.esic || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">PT (Professional Tax)</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.pt || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">TDS (Tax Deducted at Source)</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">Advance Any</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.advanceAnyDeduction || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">Retention</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.retention || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-          <tr style="background-color: #f5f5f5; font-weight: bold;">
-            <td style="border: 1px solid #ddd; padding: 8px;">Total Deductions</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(record.deductions || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="margin-bottom: 30px; background-color: #e8f5e9; padding: 20px; border-radius: 4px;">
-        <div style="font-size: 18px; font-weight: bold; color: #2e7d32;">
-          Net Salary Credited: ₹${record.totalSalary.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
-        </div>
-        <div style="font-size: 12px; color: #555; margin-top: 10px;">
-          Amount (in words): ${numberToWords(Math.floor(record.totalSalary))} Rupees only
-        </div>
-      </div>
-
-      ${record.paymentDate ? `<div style="margin-bottom: 20px; text-align: right; color: #666; font-size: 12px;">
-        Payment Date: ${record.paymentDate}
-      </div>` : ""}
-
-      <div style="text-align: center; margin-top: 40px; color: #999; font-size: 11px;">
-        This is a system generated slip
+      <!-- Footer -->
+      <div style="text-align: center; margin-top: 40px;">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Ctext x='10' y='30' font-size='12' font-weight='bold'%3EInfoseum%3C/text%3E%3C/svg%3E" style="height: 30px; margin: 10px 0;" />
+        <p style="margin: 15px 0 0 0; font-size: 11px; color: #666;">This is a system generated slip</p>
       </div>
     </div>
   `;
