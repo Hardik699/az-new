@@ -62,8 +62,8 @@ export function Payslip({ data }: { data: PayslipData }) {
   };
 
   return (
-    <div className="w-full p-0 bg-white" style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", lineHeight: '1.4'}}>
-      <div className="w-full bg-white p-0" style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}>
+    <div className="w-full p-0 bg-white" style={{fontFamily: "Arial, Helvetica, sans-serif", lineHeight: '1.5', fontSize: '14px'}}>
+      <div className="w-full bg-white p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", fontSize: '14px'}}>
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
@@ -197,6 +197,22 @@ export function Payslip({ data }: { data: PayslipData }) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Net Salary Credited and Amount in Words */}
+      <div className="p-6 border-b border-gray-300">
+        <table className="w-full text-sm border-collapse">
+          <tbody>
+            <tr className="border-b border-gray-300">
+              <td className="border border-gray-300 px-4 py-3 text-black font-bold">Net Salary Credited-</td>
+              <td className="border border-gray-300 px-4 py-3 text-right text-black font-bold text-lg">₹ {formatCurrency(data.netSalaryCredited)}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 px-4 py-3 text-black font-bold">Amount (in words) -</td>
+              <td className="border border-gray-300 px-4 py-3 text-right text-black">{data.amountInWords}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Footer */}
