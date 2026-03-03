@@ -2521,6 +2521,19 @@ export default function EmployeeDetailsPage() {
                                 <div className="flex gap-2">
                                   <Button
                                     onClick={() =>
+                                      navigate("/payslip", {
+                                        state: { record, employee }
+                                      })
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
+                                    title="View Payslip"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    onClick={() =>
                                       handleDownloadPayslip(record)
                                     }
                                     variant="outline"
