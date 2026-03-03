@@ -7,27 +7,58 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 interface SalaryRecord {
+  id: string;
+  employeeId: string;
   month: string;
   year?: number;
-  basicSalary: number;
+  totalWorkingDays: number;
+  actualWorkingDays: number;
+  // Earnings
+  basic: number;
   hra: number;
   conveyance: number;
   specialAllowance: number;
-  basicEarned?: number;
-  hraEarned?: number;
-  conveyanceEarned?: number;
-  specialAllowanceEarned?: number;
-  bonus?: number;
-  totalSalary: number;
+  incentive: number;
+  adjustment: number;
+  bonus: number;
+  retentionBonus?: number;
+  advanceAny?: number;
+  // Earned Amounts
+  basicEarned: number;
+  hraEarned: number;
+  conveyanceEarned: number;
+  specialAllowanceEarned: number;
+  incentiveEarned: number;
+  adjustmentEarned: number;
+  bonusEarned: number;
+  retentionBonusEarned?: number;
+  advanceAnyEarned?: number;
+  // Deductions
   pf: number;
   esic: number;
   pt: number;
   tds: number;
+  advanceAnyDeduction?: number;
   retention: number;
-  incentive?: number;
-  adjustment?: number;
-  actualWorkingDays: number;
-  totalWorkingDays: number;
+  // Totals
+  totalSalary: number;
+  // Other
+  paymentDate?: string;
+  notes?: string;
+  // Leave Details
+  plTotal?: number;
+  plAvailed?: number;
+  plSubsisting?: number;
+  clTotal?: number;
+  clAvailed?: number;
+  clSubsisting?: number;
+  slTotal?: number;
+  slAvailed?: number;
+  slSubsisting?: number;
+  lwp: number;
+  totalLeavesTaken?: number;
+  totalLeaveWithoutPay?: number;
+  totalWorkingDaysPayable?: number;
   createdAt: string;
 }
 
@@ -77,31 +108,39 @@ export default function PayslipPage() {
       const year = record.year || monthDate.getFullYear();
       const monthNum = parseInt(record.month.split("-")[1] || record.month);
 
-      // Use database values if they exist, otherwise use calculated defaults
-      const basicSalary = record.basicSalary || 0;
-      const hra = record.hra !== undefined && record.hra !== null ? record.hra : (basicSalary * 0.4);
-      const conveyance = record.conveyance !== undefined && record.conveyance !== null ? record.conveyance : 1600;
-      const specialAllowance = record.specialAllowance !== undefined && record.specialAllowance !== null ? record.specialAllowance : (basicSalary * 0.25);
+      // Use ALL values directly from database - Salary Management
+      const basicSalary = record.basic || 0;
+      const hra = record.hra || 0;
+      const conveyance = record.conveyance || 0;
+      const specialAllowance = record.specialAllowance || 0;
       const bonus = record.bonus || 0;
       const incentive = record.incentive || 0;
       const adjustment = record.adjustment || 0;
+      const retentionBonus = record.retentionBonus || 0;
+      const advanceAny = record.advanceAny || 0;
 
-      // For earned amounts, use database values if available, otherwise use the actual values
-      const basicEarned = record.basicEarned !== undefined ? record.basicEarned : basicSalary;
-      const hraEarned = record.hraEarned !== undefined ? record.hraEarned : hra;
-      const conveyanceEarned = record.conveyanceEarned !== undefined ? record.conveyanceEarned : conveyance;
-      const specialAllowanceEarned = record.specialAllowanceEarned !== undefined ? record.specialAllowanceEarned : specialAllowance;
+      // Use earned amounts directly from database
+      const basicEarned = record.basicEarned || 0;
+      const hraEarned = record.hraEarned || 0;
+      const conveyanceEarned = record.conveyanceEarned || 0;
+      const specialAllowanceEarned = record.specialAllowanceEarned || 0;
+      const incentiveEarned = record.incentiveEarned || 0;
+      const adjustmentEarned = record.adjustmentEarned || 0;
+      const bonusEarned = record.bonusEarned || 0;
+      const retentionBonusEarned = record.retentionBonusEarned || 0;
+      const advanceAnyEarned = record.advanceAnyEarned || 0;
 
-      const totalEarningsActual = basicSalary + hra + conveyance + specialAllowance + bonus + incentive + adjustment;
-      const totalEarningsEarned = basicEarned + hraEarned + conveyanceEarned + specialAllowanceEarned + bonus + incentive + adjustment;
+      const totalEarningsActual = basicSalary + hra + conveyance + specialAllowance + bonus + incentive + adjustment + retentionBonus + advanceAny;
+      const totalEarningsEarned = basicEarned + hraEarned + conveyanceEarned + specialAllowanceEarned + incentiveEarned + adjustmentEarned + bonusEarned + retentionBonusEarned + advanceAnyEarned;
 
-      // Deductions - use database values with 0 as default if not provided
+      // Deductions - use database values directly
       const pf = record.pf || 0;
       const esic = record.esic || 0;
       const pt = record.pt || 0;
       const tds = record.tds || 0;
+      const advanceAnyDeduction = record.advanceAnyDeduction || 0;
       const retention = record.retention || 0;
-      const totalDeductions = pf + esic + pt + tds + retention;
+      const totalDeductions = pf + esic + pt + tds + advanceAnyDeduction + retention;
 
       return {
         companyName: COMPANY_NAME,
@@ -116,22 +155,24 @@ export default function PayslipPage() {
         bankAccountNo: employee.accountNumber || "N/A",
         daysInMonth: record.totalWorkingDays || 30,
         leaves: [
-          { type: "PL", total: 0, availed: 0, subsisting: 0, lwp: 0 },
-          { type: "CL", total: 0, availed: 0, subsisting: 0, lwp: 0 },
-          { type: "SL", total: 0, availed: 0, subsisting: 0, lwp: 0 },
+          { type: "PL", total: record.plTotal || 0, availed: record.plAvailed || 0, subsisting: record.plSubsisting || 0, lwp: record.lwp || 0 },
+          { type: "CL", total: record.clTotal || 0, availed: record.clAvailed || 0, subsisting: record.clSubsisting || 0, lwp: record.lwp || 0 },
+          { type: "SL", total: record.slTotal || 0, availed: record.slAvailed || 0, subsisting: record.slSubsisting || 0, lwp: record.lwp || 0 },
         ],
-        totalLeavesTaken: 0,
-        totalLeaveWithoutPay: record.totalWorkingDays - record.actualWorkingDays,
+        totalLeavesTaken: record.totalLeavesTaken || 0,
+        totalLeaveWithoutPay: record.totalLeaveWithoutPay || (record.totalWorkingDays - record.actualWorkingDays),
         totalPresentDays: record.actualWorkingDays,
-        totalDaysPayable: record.actualWorkingDays,
+        totalDaysPayable: record.totalWorkingDaysPayable || record.actualWorkingDays,
         earnings: [
           { name: "Basic", actualGross: basicSalary, earnedGross: basicEarned },
           { name: "HRA", actualGross: hra, earnedGross: hraEarned },
           { name: "Conveyance", actualGross: conveyance, earnedGross: conveyanceEarned },
           { name: "Sp. Allowance", actualGross: specialAllowance, earnedGross: specialAllowanceEarned },
-          { name: "Bonus", actualGross: bonus, earnedGross: bonus },
-          { name: "Incentive", actualGross: incentive, earnedGross: incentive },
-          { name: "Adjustment", actualGross: adjustment, earnedGross: adjustment },
+          { name: "Bonus", actualGross: bonus, earnedGross: bonusEarned },
+          { name: "Incentive", actualGross: incentive, earnedGross: incentiveEarned },
+          { name: "Adjustment", actualGross: adjustment, earnedGross: adjustmentEarned },
+          ...(retentionBonus > 0 ? [{ name: "Retention Bonus", actualGross: retentionBonus, earnedGross: retentionBonusEarned }] : []),
+          ...(advanceAny > 0 ? [{ name: "Advance", actualGross: advanceAny, earnedGross: advanceAnyEarned }] : []),
         ],
         deductions: [
           { name: "PF", amount: pf },
@@ -139,6 +180,7 @@ export default function PayslipPage() {
           { name: "PT", amount: pt },
           { name: "TDS", amount: tds },
           { name: "Retention", amount: retention },
+          ...(advanceAnyDeduction > 0 ? [{ name: "Advance Deduction", amount: advanceAnyDeduction }] : []),
         ],
         grossEarnings: totalEarningsActual,
         earnedGrossEarnings: totalEarningsEarned,
