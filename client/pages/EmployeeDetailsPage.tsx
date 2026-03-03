@@ -834,11 +834,21 @@ export default function EmployeeDetailsPage() {
         const mongoId = (record as any)._id || recordId;
         const response = await fetch(`/api/salary-records/${mongoId}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to delete salary record");
+          let errorMessage = "Failed to delete salary record";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (e) {
+            // If response is not JSON, use the status text
+            errorMessage = response.statusText || errorMessage;
+          }
+          throw new Error(errorMessage);
         }
 
         const updatedRecords = salaryRecords.filter(
@@ -850,7 +860,9 @@ export default function EmployeeDetailsPage() {
         });
       } catch (error) {
         console.error("Failed to delete salary record:", error);
-        toast.error("Failed to delete salary record");
+        toast.error("Failed to delete salary record", {
+          description: error instanceof Error ? error.message : "Unknown error occurred",
+        });
       }
     }
   };
