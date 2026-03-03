@@ -2664,6 +2664,50 @@ export default function EmployeeDetailsPage() {
                             </div>
                           </div>
                         ) : null}
+
+                        {/* Leave Details Table */}
+                        <div className="bg-slate-900/50 border border-slate-700 rounded-lg overflow-hidden">
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-slate-800/50 border-b border-slate-700">
+                                  <th className="px-4 py-3 text-left text-slate-300 font-semibold">Leave Type</th>
+                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Total</th>
+                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Availed</th>
+                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">Subsisting</th>
+                                  <th className="px-4 py-3 text-right text-slate-300 font-semibold">LWP</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                  <td className="px-4 py-2 text-slate-300">PL (Paid Leave)</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.plTotal || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.plAvailed || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{(record.plTotal || 0) - (record.plAvailed || 0)}</td>
+                                  <td className="px-4 py-2 text-right text-white">-</td>
+                                </tr>
+                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                  <td className="px-4 py-2 text-slate-300">CL (Casual Leave)</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.clTotal || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.clAvailed || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{(record.clTotal || 0) - (record.clAvailed || 0)}</td>
+                                  <td className="px-4 py-2 text-right text-white">-</td>
+                                </tr>
+                                <tr className="border-b border-slate-700/50 hover:bg-slate-800/20">
+                                  <td className="px-4 py-2 text-slate-300">SL (Sick Leave)</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.slTotal || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{record.slAvailed || 0}</td>
+                                  <td className="px-4 py-2 text-right text-white">{(record.slTotal || 0) - (record.slAvailed || 0)}</td>
+                                  <td className="px-4 py-2 text-right text-white">-</td>
+                                </tr>
+                                <tr className="bg-slate-800/30 border-t border-slate-700">
+                                  <td className="px-4 py-2 text-slate-300">Leave Without Pay (LWP)</td>
+                                  <td colSpan={4} className="px-4 py-2 text-right text-white font-medium">{record.lwp || 0}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
