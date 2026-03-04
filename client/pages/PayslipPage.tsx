@@ -255,7 +255,7 @@ export default function PayslipPage() {
           </div>
 
           {/* Payslip Container */}
-          <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
+          <div id="payslip-container" className="bg-white rounded-lg shadow-2xl overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
             <Payslip data={payslipData} />
           </div>
 
@@ -264,20 +264,19 @@ export default function PayslipPage() {
             <Button
               onClick={async () => {
                 try {
-                  const element = document.querySelector('.bg-white.rounded-lg.shadow-2xl');
+                  const element = document.getElementById('payslip-container');
                   if (!element) {
                     alert('Payslip not found');
                     return;
                   }
                   const canvas = await html2canvas(element as HTMLElement, {
-                    scale: 4,
+                    scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    dpi: 300,
+                    dpi: 150,
                     letterRendering: true,
-                    fontEmbedCss: true,
                     windowWidth: 1024,
                     windowHeight: 1400
                   });

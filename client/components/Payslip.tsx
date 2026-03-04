@@ -62,8 +62,8 @@ export function Payslip({ data }: { data: PayslipData }) {
   };
 
   return (
-    <div className="w-full p-0 bg-white" style={{fontFamily: "Arial, Helvetica, sans-serif", lineHeight: '1.5', fontSize: '14px'}}>
-      <div className="w-full bg-white p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", fontSize: '14px'}}>
+    <div className="w-full p-0 bg-white" style={{fontFamily: "Arial, Helvetica, sans-serif", lineHeight: '1.5', fontSize: '14px', backgroundColor: '#ffffff'}}>
+      <div className="w-full bg-white p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", fontSize: '14px', backgroundColor: '#ffffff'}}>
       {/* Header Section */}
       <div className="border-b border-gray-300">
         <div className="p-6 text-center">
