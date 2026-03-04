@@ -255,7 +255,7 @@ export default function PayslipPage() {
           </div>
 
           {/* Payslip Container */}
-          <div id="payslip-container" className="bg-white rounded-lg shadow-2xl overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
+          <div id="payslip-container" className="bg-white overflow-hidden" style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
             <Payslip data={payslipData} />
           </div>
 
@@ -270,39 +270,32 @@ export default function PayslipPage() {
                     return;
                   }
                   const canvas = await html2canvas(element as HTMLElement, {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    dpi: 150,
-                    letterRendering: true,
-                    windowWidth: 1024,
-                    windowHeight: 1400
+                    windowWidth: 800,
+                    windowHeight: 1200
                   });
                   const pdf = new jsPDF({
                     orientation: 'p',
                     unit: 'mm',
-                    format: 'a4',
-                    compress: false
+                    format: 'a4'
                   });
+
                   const imgData = canvas.toDataURL('image/png');
                   const pdfWidth = pdf.internal.pageSize.getWidth();
                   const pdfHeight = pdf.internal.pageSize.getHeight();
                   const canvasWidth = canvas.width;
                   const canvasHeight = canvas.height;
+
+                  // Calculate ratio to fit on single page
                   const ratio = pdfWidth / canvasWidth;
                   const scaledHeight = canvasHeight * ratio;
 
-                  if (scaledHeight > pdfHeight) {
-                    const pageCount = Math.ceil(scaledHeight / pdfHeight);
-                    for (let i = 0; i < pageCount; i++) {
-                      if (i > 0) pdf.addPage();
-                      pdf.addImage(imgData, 'PNG', 0, -i * pdfHeight, pdfWidth, scaledHeight);
-                    }
-                  } else {
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
-                  }
+                  // Add image to fit on single page
+                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
