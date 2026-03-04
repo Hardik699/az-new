@@ -1160,6 +1160,68 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+  const initializeNewSalaryForm = () => {
+    const salary = parseFloat(employee?.salary || "0");
+    const pf = parseFloat(employee?.pf || "0");
+    const esic = parseFloat(employee?.esic || "0");
+    const basicAmount = salary - pf - esic;
+
+    // Auto-calculate dependent values
+    const calculations = calculateSalaryComponents(basicAmount);
+
+    const newForm = {
+      month: "",
+      totalWorkingDays: "",
+      actualWorkingDays: "",
+      basic: basicAmount.toString(),
+      hra: calculations.hra.toString(),
+      conveyance: calculations.conveyance.toString(),
+      specialAllowance: calculations.specialAllowance.toString(),
+      incentive: "",
+      adjustment: "",
+      bonus: "",
+      retentionBonus: "",
+      advanceAny: "",
+      basicEarned: "",
+      hraEarned: "",
+      conveyanceEarned: "",
+      specialAllowanceEarned: "",
+      incentiveEarned: "",
+      adjustmentEarned: "",
+      bonusEarned: "",
+      retentionBonusEarned: "",
+      advanceAnyEarned: "",
+      pf: employee?.pf || "",
+      esic: employee?.esic || "",
+      pt: employee?.pt || "",
+      tds: employee?.tds || "",
+      advanceAnyDeduction: employee?.advanceAny || "",
+      retention: employee?.retention || "",
+      paymentDate: "",
+      notes: "",
+      // Leave Details
+      plTotal: "",
+      plAvailed: "",
+      plSubsisting: "",
+      clTotal: "",
+      clAvailed: "",
+      clSubsisting: "",
+      slTotal: "",
+      slAvailed: "",
+      slSubsisting: "",
+      lwp: "",
+      totalLeavesTaken: "",
+      totalLeaveWithoutPay: "",
+      totalWorkingDaysPayable: "",
+    };
+
+    const earnedValues = calculateEarnedValues(newForm);
+    setSalaryForm({
+      ...newForm,
+      ...earnedValues,
+    });
+  };
+
   const handleEditSalaryRecord = (record: SalaryRecord) => {
     setEditingSalaryRecordId(record.id);
     const salary = parseFloat(employee?.salary || "0");
@@ -1844,49 +1906,13 @@ export default function EmployeeDetailsPage() {
                 </div>
                 <Button
                   onClick={() => {
-                    setShowSalaryForm(!showSalaryForm);
-                    if (showSalaryForm) {
+                    if (!showSalaryForm) {
                       setEditingSalaryRecordId(null);
-                      const salary = parseFloat(employee?.salary || "0");
-                      const pf = parseFloat(employee?.pf || "0");
-                      const esic = parseFloat(employee?.esic || "0");
-                      const basicAmount = salary - pf - esic;
-
-                      // Auto-calculate dependent values
-                      const calculations = calculateSalaryComponents(basicAmount);
-
-                      setSalaryForm({
-                        month: "",
-                        totalWorkingDays: "",
-                        actualWorkingDays: "",
-                        basic: basicAmount.toString(),
-                        hra: calculations.hra.toString(),
-                        conveyance: calculations.conveyance.toString(),
-                        specialAllowance: calculations.specialAllowance.toString(),
-                        incentive: "",
-                        adjustment: "",
-                        bonus: "",
-                        retentionBonus: "",
-                        advanceAny: "",
-                        basicEarned: "",
-                        hraEarned: "",
-                        conveyanceEarned: "",
-                        specialAllowanceEarned: "",
-                        incentiveEarned: "",
-                        adjustmentEarned: "",
-                        bonusEarned: "",
-                        retentionBonusEarned: "",
-                        advanceAnyEarned: "",
-                        pf: employee?.pf || "",
-                        esic: employee?.esic || "",
-                        pt: employee?.pt || "",
-                        tds: employee?.tds || "",
-                        advanceAnyDeduction: employee?.advanceAny || "",
-                        retention: employee?.retention || "",
-                        paymentDate: "",
-                        notes: "",
-                      });
+                      initializeNewSalaryForm();
+                    } else {
+                      setEditingSalaryRecordId(null);
                     }
+                    setShowSalaryForm(!showSalaryForm);
                   }}
                   className="bg-blue-500 hover:bg-blue-600 text-white"
                   size="sm"

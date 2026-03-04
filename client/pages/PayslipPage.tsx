@@ -255,8 +255,10 @@ export default function PayslipPage() {
           </div>
 
           {/* Payslip Container */}
-          <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
-            <Payslip data={payslipData} />
+          <div className="rounded-lg shadow-2xl overflow-hidden">
+            <div id="payslip-container" className="bg-white" style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
+              <Payslip data={payslipData} />
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -264,46 +266,58 @@ export default function PayslipPage() {
             <Button
               onClick={async () => {
                 try {
-                  const element = document.querySelector('.bg-white.rounded-lg.shadow-2xl');
+                  const element = document.getElementById('payslip-container');
                   if (!element) {
                     alert('Payslip not found');
                     return;
                   }
-                  const canvas = await html2canvas(element as HTMLElement, {
-                    scale: 4,
+
+                  // Create a clone with white background to ensure clean capture
+                  const clonedElement = element.cloneNode(true) as HTMLElement;
+                  clonedElement.style.backgroundColor = '#ffffff';
+                  clonedElement.style.margin = '0';
+                  clonedElement.style.padding = '0';
+
+                  // Temporarily add to DOM off-screen for accurate rendering
+                  clonedElement.style.position = 'absolute';
+                  clonedElement.style.left = '-9999px';
+                  clonedElement.style.top = '-9999px';
+                  document.body.appendChild(clonedElement);
+
+                  const canvas = await html2canvas(clonedElement as HTMLElement, {
+                    scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    dpi: 300,
-                    letterRendering: true,
-                    fontEmbedCss: true,
-                    windowWidth: 1024,
-                    windowHeight: 1400
+                    windowWidth: 800,
+                    windowHeight: 1200,
+                    imageTimeout: 0
                   });
+
+                  // Remove cloned element
+                  document.body.removeChild(clonedElement);
+
                   const pdf = new jsPDF({
                     orientation: 'p',
                     unit: 'mm',
-                    format: 'a4',
-                    compress: false
+                    format: 'a4'
                   });
+
                   const imgData = canvas.toDataURL('image/png');
                   const pdfWidth = pdf.internal.pageSize.getWidth();
                   const pdfHeight = pdf.internal.pageSize.getHeight();
                   const canvasWidth = canvas.width;
                   const canvasHeight = canvas.height;
+
+                  // Calculate ratio to fit on single page
                   const ratio = pdfWidth / canvasWidth;
                   const scaledHeight = canvasHeight * ratio;
 
-                  if (scaledHeight > pdfHeight) {
-                    const pageCount = Math.ceil(scaledHeight / pdfHeight);
-                    for (let i = 0; i < pageCount; i++) {
-                      if (i > 0) pdf.addPage();
-                      pdf.addImage(imgData, 'PNG', 0, -i * pdfHeight, pdfWidth, scaledHeight);
-                    }
-                  } else {
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
-                  }
+                  // Add image to fit on single page with white background
+                  pdf.setFillColor(255, 255, 255);
+                  pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
