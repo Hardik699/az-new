@@ -130,8 +130,8 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Leave Details Table */}
-      <div className="p-3" style={{paddingTop: '0', paddingBottom: '0'}}>
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '25px'}}>Leave Details</h3>
+      <div className="p-3">
+        <h3 className="font-extrabold text-black text-center w-full" style={{marginTop: '20px', marginBottom: '15px', fontSize: '25px'}}>Leave Details</h3>
         <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <thead>
             <tr className="bg-gray-200">
@@ -172,8 +172,8 @@ export function Payslip({ data }: { data: PayslipData }) {
 
 
       {/* Salary Details Table */}
-      <div className="p-3" style={{paddingTop: '0', paddingBottom: '0'}}>
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '25px'}}>Salary Details</h3>
+      <div className="p-3">
+        <h3 className="font-extrabold text-black text-center w-full" style={{marginTop: '20px', marginBottom: '15px', fontSize: '25px'}}>Salary Details</h3>
         <table className="w-full border-collapse mx-auto" style={{fontSize: '18px', fontWeight: '500'}}>
           <thead>
             <tr className="bg-gray-200">
