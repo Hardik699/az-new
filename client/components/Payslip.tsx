@@ -77,6 +77,11 @@ export function Payslip({ data }: { data: PayslipData }) {
     padding: '14px 6px',
   };
 
+  // Table style with bottom padding
+  const tableStyle = {
+    paddingBottom: '5px'
+  };
+
   return (
     <div className="w-full p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", lineHeight: '1.3', fontSize: '12px', backgroundColor: '#ffffff', minHeight: '100vh'}}>
       <div className="w-full p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", fontSize: '12px', backgroundColor: '#ffffff', lineHeight: '1.3'}}>
@@ -91,7 +96,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Employee Details Section */}
       <div className="p-3 border-b border-gray-300">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse" style={tableStyle}>
           <tbody>
             <tr className="hover:bg-gray-50">
               <td className="border border-gray-300 text-black font-bold text-center" style={cellCenteringStyle}>Name:</td>
@@ -129,7 +134,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Leave Details Table */}
       <div className="p-3 border-b border-gray-300">
         <h3 className="text-sm font-extrabold text-black mb-1 text-center">Leave Details</h3>
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse" style={tableStyle}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 text-center text-black font-bold" style={headerCenteringStyle}>Leave Type</th>
@@ -171,7 +176,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       {/* Salary Details Table */}
       <div className="p-3 border-b border-gray-300">
         <h3 className="text-sm font-extrabold text-black mb-1 text-center">Salary Details</h3>
-        <table className="w-full text-xs border-collapse mx-auto">
+        <table className="w-full text-xs border-collapse mx-auto" style={tableStyle}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 text-center text-black font-bold" style={headerCenteringStyle}>Earning</th>
@@ -216,7 +221,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Net Salary Credited and Amount in Words */}
       <div className="p-3 border-b border-gray-300">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse" style={tableStyle}>
           <tbody>
             <tr>
               <td className="border border-gray-300 text-black font-bold" style={cellCenteringStyle}>Net Salary Credited-</td>
