@@ -456,7 +456,7 @@ export default function PayslipPage() {
                   });
 
                   pdf.save(`Payslip_${monthName}.pdf`);
-                  toast.success('PDF Downloaded! Password: 123');
+                  toast.success('PDF Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
                   toast.error('Failed to generate PDF');
