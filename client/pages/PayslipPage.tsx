@@ -273,21 +273,16 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with background design and margins
+                  // Create a wrapper with white background and margins
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
-                  wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '80px 0';
+                  wrapper.style.backgroundColor = '#ffffff';
+                  wrapper.style.padding = '40px 0';
                   wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
-                  wrapper.style.backgroundImage = `
-                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
-                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
-                  `;
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
@@ -356,21 +351,16 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with background design and margins
+                  // Create a wrapper with white background and margins
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
-                  wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '80px 0';
+                  wrapper.style.backgroundColor = '#ffffff';
+                  wrapper.style.padding = '40px 0';
                   wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
-                  wrapper.style.backgroundImage = `
-                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
-                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
-                  `;
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
