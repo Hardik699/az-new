@@ -407,38 +407,43 @@ export default function PayslipPage() {
                   // Remove wrapper
                   document.body.removeChild(wrapper);
 
-                  // Calculate PDF dimensions based on canvas aspect ratio
+                  // Get image data and send to server for PDF generation with password
                   const imgData = canvas.toDataURL('image/png');
-                  const canvasWidth = canvas.width;
-                  const canvasHeight = canvas.height;
-
-                  // Create PDF with dimensions that match the preview
-                  const pdfWidthMm = 210; // A4 width
-                  const pdfHeightMm = (canvasHeight / canvasWidth) * pdfWidthMm;
-                  const marginMm = 15; // Additional PDF margin
-
-                  const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: [pdfWidthMm, pdfHeightMm]
-                  });
-
-                  // Set white background
-                  pdf.setFillColor(255, 255, 255);
-                  pdf.rect(0, 0, pdfWidthMm, pdfHeightMm, 'F');
-
-                  // Add image with margins
-                  const imgWidthMm = pdfWidthMm - (marginMm * 2);
-                  const imgHeightMm = pdfHeightMm - (marginMm * 2);
-                  pdf.addImage(imgData, 'PNG', marginMm, marginMm, imgWidthMm, imgHeightMm);
+                  const imgBase64 = imgData.split(',')[1];
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric'
                   });
 
-                  // Download PDF directly from client
-                  pdf.save(`Payslip_${monthName}.pdf`);
+                  // Send to server for encryption
+                  const response = await fetch('/api/encrypt-pdf', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      image: imgBase64,
+                      password: '123', // Static password for now, can be changed
+                      fileName: `Payslip_${monthName}`
+                    })
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Failed to encrypt PDF');
+                  }
+
+                  // Download the encrypted PDF
+                  const blob = await response.blob();
+                  const downloadUrl = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = downloadUrl;
+                  link.download = `Payslip_${monthName}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(downloadUrl);
+
                   toast.success('PDF Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
