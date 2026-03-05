@@ -262,7 +262,7 @@ export default function PayslipPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-center mt-8">
+          <div className="flex gap-3 justify-center mt-8 mb-8" style={{padding: '20px'}}>
             <Button
               onClick={async () => {
                 try {
