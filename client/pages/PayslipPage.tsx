@@ -278,8 +278,8 @@ export default function PayslipPage() {
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
                   wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '200px';
-                  wrapper.style.width = (element.offsetWidth + 400) + 'px';
+                  wrapper.style.padding = '80px 0';
+                  wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
                   wrapper.style.backgroundImage = `
@@ -360,8 +360,8 @@ export default function PayslipPage() {
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
                   wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '200px';
-                  wrapper.style.width = (element.offsetWidth + 400) + 'px';
+                  wrapper.style.padding = '80px 0';
+                  wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
                   wrapper.style.backgroundImage = `
@@ -434,6 +434,28 @@ export default function PayslipPage() {
                     month: 'long',
                     year: 'numeric'
                   });
+
+                  // Extract last 4 digits of UAN for password
+                  const uanNumber = payslipData.uanNo || '';
+                  const pdfPassword = uanNumber.slice(-4);
+
+                  // Add password protection if password exists
+                  if (pdfPassword && pdfPassword.length === 4) {
+                    pdf.setProperties({
+                      userPassword: pdfPassword,
+                      ownerPassword: pdfPassword,
+                      permissions: {
+                        printing: 'highResolution',
+                        modifying: false,
+                        copying: false,
+                        annotating: false,
+                        fillingForms: false,
+                        contentAccessibility: false,
+                        documentAssembly: false
+                      }
+                    });
+                  }
+
                   pdf.save(`Payslip_${monthName}.pdf`);
                 } catch (error) {
                   console.error('Error generating PDF:', error);
