@@ -417,6 +417,9 @@ export default function PayslipPage() {
                   });
 
                   // Send to server for encryption
+                  const uanNo = employee?.uanNumber || "1234"; // Defaulting to 1234 if no UAN provided
+                  const uanPassword = uanNo.toString().slice(-4);
+
                   const response = await fetch('/api/encrypt-pdf', {
                     method: 'POST',
                     headers: {
@@ -424,7 +427,7 @@ export default function PayslipPage() {
                     },
                     body: JSON.stringify({
                       image: imgBase64,
-                      password: '123', // Static password for now, can be changed
+                      password: uanPassword,
                       fileName: `Payslip_${monthName}`
                     })
                   });
