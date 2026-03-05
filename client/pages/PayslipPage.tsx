@@ -276,9 +276,10 @@ export default function PayslipPage() {
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
-                  clonedElement.style.padding = '0';
+                  clonedElement.style.padding = '80px';
                   clonedElement.style.width = element.offsetWidth + 'px';
                   clonedElement.style.minHeight = 'auto';
+                  clonedElement.style.boxSizing = 'border-box';
 
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
