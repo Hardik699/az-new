@@ -437,25 +437,48 @@ export default function PayslipPage() {
                     year: 'numeric'
                   });
 
-                  // Set password to 123
-                  const pdfPassword = '123';
+                  // Get PDF as blob and convert to base64
+                  const pdfBlob = pdf.output('blob');
+                  const reader = new FileReader();
+                  let pdfBase64 = '';
 
-                  // Add password protection
-                  pdf.setProperties({
-                    userPassword: pdfPassword,
-                    ownerPassword: pdfPassword,
-                    permissions: {
-                      printing: 'highResolution',
-                      modifying: false,
-                      copying: false,
-                      annotating: false,
-                      fillingForms: false,
-                      contentAccessibility: false,
-                      documentAssembly: false
-                    }
+                  await new Promise((resolve) => {
+                    reader.onloadend = () => {
+                      const result = reader.result as string;
+                      pdfBase64 = result.split(',')[1];
+                      resolve(null);
+                    };
+                    reader.readAsDataURL(pdfBlob);
                   });
 
-                  pdf.save(`Payslip_${monthName}.pdf`);
+                  // Send to server for encryption
+                  const response = await fetch('/api/encrypt-pdf', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      pdfBase64: pdfBase64,
+                      password: '123',
+                      fileName: `Payslip_${monthName}`
+                    })
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Failed to encrypt PDF');
+                  }
+
+                  // Download the encrypted PDF
+                  const blob = await response.blob();
+                  const downloadUrl = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = downloadUrl;
+                  link.download = `Payslip_${monthName}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(downloadUrl);
+
                   toast.success('PDF Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating PDF:', error);

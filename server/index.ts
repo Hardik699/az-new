@@ -20,6 +20,7 @@ import { salaryRecordsRouter } from "./routes/salary-records";
 import { systemAssetsRouter } from "./routes/system-assets";
 import { clearDataRouter } from "./routes/clear-data";
 import { authRouter, seedUsers, seedSalaryRecords } from "./routes/auth";
+import { encryptPDF } from "./routes/pdf-encrypt";
 
 export function createServer() {
   const app = express();
@@ -68,6 +69,9 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // PDF Encryption API
+  app.post("/api/encrypt-pdf", encryptPDF);
 
   // Salaries API
   app.use("/api/salaries", salariesRouter());
