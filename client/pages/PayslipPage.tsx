@@ -435,26 +435,23 @@ export default function PayslipPage() {
                     year: 'numeric'
                   });
 
-                  // Extract last 4 digits of UAN for password
-                  const uanNumber = payslipData.uanNo || '';
-                  const pdfPassword = uanNumber.slice(-4);
+                  // Set password to 123
+                  const pdfPassword = '123';
 
-                  // Add password protection if password exists
-                  if (pdfPassword && pdfPassword.length === 4) {
-                    pdf.setProperties({
-                      userPassword: pdfPassword,
-                      ownerPassword: pdfPassword,
-                      permissions: {
-                        printing: 'highResolution',
-                        modifying: false,
-                        copying: false,
-                        annotating: false,
-                        fillingForms: false,
-                        contentAccessibility: false,
-                        documentAssembly: false
-                      }
-                    });
-                  }
+                  // Add password protection
+                  pdf.setProperties({
+                    userPassword: pdfPassword,
+                    ownerPassword: pdfPassword,
+                    permissions: {
+                      printing: 'highResolution',
+                      modifying: false,
+                      copying: false,
+                      annotating: false,
+                      fillingForms: false,
+                      contentAccessibility: false,
+                      documentAssembly: false
+                    }
+                  });
 
                   pdf.save(`Payslip_${monthName}.pdf`);
                 } catch (error) {
