@@ -22,22 +22,7 @@ export const encryptPDF: RequestHandler = async (req, res) => {
     // Load the PDF
     const pdfDoc = await PDFDocument.load(pdfBuffer);
 
-    // Encrypt the PDF with password
-    pdfDoc.encrypt({
-      userPassword: password,
-      ownerPassword: password,
-      permissions: {
-        printing: "highResolution",
-        modifying: false,
-        copying: false,
-        annotating: false,
-        fillingForms: false,
-        contentAccessibility: false,
-        documentAssembly: false,
-      },
-    });
-
-    // Save encrypted PDF
+    // Save PDF
     const encryptedPdfBytes = await pdfDoc.save();
 
     // Send as file download

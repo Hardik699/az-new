@@ -3,7 +3,7 @@ import AppNav from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -437,48 +437,8 @@ export default function PayslipPage() {
                     year: 'numeric'
                   });
 
-                  // Get PDF as blob and convert to base64
-                  const pdfBlob = pdf.output('blob');
-                  const reader = new FileReader();
-                  let pdfBase64 = '';
-
-                  await new Promise((resolve) => {
-                    reader.onloadend = () => {
-                      const result = reader.result as string;
-                      pdfBase64 = result.split(',')[1];
-                      resolve(null);
-                    };
-                    reader.readAsDataURL(pdfBlob);
-                  });
-
-                  // Send to server for encryption
-                  const response = await fetch('/api/encrypt-pdf', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      pdfBase64: pdfBase64,
-                      password: '123',
-                      fileName: `Payslip_${monthName}`
-                    })
-                  });
-
-                  if (!response.ok) {
-                    throw new Error('Failed to encrypt PDF');
-                  }
-
-                  // Download the encrypted PDF
-                  const blob = await response.blob();
-                  const downloadUrl = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = downloadUrl;
-                  link.download = `Payslip_${monthName}.pdf`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(downloadUrl);
-
+                  // Download PDF directly from client
+                  pdf.save(`Payslip_${monthName}.pdf`);
                   toast.success('PDF Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
