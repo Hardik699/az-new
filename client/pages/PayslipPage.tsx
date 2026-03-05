@@ -279,7 +279,7 @@ export default function PayslipPage() {
                   wrapper.style.top = '-9999px';
                   wrapper.style.backgroundColor = '#f0f4f8';
                   wrapper.style.padding = '200px';
-                  wrapper.style.width = element.offsetWidth + 'px';
+                  wrapper.style.width = (element.offsetWidth + 400) + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
                   wrapper.style.backgroundImage = `
@@ -361,7 +361,7 @@ export default function PayslipPage() {
                   wrapper.style.top = '-9999px';
                   wrapper.style.backgroundColor = '#f0f4f8';
                   wrapper.style.padding = '200px';
-                  wrapper.style.width = element.offsetWidth + 'px';
+                  wrapper.style.width = (element.offsetWidth + 400) + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
                   wrapper.style.backgroundImage = `
