@@ -302,6 +302,67 @@ export default function PayslipPage() {
                   // Remove cloned element
                   document.body.removeChild(clonedElement);
 
+                  // Get image data and download
+                  const imgData = canvas.toDataURL('image/png');
+                  const link = document.createElement('a');
+                  const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
+                    month: 'long',
+                    year: 'numeric'
+                  });
+                  link.href = imgData;
+                  link.download = `Payslip_${monthName}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } catch (error) {
+                  console.error('Error generating image:', error);
+                  alert('Failed to generate image');
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Download Image
+            </Button>
+
+            <Button
+              onClick={async () => {
+                try {
+                  const element = document.getElementById('payslip-container');
+                  if (!element) {
+                    alert('Payslip not found');
+                    return;
+                  }
+
+                  // Create a clone with white background to ensure clean capture
+                  const clonedElement = element.cloneNode(true) as HTMLElement;
+                  clonedElement.style.backgroundColor = '#ffffff';
+                  clonedElement.style.margin = '0';
+                  clonedElement.style.padding = '30px';
+                  clonedElement.style.width = element.offsetWidth + 'px';
+                  clonedElement.style.minHeight = 'auto';
+                  clonedElement.style.boxSizing = 'border-box';
+
+                  // Temporarily add to DOM off-screen for accurate rendering
+                  clonedElement.style.position = 'absolute';
+                  clonedElement.style.left = '-9999px';
+                  clonedElement.style.top = '-9999px';
+                  document.body.appendChild(clonedElement);
+
+                  // Wait for content to render
+                  await new Promise((resolve) => setTimeout(resolve, 200));
+
+                  const canvas = await html2canvas(clonedElement as HTMLElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    allowTaint: true,
+                    imageTimeout: 0
+                  });
+
+                  // Remove cloned element
+                  document.body.removeChild(clonedElement);
+
                   // Calculate PDF dimensions based on canvas aspect ratio
                   const imgData = canvas.toDataURL('image/png');
                   const canvasWidth = canvas.width;
