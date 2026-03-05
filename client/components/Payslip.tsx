@@ -66,13 +66,15 @@ export function Payslip({ data }: { data: PayslipData }) {
     verticalAlign: 'middle' as const,
     textAlign: 'center' as const,
     display: 'table-cell',
-    height: '40px',
-    padding: '8px 6px'
+    height: '45px',
+    padding: '0px',
+    lineHeight: '45px'
   };
 
   const headerCenteringStyle = {
     ...cellCenteringStyle,
-    height: '44px'
+    height: '48px',
+    lineHeight: '48px'
   };
 
   return (
