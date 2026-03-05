@@ -66,15 +66,18 @@ export function Payslip({ data }: { data: PayslipData }) {
     verticalAlign: 'middle' as const,
     textAlign: 'center' as const,
     display: 'table-cell',
-    height: '45px',
-    padding: '12px 6px',
+    height: '40px',
+    padding: '8px 6px',
     lineHeight: '1.2',
+    fontSize: '18px',
+    fontWeight: '500',
   };
 
   const headerCenteringStyle = {
     ...cellCenteringStyle,
-    height: '48px',
-    padding: '14px 6px',
+    height: '40px',
+    padding: '8px 6px',
+    fontWeight: 'bold' as const,
   };
 
   return (
@@ -91,7 +94,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Employee Details Section */}
       <div className="p-3">
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <tbody>
             <tr className="hover:bg-gray-50">
               <td className="border border-gray-700 text-black font-bold text-center" style={cellCenteringStyle}>Name:</td>
@@ -127,9 +130,9 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Leave Details Table */}
-      <div className="p-3">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '15px', marginBottom: '15px', fontSize: '18px'}}>Leave Details</h3>
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+      <div className="p-3" style={{paddingTop: '0', paddingBottom: '0'}}>
+        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '25px'}}>Leave Details</h3>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Leave Type</th>
@@ -169,9 +172,9 @@ export function Payslip({ data }: { data: PayslipData }) {
 
 
       {/* Salary Details Table */}
-      <div className="p-3">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '15px', marginBottom: '15px', fontSize: '18px'}}>Salary Details</h3>
-        <table className="w-full border-collapse mx-auto" style={{fontSize: '14px'}}>
+      <div className="p-3" style={{paddingTop: '0', paddingBottom: '0'}}>
+        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '25px'}}>Salary Details</h3>
+        <table className="w-full border-collapse mx-auto" style={{fontSize: '18px', fontWeight: '500'}}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Earning</th>
@@ -216,7 +219,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Net Salary Credited and Amount in Words */}
       <div className="p-3">
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <tbody>
             <tr>
               <td className="border border-gray-700 text-black font-bold" style={cellCenteringStyle}>Net Salary Credited-</td>

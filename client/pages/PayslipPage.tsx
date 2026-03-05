@@ -200,32 +200,32 @@ export default function PayslipPage() {
 
   if (!payslipData) {
     return (
-      <>
+      <div className="min-h-screen bg-white">
         <AppNav />
-        <div className="min-h-screen bg-gradient-to-br from-blue-deep-900 via-blue-deep-800 to-slate-900 py-8">
+        <div className="bg-white py-8">
           <div className="w-full max-w-5xl mx-auto px-4">
             <div className="flex items-center gap-3 mb-8">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate(-1)}
-                className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+                className="text-slate-600 hover:text-black hover:bg-slate-100"
                 title="Go back"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white">
+              <h1 className="text-3xl sm:text-4xl font-bold text-black">
                 No Salary Data
               </h1>
             </div>
-            <div className="bg-white rounded-lg shadow-2xl overflow-hidden p-8">
+            <div className="bg-white rounded-lg p-8">
               <p className="text-center text-gray-700 text-lg">
                 Please select a salary record from the Employee Details page to view the payslip.
               </p>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -235,35 +235,35 @@ export default function PayslipPage() {
   });
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <AppNav />
-      <div className="min-h-screen bg-gradient-to-br from-blue-deep-900 via-blue-deep-800 to-slate-900 py-8">
+      <div className="bg-white py-8">
         <div className="w-full max-w-5xl mx-auto px-4">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-8 no-print">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate(-1)}
-              className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+              className="text-slate-600 hover:text-black hover:bg-slate-100"
               title="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">
+            <h1 className="text-3xl sm:text-4xl font-bold text-black">
               Pay Check - {monthName}
             </h1>
           </div>
 
           {/* Payslip Container */}
-          <div className="rounded-lg shadow-2xl overflow-hidden">
+          <div className="bg-white">
             <div id="payslip-container" className="bg-white" style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
               <Payslip data={payslipData} />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-center mt-8 mb-8" style={{padding: '20px'}}>
+          <div className="flex gap-3 justify-center mt-8 mb-8 no-print" style={{padding: '20px'}}>
             <Button
               onClick={async () => {
                 try {
@@ -457,6 +457,6 @@ export default function PayslipPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
