@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 interface SalaryRecord {
   id: string;
@@ -262,7 +263,7 @@ export default function PayslipPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-center mt-8">
+          <div className="flex gap-3 justify-center mt-8 mb-8" style={{padding: '20px'}}>
             <Button
               onClick={async () => {
                 try {
@@ -335,9 +336,10 @@ export default function PayslipPage() {
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
+                  toast.success('Image Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating image:', error);
-                  alert('Failed to generate image');
+                  toast.error('Failed to generate image');
                 }
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -435,31 +437,52 @@ export default function PayslipPage() {
                     year: 'numeric'
                   });
 
-                  // Extract last 4 digits of UAN for password
-                  const uanNumber = payslipData.uanNo || '';
-                  const pdfPassword = uanNumber.slice(-4);
+                  // Get PDF as blob and convert to base64
+                  const pdfBlob = pdf.output('blob');
+                  const reader = new FileReader();
+                  let pdfBase64 = '';
 
-                  // Add password protection if password exists
-                  if (pdfPassword && pdfPassword.length === 4) {
-                    pdf.setProperties({
-                      userPassword: pdfPassword,
-                      ownerPassword: pdfPassword,
-                      permissions: {
-                        printing: 'highResolution',
-                        modifying: false,
-                        copying: false,
-                        annotating: false,
-                        fillingForms: false,
-                        contentAccessibility: false,
-                        documentAssembly: false
-                      }
-                    });
+                  await new Promise((resolve) => {
+                    reader.onloadend = () => {
+                      const result = reader.result as string;
+                      pdfBase64 = result.split(',')[1];
+                      resolve(null);
+                    };
+                    reader.readAsDataURL(pdfBlob);
+                  });
+
+                  // Send to server for encryption
+                  const response = await fetch('/api/encrypt-pdf', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      pdfBase64: pdfBase64,
+                      password: '123',
+                      fileName: `Payslip_${monthName}`
+                    })
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Failed to encrypt PDF');
                   }
 
-                  pdf.save(`Payslip_${monthName}.pdf`);
+                  // Download the encrypted PDF
+                  const blob = await response.blob();
+                  const downloadUrl = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = downloadUrl;
+                  link.download = `Payslip_${monthName}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(downloadUrl);
+
+                  toast.success('PDF Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
-                  alert('Failed to generate PDF');
+                  toast.error('Failed to generate PDF');
                 }
               }}
               className="bg-green-600 hover:bg-green-700 text-white"
