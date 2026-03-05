@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 interface SalaryRecord {
   id: string;
@@ -335,9 +336,10 @@ export default function PayslipPage() {
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
+                  toast.success('Image Downloaded Successfully');
                 } catch (error) {
                   console.error('Error generating image:', error);
-                  alert('Failed to generate image');
+                  toast.error('Failed to generate image');
                 }
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -454,9 +456,10 @@ export default function PayslipPage() {
                   });
 
                   pdf.save(`Payslip_${monthName}.pdf`);
+                  toast.success('PDF Downloaded! Password: 123');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
-                  alert('Failed to generate PDF');
+                  toast.error('Failed to generate PDF');
                 }
               }}
               className="bg-green-600 hover:bg-green-700 text-white"
