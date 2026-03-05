@@ -277,6 +277,7 @@ export default function PayslipPage() {
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
                   clonedElement.style.padding = '0';
+                  clonedElement.style.minHeight = '100vh';
 
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
