@@ -81,7 +81,7 @@ export function Payslip({ data }: { data: PayslipData }) {
     <div className="w-full p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", lineHeight: '1.3', fontSize: '15px', backgroundColor: '#ffffff', minHeight: '100vh'}}>
       <div className="w-full p-0" style={{fontFamily: "Arial, Helvetica, sans-serif", fontSize: '15px', backgroundColor: '#ffffff', lineHeight: '1.3'}}>
       {/* Header Section */}
-      <div className="border-b border-gray-700">
+      <div>
         <div className="p-3 text-center">
           <h1 style={{fontSize: '28px'}} className="font-bold text-black mb-1">{data.companyName}</h1>
           <p style={{fontSize: '13px'}} className="text-gray-700 mb-2">{data.companyAddress}</p>
@@ -90,7 +90,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Employee Details Section */}
-      <div className="p-3 border-b border-gray-700">
+      <div className="p-3">
         <table className="w-full border-collapse" style={{fontSize: '14px'}}>
           <tbody>
             <tr className="hover:bg-gray-50">
@@ -127,8 +127,8 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Leave Details Table */}
-      <div className="p-3 border-b border-gray-700">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '30px', marginBottom: '30px', fontSize: '15px'}}>Leave Details</h3>
+      <div className="p-3">
+        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '15px'}}>Leave Details</h3>
         <table className="w-full border-collapse" style={{fontSize: '14px'}}>
           <thead>
             <tr className="bg-gray-200">
@@ -169,8 +169,8 @@ export function Payslip({ data }: { data: PayslipData }) {
 
 
       {/* Salary Details Table */}
-      <div className="p-3 border-b border-gray-700">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '30px', marginBottom: '30px', fontSize: '15px'}}>Salary Details</h3>
+      <div className="p-3">
+        <h3 className="font-extrabold text-black text-center" style={{marginTop: '5px', marginBottom: '5px', fontSize: '15px'}}>Salary Details</h3>
         <table className="w-full border-collapse mx-auto" style={{fontSize: '14px'}}>
           <thead>
             <tr className="bg-gray-200">
@@ -215,7 +215,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Net Salary Credited and Amount in Words */}
-      <div className="p-3 border-b border-gray-700">
+      <div className="p-3">
         <table className="w-full border-collapse" style={{fontSize: '14px'}}>
           <tbody>
             <tr>
@@ -231,7 +231,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
       {/* Footer */}
-      <div className="p-2 text-center border-t border-gray-700">
+      <div className="p-2 text-center">
         <img src="https://cdn.builder.io/api/v1/image/assets%2F8012cbea6d4a4d528be55b21ebc4390f%2F5e57f6b47c4249638a8470815ec3ca60?format=webp&width=800&height=1200" alt="Infoseum Logo" className="h-12 mx-auto mb-2" />
         <p style={{fontSize: '13px'}} className="text-gray-600">This is a system generated slip</p>
       </div>
