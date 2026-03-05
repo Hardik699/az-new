@@ -276,7 +276,7 @@ export default function PayslipPage() {
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
-                  clonedElement.style.padding = '80px';
+                  clonedElement.style.padding = '30px';
                   clonedElement.style.width = element.offsetWidth + 'px';
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
@@ -310,6 +310,7 @@ export default function PayslipPage() {
                   // Create PDF with dimensions that match the preview
                   const pdfWidthMm = 210; // A4 width
                   const pdfHeightMm = (canvasHeight / canvasWidth) * pdfWidthMm;
+                  const marginMm = 15; // Additional PDF margin
 
                   const pdf = new jsPDF({
                     orientation: 'p',
@@ -317,8 +318,14 @@ export default function PayslipPage() {
                     format: [pdfWidthMm, pdfHeightMm]
                   });
 
-                  // Add image to fit exactly on the page
-                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidthMm, pdfHeightMm);
+                  // Set white background
+                  pdf.setFillColor(255, 255, 255);
+                  pdf.rect(0, 0, pdfWidthMm, pdfHeightMm, 'F');
+
+                  // Add image with margins
+                  const imgWidthMm = pdfWidthMm - (marginMm * 2);
+                  const imgHeightMm = pdfHeightMm - (marginMm * 2);
+                  pdf.addImage(imgData, 'PNG', marginMm, marginMm, imgWidthMm, imgHeightMm);
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
