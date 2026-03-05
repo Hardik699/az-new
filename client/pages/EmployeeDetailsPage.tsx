@@ -117,7 +117,7 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
   const joiningDate = new Date(employee.joiningDate).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   element.innerHTML = `
-    <div style="width: 900px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #000;">
+    <div style="width: 900px; padding: 40px; font-family: Arial, sans-serif; background: white; color: #000; min-height: 100vh;">
 
       <!-- Company Header -->
       <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">

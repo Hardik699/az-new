@@ -276,7 +276,10 @@ export default function PayslipPage() {
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
-                  clonedElement.style.padding = '0';
+                  clonedElement.style.padding = '30px';
+                  clonedElement.style.width = element.offsetWidth + 'px';
+                  clonedElement.style.minHeight = 'auto';
+                  clonedElement.style.boxSizing = 'border-box';
 
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
@@ -284,40 +287,106 @@ export default function PayslipPage() {
                   clonedElement.style.top = '-9999px';
                   document.body.appendChild(clonedElement);
 
+                  // Wait for content to render
+                  await new Promise((resolve) => setTimeout(resolve, 200));
+
                   const canvas = await html2canvas(clonedElement as HTMLElement, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    windowWidth: 800,
-                    windowHeight: 1200,
                     imageTimeout: 0
                   });
 
                   // Remove cloned element
                   document.body.removeChild(clonedElement);
 
-                  const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: 'a4'
+                  // Get image data and download
+                  const imgData = canvas.toDataURL('image/png');
+                  const link = document.createElement('a');
+                  const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
+                    month: 'long',
+                    year: 'numeric'
+                  });
+                  link.href = imgData;
+                  link.download = `Payslip_${monthName}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } catch (error) {
+                  console.error('Error generating image:', error);
+                  alert('Failed to generate image');
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Download Image
+            </Button>
+
+            <Button
+              onClick={async () => {
+                try {
+                  const element = document.getElementById('payslip-container');
+                  if (!element) {
+                    alert('Payslip not found');
+                    return;
+                  }
+
+                  // Create a clone with white background to ensure clean capture
+                  const clonedElement = element.cloneNode(true) as HTMLElement;
+                  clonedElement.style.backgroundColor = '#ffffff';
+                  clonedElement.style.margin = '0';
+                  clonedElement.style.padding = '30px';
+                  clonedElement.style.width = element.offsetWidth + 'px';
+                  clonedElement.style.minHeight = 'auto';
+                  clonedElement.style.boxSizing = 'border-box';
+
+                  // Temporarily add to DOM off-screen for accurate rendering
+                  clonedElement.style.position = 'absolute';
+                  clonedElement.style.left = '-9999px';
+                  clonedElement.style.top = '-9999px';
+                  document.body.appendChild(clonedElement);
+
+                  // Wait for content to render
+                  await new Promise((resolve) => setTimeout(resolve, 200));
+
+                  const canvas = await html2canvas(clonedElement as HTMLElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    allowTaint: true,
+                    imageTimeout: 0
                   });
 
+                  // Remove cloned element
+                  document.body.removeChild(clonedElement);
+
+                  // Calculate PDF dimensions based on canvas aspect ratio
                   const imgData = canvas.toDataURL('image/png');
-                  const pdfWidth = pdf.internal.pageSize.getWidth();
-                  const pdfHeight = pdf.internal.pageSize.getHeight();
                   const canvasWidth = canvas.width;
                   const canvasHeight = canvas.height;
 
-                  // Calculate ratio to fit on single page
-                  const ratio = pdfWidth / canvasWidth;
-                  const scaledHeight = canvasHeight * ratio;
+                  // Create PDF with dimensions that match the preview
+                  const pdfWidthMm = 210; // A4 width
+                  const pdfHeightMm = (canvasHeight / canvasWidth) * pdfWidthMm;
+                  const marginMm = 15; // Additional PDF margin
 
-                  // Add image to fit on single page with white background
+                  const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: [pdfWidthMm, pdfHeightMm]
+                  });
+
+                  // Set white background
                   pdf.setFillColor(255, 255, 255);
-                  pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
-                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+                  pdf.rect(0, 0, pdfWidthMm, pdfHeightMm, 'F');
+
+                  // Add image with margins
+                  const imgWidthMm = pdfWidthMm - (marginMm * 2);
+                  const imgHeightMm = pdfHeightMm - (marginMm * 2);
+                  pdf.addImage(imgData, 'PNG', marginMm, marginMm, imgWidthMm, imgHeightMm);
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
