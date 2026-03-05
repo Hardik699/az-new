@@ -67,14 +67,14 @@ export function Payslip({ data }: { data: PayslipData }) {
     textAlign: 'center' as const,
     display: 'table-cell',
     height: '45px',
-    padding: '0px',
-    lineHeight: '45px'
+    padding: '12px 6px',
+    lineHeight: '1.2',
   };
 
   const headerCenteringStyle = {
     ...cellCenteringStyle,
     height: '48px',
-    lineHeight: '48px'
+    padding: '14px 6px',
   };
 
   return (

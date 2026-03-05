@@ -281,6 +281,13 @@ export default function PayslipPage() {
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
 
+                  // Ensure all table cells maintain proper centering
+                  const allCells = clonedElement.querySelectorAll('td, th');
+                  allCells.forEach((cell) => {
+                    (cell as HTMLElement).style.verticalAlign = 'middle';
+                    (cell as HTMLElement).style.textAlign = 'center';
+                  });
+
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
                   clonedElement.style.left = '-9999px';
@@ -341,6 +348,13 @@ export default function PayslipPage() {
                   clonedElement.style.width = element.offsetWidth + 'px';
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
+
+                  // Ensure all table cells maintain proper centering
+                  const allCells = clonedElement.querySelectorAll('td, th');
+                  allCells.forEach((cell) => {
+                    (cell as HTMLElement).style.verticalAlign = 'middle';
+                    (cell as HTMLElement).style.textAlign = 'center';
+                  });
 
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
