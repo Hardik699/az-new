@@ -277,7 +277,8 @@ export default function PayslipPage() {
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
                   clonedElement.style.padding = '0';
-                  clonedElement.style.minHeight = '100vh';
+                  clonedElement.style.width = element.offsetWidth + 'px';
+                  clonedElement.style.minHeight = 'auto';
 
                   // Temporarily add to DOM off-screen for accurate rendering
                   clonedElement.style.position = 'absolute';
@@ -285,40 +286,38 @@ export default function PayslipPage() {
                   clonedElement.style.top = '-9999px';
                   document.body.appendChild(clonedElement);
 
+                  // Wait for content to render
+                  await new Promise((resolve) => setTimeout(resolve, 200));
+
                   const canvas = await html2canvas(clonedElement as HTMLElement, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    imageTimeout: 0,
-                    width: clonedElement.offsetWidth,
-                    height: clonedElement.offsetHeight
+                    imageTimeout: 0
                   });
 
                   // Remove cloned element
                   document.body.removeChild(clonedElement);
 
-                  const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: 'a4'
-                  });
-
+                  // Calculate PDF dimensions based on canvas aspect ratio
                   const imgData = canvas.toDataURL('image/png');
-                  const pdfWidth = pdf.internal.pageSize.getWidth();
-                  const pdfHeight = pdf.internal.pageSize.getHeight();
                   const canvasWidth = canvas.width;
                   const canvasHeight = canvas.height;
 
-                  // Calculate ratio to fit on single page
-                  const ratio = pdfWidth / canvasWidth;
-                  const scaledHeight = canvasHeight * ratio;
+                  // Create PDF with dimensions that match the preview
+                  const pdfWidthMm = 210; // A4 width
+                  const pdfHeightMm = (canvasHeight / canvasWidth) * pdfWidthMm;
 
-                  // Add image to fit on single page with white background
-                  pdf.setFillColor(255, 255, 255);
-                  pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
-                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+                  const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: [pdfWidthMm, pdfHeightMm]
+                  });
+
+                  // Add image to fit exactly on the page
+                  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidthMm, pdfHeightMm);
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
