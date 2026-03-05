@@ -291,9 +291,9 @@ export default function PayslipPage() {
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    windowWidth: 800,
-                    windowHeight: 1200,
-                    imageTimeout: 0
+                    imageTimeout: 0,
+                    width: clonedElement.offsetWidth,
+                    height: clonedElement.offsetHeight
                   });
 
                   // Remove cloned element
