@@ -64,14 +64,17 @@ export function Payslip({ data }: { data: PayslipData }) {
   // Unified centering style for all table cells
   const cellCenteringStyle = {
     verticalAlign: 'middle' as const,
+    textAlign: 'center' as const,
     display: 'table-cell',
-    height: '40px',
-    padding: '8px 6px'
+    height: '45px',
+    padding: '12px 6px',
+    lineHeight: '1.2',
   };
 
   const headerCenteringStyle = {
     ...cellCenteringStyle,
-    height: '44px'
+    height: '48px',
+    padding: '14px 6px',
   };
 
   return (
@@ -217,11 +220,11 @@ export function Payslip({ data }: { data: PayslipData }) {
           <tbody>
             <tr>
               <td className="border border-gray-300 text-black font-bold" style={cellCenteringStyle}>Net Salary Credited-</td>
-              <td className="border border-gray-300 text-right text-black font-bold" style={cellCenteringStyle}>₹ {formatCurrency(data.netSalaryCredited)}</td>
+              <td className="border border-gray-300 text-black font-bold" style={cellCenteringStyle}>₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
             <tr>
               <td className="border border-gray-300 text-black font-bold" style={cellCenteringStyle}>Amount (in words) -</td>
-              <td className="border border-gray-300 text-right text-black text-xs" style={cellCenteringStyle}>{data.amountInWords}</td>
+              <td className="border border-gray-300 text-black text-xs" style={cellCenteringStyle}>{data.amountInWords}</td>
             </tr>
           </tbody>
         </table>

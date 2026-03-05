@@ -272,7 +272,23 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a clone with white background to ensure clean capture
+                  // Create a wrapper with background design and margins
+                  const wrapper = document.createElement('div');
+                  wrapper.style.position = 'absolute';
+                  wrapper.style.left = '-9999px';
+                  wrapper.style.top = '-9999px';
+                  wrapper.style.backgroundColor = '#f0f4f8';
+                  wrapper.style.padding = '80px 0';
+                  wrapper.style.width = element.offsetWidth + 'px';
+                  wrapper.style.minHeight = 'auto';
+                  wrapper.style.boxSizing = 'border-box';
+                  wrapper.style.backgroundImage = `
+                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
+                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
+                  `;
+
+                  // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
@@ -281,26 +297,31 @@ export default function PayslipPage() {
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
 
-                  // Temporarily add to DOM off-screen for accurate rendering
-                  clonedElement.style.position = 'absolute';
-                  clonedElement.style.left = '-9999px';
-                  clonedElement.style.top = '-9999px';
-                  document.body.appendChild(clonedElement);
+                  // Ensure all table cells maintain proper centering
+                  const allCells = clonedElement.querySelectorAll('td, th');
+                  allCells.forEach((cell) => {
+                    (cell as HTMLElement).style.verticalAlign = 'middle';
+                    (cell as HTMLElement).style.textAlign = 'center';
+                  });
+
+                  // Add cloned element to wrapper
+                  wrapper.appendChild(clonedElement);
+                  document.body.appendChild(wrapper);
 
                   // Wait for content to render
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
-                  const canvas = await html2canvas(clonedElement as HTMLElement, {
+                  const canvas = await html2canvas(wrapper as HTMLElement, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f0f4f8',
                     allowTaint: true,
                     imageTimeout: 0
                   });
 
-                  // Remove cloned element
-                  document.body.removeChild(clonedElement);
+                  // Remove wrapper
+                  document.body.removeChild(wrapper);
 
                   // Get image data and download
                   const imgData = canvas.toDataURL('image/png');
@@ -333,7 +354,23 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a clone with white background to ensure clean capture
+                  // Create a wrapper with background design and margins
+                  const wrapper = document.createElement('div');
+                  wrapper.style.position = 'absolute';
+                  wrapper.style.left = '-9999px';
+                  wrapper.style.top = '-9999px';
+                  wrapper.style.backgroundColor = '#f0f4f8';
+                  wrapper.style.padding = '80px 0';
+                  wrapper.style.width = element.offsetWidth + 'px';
+                  wrapper.style.minHeight = 'auto';
+                  wrapper.style.boxSizing = 'border-box';
+                  wrapper.style.backgroundImage = `
+                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
+                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
+                  `;
+
+                  // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
@@ -342,26 +379,31 @@ export default function PayslipPage() {
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
 
-                  // Temporarily add to DOM off-screen for accurate rendering
-                  clonedElement.style.position = 'absolute';
-                  clonedElement.style.left = '-9999px';
-                  clonedElement.style.top = '-9999px';
-                  document.body.appendChild(clonedElement);
+                  // Ensure all table cells maintain proper centering
+                  const allCells = clonedElement.querySelectorAll('td, th');
+                  allCells.forEach((cell) => {
+                    (cell as HTMLElement).style.verticalAlign = 'middle';
+                    (cell as HTMLElement).style.textAlign = 'center';
+                  });
+
+                  // Add cloned element to wrapper
+                  wrapper.appendChild(clonedElement);
+                  document.body.appendChild(wrapper);
 
                   // Wait for content to render
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
-                  const canvas = await html2canvas(clonedElement as HTMLElement, {
+                  const canvas = await html2canvas(wrapper as HTMLElement, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f0f4f8',
                     allowTaint: true,
                     imageTimeout: 0
                   });
 
-                  // Remove cloned element
-                  document.body.removeChild(clonedElement);
+                  // Remove wrapper
+                  document.body.removeChild(wrapper);
 
                   // Calculate PDF dimensions based on canvas aspect ratio
                   const imgData = canvas.toDataURL('image/png');
@@ -392,6 +434,28 @@ export default function PayslipPage() {
                     month: 'long',
                     year: 'numeric'
                   });
+
+                  // Extract last 4 digits of UAN for password
+                  const uanNumber = payslipData.uanNo || '';
+                  const pdfPassword = uanNumber.slice(-4);
+
+                  // Add password protection if password exists
+                  if (pdfPassword && pdfPassword.length === 4) {
+                    pdf.setProperties({
+                      userPassword: pdfPassword,
+                      ownerPassword: pdfPassword,
+                      permissions: {
+                        printing: 'highResolution',
+                        modifying: false,
+                        copying: false,
+                        annotating: false,
+                        fillingForms: false,
+                        contentAccessibility: false,
+                        documentAssembly: false
+                      }
+                    });
+                  }
+
                   pdf.save(`Payslip_${monthName}.pdf`);
                 } catch (error) {
                   console.error('Error generating PDF:', error);
