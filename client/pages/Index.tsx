@@ -135,12 +135,6 @@ export default function Index() {
                       Users Dashboard <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   )}
-                  <Button
-                    onClick={() => navigate("/dashboard")}
-                    className="bg-slate-700 hover:bg-slate-600 text-white"
-                  >
-                    Dashboard <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
                 </div>
               </div>
             </div>

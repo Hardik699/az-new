@@ -407,8 +407,13 @@ export default function PayslipPage() {
                   });
 
                   // Send to server for encryption
-                  const uanNo = employee?.uanNumber || "1234"; // Defaulting to 1234 if no UAN provided
-                  const uanPassword = uanNo.toString().slice(-4);
+                  let uanNo = employee?.uanNumber || payslipData.uanNo || "1234";
+                  // Ensure password is exactly 4 digits (last 4 of UAN)
+                  let uanPassword = String(uanNo).replace(/\D/g, '').slice(-4);
+                  // If password is less than 4 digits, pad with zeros
+                  if (uanPassword.length < 4) {
+                    uanPassword = uanPassword.padStart(4, '0');
+                  }
 
                   const response = await fetch('/api/encrypt-pdf', {
                     method: 'POST',
