@@ -41,12 +41,15 @@ export interface ISalaryRecord extends Document {
   plTotal?: number;
   plAvailed?: number;
   plSubsisting?: number;
+  plLwp?: number;
   clTotal?: number;
   clAvailed?: number;
   clSubsisting?: number;
+  clLwp?: number;
   slTotal?: number;
   slAvailed?: number;
   slSubsisting?: number;
+  slLwp?: number;
   lwp?: number;
   totalLeavesTaken?: number;
   totalLeaveWithoutPay?: number;
@@ -100,12 +103,15 @@ const salaryRecordSchema = new Schema<ISalaryRecord>(
     plTotal: Number,
     plAvailed: Number,
     plSubsisting: Number,
+    plLwp: Number,
     clTotal: Number,
     clAvailed: Number,
     clSubsisting: Number,
+    clLwp: Number,
     slTotal: Number,
     slAvailed: Number,
     slSubsisting: Number,
+    slLwp: Number,
     lwp: Number,
     totalLeavesTaken: Number,
     totalLeaveWithoutPay: Number,
