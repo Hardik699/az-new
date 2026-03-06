@@ -172,8 +172,8 @@ export default function PayslipPage() {
           { name: "Bonus", actualGross: bonus, earnedGross: bonusEarned },
           { name: "Incentive", actualGross: incentive, earnedGross: incentiveEarned },
           { name: "Adjustment", actualGross: adjustment, earnedGross: adjustmentEarned },
-          ...(retentionBonus > 0 ? [{ name: "Retention Bonus", actualGross: retentionBonus, earnedGross: retentionBonusEarned }] : []),
-          ...(advanceAny > 0 ? [{ name: "Advance", actualGross: advanceAny, earnedGross: advanceAnyEarned }] : []),
+          { name: "Retention Bonus", actualGross: retentionBonus, earnedGross: retentionBonusEarned },
+          { name: "Advance Any", actualGross: advanceAny, earnedGross: advanceAnyEarned },
         ],
         deductions: [
           { name: "PF", amount: pf },

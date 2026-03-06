@@ -248,19 +248,19 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Bonus</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>TDS</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Retention Bonus</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Retention</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Advance Any</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAny || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Advance Any</strong></td>
           </tr>
@@ -2059,8 +2059,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.plTotal) || 0) - (parseFloat(salaryForm.plAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.plSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
@@ -2112,8 +2124,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.clTotal) || 0) - (parseFloat(salaryForm.clAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.clSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
@@ -2165,8 +2189,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.slTotal) || 0) - (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.slSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
