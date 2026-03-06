@@ -248,19 +248,19 @@ const generatePayslipPDF = async (employee: Employee, record: any) => {
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Bonus</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.bonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>TDS</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Retention Bonus</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonus || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.retentionBonusEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.tds || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Retention</strong></td>
           </tr>
           <tr>
             <td style="border: 1px solid #000; padding: 8px;">Advance Any</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right;">-</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAny || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;">${(record.advanceAnyEarned || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right;"><strong>Advance Any</strong></td>
           </tr>
