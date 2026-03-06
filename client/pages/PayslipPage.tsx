@@ -97,6 +97,20 @@ function numberToWords(num: number): string {
   return convert(num) + " Rupees only";
 }
 
+function cleanElementForExport(element: HTMLElement): void {
+  // Set white background and black text on wrapper
+  element.style.backgroundColor = '#ffffff !important';
+  element.style.color = '#000000 !important';
+  
+  // Remove dark theme styles from all children
+  const allElements = element.querySelectorAll('*');
+  allElements.forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.backgroundColor = '#ffffff';
+    htmlEl.style.color = '#000000';
+  });
+}
+
 export default function PayslipPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -273,7 +287,7 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with white background and margins
+                  // Create a wrapper with white background
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
@@ -286,7 +300,10 @@ export default function PayslipPage() {
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
-                  clonedElement.style.backgroundColor = '#ffffff';
+                  
+                  // Clean the cloned element to remove dark theme styles
+                  cleanElementForExport(clonedElement);
+                  
                   clonedElement.style.margin = '0';
                   clonedElement.style.padding = '30px';
                   clonedElement.style.width = element.offsetWidth + 'px';
@@ -351,7 +368,7 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with white background and margins
+                  // Create a wrapper with white background
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
@@ -364,7 +381,10 @@ export default function PayslipPage() {
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
-                  clonedElement.style.backgroundColor = '#ffffff';
+                  
+                  // Clean the cloned element to remove dark theme styles
+                  cleanElementForExport(clonedElement);
+                  
                   clonedElement.style.margin = '0';
                   clonedElement.style.padding = '30px';
                   clonedElement.style.width = element.offsetWidth + 'px';
