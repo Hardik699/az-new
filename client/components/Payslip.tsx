@@ -191,11 +191,11 @@ export function Payslip({ data }: { data: PayslipData }) {
                 <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left'}}>{earning.name}</td>
                 <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{formatCurrency(earning.actualGross || 0)}</td>
                 <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{formatCurrency(earning.earnedGross || 0)}</td>
-                <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left'}}>
+                <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>
                   {data.deductions[idx]?.name || ''}
                 </td>
                 <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>
-                  {data.deductions[idx]?.amount ? formatCurrency(data.deductions[idx].amount) : ''}
+                  {data.deductions[idx]?.amount ? formatCurrency(data.deductions[idx].amount) : formatCurrency(0)}
                 </td>
               </tr>
             ))}
