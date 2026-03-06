@@ -38,8 +38,8 @@ export function createServer() {
 
   // Middleware
   app.use(cors());
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+  app.use(express.json({ limit: "100mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "100mb" }));
   app.use(attachIdentity);
 
   // Static for uploaded files
