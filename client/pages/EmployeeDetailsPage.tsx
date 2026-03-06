@@ -490,10 +490,16 @@ export default function EmployeeDetailsPage() {
     // Leave Details
     plTotal: "",
     plAvailed: "",
+    plSubsisting: "",
+    plLwp: "",
     clTotal: "",
     clAvailed: "",
+    clSubsisting: "",
+    clLwp: "",
     slTotal: "",
     slAvailed: "",
+    slSubsisting: "",
+    slLwp: "",
     totalLeavesTaken: "",
     totalLeaveWithoutPay: "",
     totalWorkingDaysPayable: "",
@@ -963,10 +969,16 @@ export default function EmployeeDetailsPage() {
       // Leave Details
       plTotal: parseFloat(salaryForm.plTotal) || 0,
       plAvailed: parseFloat(salaryForm.plAvailed) || 0,
+      plSubsisting: parseFloat(salaryForm.plSubsisting) || 0,
+      plLwp: parseFloat(salaryForm.plLwp) || 0,
       clTotal: parseFloat(salaryForm.clTotal) || 0,
       clAvailed: parseFloat(salaryForm.clAvailed) || 0,
+      clSubsisting: parseFloat(salaryForm.clSubsisting) || 0,
+      clLwp: parseFloat(salaryForm.clLwp) || 0,
       slTotal: parseFloat(salaryForm.slTotal) || 0,
       slAvailed: parseFloat(salaryForm.slAvailed) || 0,
+      slSubsisting: parseFloat(salaryForm.slSubsisting) || 0,
+      slLwp: parseFloat(salaryForm.slLwp) || 0,
     };
 
     try {
@@ -1197,10 +1209,16 @@ export default function EmployeeDetailsPage() {
       // Leave Details
       plTotal: "",
       plAvailed: "",
+      plSubsisting: "",
+      plLwp: "",
       clTotal: "",
       clAvailed: "",
+      clSubsisting: "",
+      clLwp: "",
       slTotal: "",
       slAvailed: "",
+      slSubsisting: "",
+      slLwp: "",
       totalLeavesTaken: "",
       totalLeaveWithoutPay: "",
       totalWorkingDaysPayable: "",
@@ -1256,10 +1274,16 @@ export default function EmployeeDetailsPage() {
       // Leave Details
       plTotal: (record as any)?.plTotal?.toString() || "",
       plAvailed: (record as any)?.plAvailed?.toString() || "",
+      plSubsisting: (record as any)?.plSubsisting?.toString() || "",
+      plLwp: (record as any)?.plLwp?.toString() || "",
       clTotal: (record as any)?.clTotal?.toString() || "",
       clAvailed: (record as any)?.clAvailed?.toString() || "",
+      clSubsisting: (record as any)?.clSubsisting?.toString() || "",
+      clLwp: (record as any)?.clLwp?.toString() || "",
       slTotal: (record as any)?.slTotal?.toString() || "",
       slAvailed: (record as any)?.slAvailed?.toString() || "",
+      slSubsisting: (record as any)?.slSubsisting?.toString() || "",
+      slLwp: (record as any)?.slLwp?.toString() || "",
       totalLeavesTaken: (record as any)?.totalLeavesTaken?.toString() || "",
       totalLeaveWithoutPay: (record as any)?.totalLeaveWithoutPay?.toString() || "",
       totalWorkingDaysPayable: (record as any)?.totalWorkingDaysPayable?.toString() || "",
@@ -2008,6 +2032,8 @@ export default function EmployeeDetailsPage() {
                               <th className="px-3 py-2 text-left text-slate-300 font-medium">Leave Type</th>
                               <th className="px-3 py-2 text-center text-slate-300 font-medium">Total In Account</th>
                               <th className="px-3 py-2 text-center text-slate-300 font-medium">Leave Availed</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">Subsisting Leave</th>
+                              <th className="px-3 py-2 text-center text-slate-300 font-medium">LWP</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-700">
@@ -2039,6 +2065,36 @@ export default function EmployeeDetailsPage() {
                                     const value = e.target.value;
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, plAvailed: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.plSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.plLwp}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plLwp: numValue < 0 ? "0" : value })
                                   }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
@@ -2079,6 +2135,36 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.clSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.clLwp}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clLwp: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
                             </tr>
 
                             {/* SL Row */}
@@ -2109,6 +2195,36 @@ export default function EmployeeDetailsPage() {
                                     const value = e.target.value;
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, slAvailed: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.slSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.slLwp}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slLwp: numValue < 0 ? "0" : value })
                                   }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
