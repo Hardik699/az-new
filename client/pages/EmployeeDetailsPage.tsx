@@ -2059,8 +2059,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.plTotal) || 0) - (parseFloat(salaryForm.plAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.plSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
@@ -2112,8 +2124,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.clTotal) || 0) - (parseFloat(salaryForm.clAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.clSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
@@ -2165,8 +2189,20 @@ export default function EmployeeDetailsPage() {
                                   placeholder="0.0"
                                 />
                               </td>
-                              <td className="px-3 py-2 text-center text-slate-400">
-                                {((parseFloat(salaryForm.slTotal) || 0) - (parseFloat(salaryForm.slAvailed) || 0)).toFixed(1)}
+                              <td className="px-3 py-2">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={salaryForm.slSubsisting}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slSubsisting: numValue < 0 ? "0" : value })
+                                  }}
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
+                                  placeholder="0.0"
+                                />
                               </td>
                               <td className="px-3 py-2">
                                 <Input
