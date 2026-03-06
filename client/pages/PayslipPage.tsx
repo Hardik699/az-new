@@ -3,7 +3,7 @@ import AppNav from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -200,32 +200,32 @@ export default function PayslipPage() {
 
   if (!payslipData) {
     return (
-      <>
+      <div className="min-h-screen bg-white">
         <AppNav />
-        <div className="min-h-screen bg-gradient-to-br from-blue-deep-900 via-blue-deep-800 to-slate-900 py-8">
+        <div className="bg-white py-8">
           <div className="w-full max-w-5xl mx-auto px-4">
             <div className="flex items-center gap-3 mb-8">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate(-1)}
-                className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+                className="text-slate-600 hover:text-black hover:bg-slate-100"
                 title="Go back"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white">
+              <h1 className="text-3xl sm:text-4xl font-bold text-black">
                 No Salary Data
               </h1>
             </div>
-            <div className="bg-white rounded-lg shadow-2xl overflow-hidden p-8">
+            <div className="bg-white rounded-lg p-8">
               <p className="text-center text-gray-700 text-lg">
                 Please select a salary record from the Employee Details page to view the payslip.
               </p>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -235,35 +235,35 @@ export default function PayslipPage() {
   });
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <AppNav />
-      <div className="min-h-screen bg-gradient-to-br from-blue-deep-900 via-blue-deep-800 to-slate-900 py-8">
+      <div className="bg-white py-8">
         <div className="w-full max-w-5xl mx-auto px-4">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-8 no-print">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate(-1)}
-              className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+              className="text-slate-600 hover:text-black hover:bg-slate-100"
               title="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">
+            <h1 className="text-3xl sm:text-4xl font-bold text-black">
               Pay Check - {monthName}
             </h1>
           </div>
 
           {/* Payslip Container */}
-          <div className="rounded-lg shadow-2xl overflow-hidden">
+          <div className="bg-white">
             <div id="payslip-container" className="bg-white" style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
               <Payslip data={payslipData} />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-center mt-8 mb-8" style={{padding: '20px'}}>
+          <div className="flex gap-3 justify-center mt-8 mb-8 no-print" style={{padding: '20px'}}>
             <Button
               onClick={async () => {
                 try {
@@ -273,21 +273,16 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with background design and margins
+                  // Create a wrapper with white background and margins
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
-                  wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '80px 0';
+                  wrapper.style.backgroundColor = '#ffffff';
+                  wrapper.style.padding = '40px 0';
                   wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
-                  wrapper.style.backgroundImage = `
-                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
-                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
-                  `;
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
@@ -313,10 +308,10 @@ export default function PayslipPage() {
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
                   const canvas = await html2canvas(wrapper as HTMLElement, {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#f0f4f8',
+                    backgroundColor: '#ffffff',
                     allowTaint: true,
                     imageTimeout: 0
                   });
@@ -356,21 +351,16 @@ export default function PayslipPage() {
                     return;
                   }
 
-                  // Create a wrapper with background design and margins
+                  // Create a wrapper with white background and margins
                   const wrapper = document.createElement('div');
                   wrapper.style.position = 'absolute';
                   wrapper.style.left = '-9999px';
                   wrapper.style.top = '-9999px';
-                  wrapper.style.backgroundColor = '#f0f4f8';
-                  wrapper.style.padding = '80px 0';
+                  wrapper.style.backgroundColor = '#ffffff';
+                  wrapper.style.padding = '40px 0';
                   wrapper.style.width = element.offsetWidth + 'px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
-                  wrapper.style.backgroundImage = `
-                    linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%),
-                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
-                  `;
 
                   // Create a clone with white background
                   const clonedElement = element.cloneNode(true) as HTMLElement;
@@ -396,10 +386,10 @@ export default function PayslipPage() {
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
                   const canvas = await html2canvas(wrapper as HTMLElement, {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#f0f4f8',
+                    backgroundColor: '#ffffff',
                     allowTaint: true,
                     imageTimeout: 0
                   });
@@ -407,59 +397,27 @@ export default function PayslipPage() {
                   // Remove wrapper
                   document.body.removeChild(wrapper);
 
-                  // Calculate PDF dimensions based on canvas aspect ratio
+                  // Get image data and send to server for PDF generation with password
                   const imgData = canvas.toDataURL('image/png');
-                  const canvasWidth = canvas.width;
-                  const canvasHeight = canvas.height;
-
-                  // Create PDF with dimensions that match the preview
-                  const pdfWidthMm = 210; // A4 width
-                  const pdfHeightMm = (canvasHeight / canvasWidth) * pdfWidthMm;
-                  const marginMm = 15; // Additional PDF margin
-
-                  const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: [pdfWidthMm, pdfHeightMm]
-                  });
-
-                  // Set white background
-                  pdf.setFillColor(255, 255, 255);
-                  pdf.rect(0, 0, pdfWidthMm, pdfHeightMm, 'F');
-
-                  // Add image with margins
-                  const imgWidthMm = pdfWidthMm - (marginMm * 2);
-                  const imgHeightMm = pdfHeightMm - (marginMm * 2);
-                  pdf.addImage(imgData, 'PNG', marginMm, marginMm, imgWidthMm, imgHeightMm);
+                  const imgBase64 = imgData.split(',')[1];
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric'
                   });
 
-                  // Get PDF as blob and convert to base64
-                  const pdfBlob = pdf.output('blob');
-                  const reader = new FileReader();
-                  let pdfBase64 = '';
-
-                  await new Promise((resolve) => {
-                    reader.onloadend = () => {
-                      const result = reader.result as string;
-                      pdfBase64 = result.split(',')[1];
-                      resolve(null);
-                    };
-                    reader.readAsDataURL(pdfBlob);
-                  });
-
                   // Send to server for encryption
+                  const uanNo = employee?.uanNumber || "1234"; // Defaulting to 1234 if no UAN provided
+                  const uanPassword = uanNo.toString().slice(-4);
+
                   const response = await fetch('/api/encrypt-pdf', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                      pdfBase64: pdfBase64,
-                      password: '123',
+                      image: imgBase64,
+                      password: uanPassword,
                       fileName: `Payslip_${monthName}`
                     })
                   });
@@ -492,6 +450,6 @@ export default function PayslipPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

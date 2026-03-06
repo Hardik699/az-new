@@ -1,44 +1,36 @@
 import { RequestHandler } from "express";
-import { PDFDocument } from "pdf-lib";
+import PDFDocument from "pdfkit";
 
 interface EncryptPDFRequest {
-  pdfBase64: string;
+  image?: string;
+  pdfBase64?: string;
   password: string;
   fileName: string;
 }
 
 export const encryptPDF: RequestHandler = async (req, res) => {
   try {
-    const { pdfBase64, password, fileName } = req.body as EncryptPDFRequest;
+    const { image, password, fileName } = req.body as EncryptPDFRequest;
 
-    if (!pdfBase64 || !password) {
-      res.status(400).json({ error: "Missing pdfBase64 or password" });
+    if (!image || !password) {
+      res.status(400).json({ error: "Missing image or password" });
       return;
     }
 
-    // Convert base64 to buffer
-    const pdfBuffer = Buffer.from(pdfBase64, "base64");
+    // Convert base64 image to buffer
+    const imgBuffer = Buffer.from(image, "base64");
 
-    // Load the PDF
-    const pdfDoc = await PDFDocument.load(pdfBuffer);
-
-    // Encrypt the PDF with password
-    pdfDoc.encrypt({
+    // Create a new PDF document with password protection
+    const doc = new PDFDocument({
+      size: "A4",
       userPassword: password,
-      ownerPassword: password,
+      ownerPassword: password, // You can set a different owner password if needed
       permissions: {
         printing: "highResolution",
-        modifying: false,
         copying: false,
-        annotating: false,
-        fillingForms: false,
-        contentAccessibility: false,
-        documentAssembly: false,
+        modifying: false,
       },
     });
-
-    // Save encrypted PDF
-    const encryptedPdfBytes = await pdfDoc.save();
 
     // Send as file download
     res.setHeader("Content-Type", "application/pdf");
@@ -46,9 +38,25 @@ export const encryptPDF: RequestHandler = async (req, res) => {
       "Content-Disposition",
       `attachment; filename="${fileName}.pdf"`
     );
-    res.send(Buffer.from(encryptedPdfBytes));
+
+    // Pipe the PDF document to the response
+    doc.pipe(res);
+
+    // Add the image to the PDF
+    // We'll scale the image to fit the page
+    const pageWidth = doc.page.width - 40; // 20 units margin on each side
+    const pageHeight = doc.page.height - 40;
+
+    doc.image(imgBuffer, 20, 20, {
+      fit: [pageWidth, pageHeight],
+      align: "center",
+      valign: "center",
+    });
+
+    // End the document
+    doc.end();
   } catch (error) {
-    console.error("Error encrypting PDF:", error);
-    res.status(500).json({ error: "Failed to encrypt PDF" });
+    console.error("Error generating password-protected PDF:", error);
+    res.status(500).json({ error: "Failed to generate password-protected PDF" });
   }
 };

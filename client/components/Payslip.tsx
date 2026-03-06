@@ -65,33 +65,33 @@ export function Payslip({ data }: { data: PayslipData }) {
   const cellCenteringStyle = {
     verticalAlign: 'middle' as const,
     textAlign: 'center' as const,
-    display: 'table-cell',
-    height: '45px',
-    padding: '12px 6px',
+    padding: '10px 8px',
     lineHeight: '1.2',
+    fontSize: '18px',
+    fontWeight: '500',
   };
 
   const headerCenteringStyle = {
     ...cellCenteringStyle,
-    height: '48px',
-    padding: '14px 6px',
+    fontWeight: 'bold' as const,
+    backgroundColor: '#f3f4f6', // gray-100 for better header visibility
   };
 
   return (
     <div className="w-full p-0" style={{fontFamily: '"Segoe UI", Arial, sans-serif', lineHeight: '1.3', fontSize: '15px', backgroundColor: '#ffffff', minHeight: '100vh'}}>
       <div className="w-full p-0" style={{fontFamily: '"Segoe UI", Arial, sans-serif', fontSize: '15px', backgroundColor: '#ffffff', lineHeight: '1.3'}}>
       {/* Header Section */}
-      <div>
-        <div className="p-3 text-center">
-          <h1 style={{fontSize: '28px'}} className="font-bold text-black mb-1">{data.companyName}</h1>
-          <p style={{fontSize: '13px'}} className="text-gray-700 mb-2">{data.companyAddress}</p>
-          <p style={{fontSize: '16px'}} className="font-semibold text-black">Pay Check - {monthName}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div className="p-3" style={{ textAlign: 'center', width: '100%' }}>
+          <h1 style={{ fontSize: '28px', margin: '0 0 4px 0' }} className="font-bold text-black">{data.companyName}</h1>
+          <p style={{ fontSize: '13px', margin: '0 0 8px 0' }} className="text-gray-700">{data.companyAddress}</p>
+          <p style={{ fontSize: '16px', margin: 0 }} className="font-semibold text-black">Pay Check - {monthName}</p>
         </div>
       </div>
 
       {/* Employee Details Section */}
       <div className="p-3">
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <tbody>
             <tr className="hover:bg-gray-50">
               <td className="border border-gray-700 text-black font-bold text-center" style={cellCenteringStyle}>Name:</td>
@@ -118,18 +118,20 @@ export function Payslip({ data }: { data: PayslipData }) {
               <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.daysInMonth}</td>
             </tr>
             <tr className="hover:bg-gray-50">
-              <td className="border border-gray-700 text-black font-bold text-center" style={cellCenteringStyle}>Employee Code:</td>
-              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.employeeCode}</td>
-              <td colSpan={2}></td>
+              <td className="border border-gray-700 text-black font-bold" style={cellCenteringStyle}>Employee Code:</td>
+              <td className="border border-gray-700 text-black" style={cellCenteringStyle}>{data.employeeCode}</td>
+              <td className="border border-gray-700" colSpan={2} style={cellCenteringStyle}></td>
             </tr>
           </tbody>
         </table>
       </div>
 
       {/* Leave Details Table */}
-      <div className="p-3">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '15px', marginBottom: '15px', fontSize: '18px'}}>Leave Details</h3>
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+      <div className="p-2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: '5px', marginBottom: '10px' }}>
+          <h3 className="font-extrabold text-black" style={{ margin: 0, fontSize: '25px', textAlign: 'center' }}>Leave Details</h3>
+        </div>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif', width: '100%', margin: '0 auto'}}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Leave Type</th>
@@ -169,9 +171,11 @@ export function Payslip({ data }: { data: PayslipData }) {
 
 
       {/* Salary Details Table */}
-      <div className="p-3">
-        <h3 className="font-extrabold text-black text-center" style={{marginTop: '15px', marginBottom: '15px', fontSize: '18px'}}>Salary Details</h3>
-        <table className="w-full border-collapse mx-auto" style={{fontSize: '14px'}}>
+      <div className="p-2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: '5px', marginBottom: '10px' }}>
+          <h3 className="font-extrabold text-black" style={{ margin: 0, fontSize: '25px', textAlign: 'center' }}>Salary Details</h3>
+        </div>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', width: '100%', margin: '0 auto'}}>
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Earning</th>
@@ -216,7 +220,7 @@ export function Payslip({ data }: { data: PayslipData }) {
 
       {/* Net Salary Credited and Amount in Words */}
       <div className="p-3">
-        <table className="w-full border-collapse" style={{fontSize: '14px', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
+        <table className="w-full border-collapse" style={{fontSize: '18px', fontWeight: '500', fontFamily: '"Segoe UI", Arial, sans-serif'}}>
           <tbody>
             <tr>
               <td className="border border-gray-700 text-black font-bold" style={cellCenteringStyle}>Net Salary Credited-</td>
