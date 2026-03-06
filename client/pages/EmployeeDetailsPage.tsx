@@ -2033,10 +2033,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.plTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, plTotal: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plTotal: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2045,10 +2048,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.plAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, plAvailed: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, plAvailed: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2066,10 +2072,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.clTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, clTotal: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clTotal: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2078,10 +2087,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.clAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, clAvailed: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, clAvailed: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2093,10 +2105,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.lwp}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, lwp: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, lwp: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2110,10 +2125,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.slTotal}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, slTotal: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slTotal: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2122,10 +2140,13 @@ export default function EmployeeDetailsPage() {
                                 <Input
                                   type="number"
                                   step="0.1"
+                                  min="0"
                                   value={salaryForm.slAvailed}
-                                  onChange={(e) =>
-                                    setSalaryForm({ ...salaryForm, slAvailed: e.target.value })
-                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const numValue = parseFloat(value) || 0;
+                                    setSalaryForm({ ...salaryForm, slAvailed: numValue < 0 ? "0" : value })
+                                  }}
                                   className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
                                   placeholder="0.0"
                                 />
@@ -2187,11 +2208,15 @@ export default function EmployeeDetailsPage() {
                         <Label className="text-slate-300">Total Working Days</Label>
                         <Input
                           type="number"
+                          min="0"
                           value={salaryForm.totalWorkingDays}
                           onChange={(e) => {
+                            const value = e.target.value;
+                            const numValue = parseFloat(value) || 0;
+                            const finalValue = numValue < 0 ? "0" : value;
                             const updatedForm = {
                               ...salaryForm,
-                              totalWorkingDays: e.target.value,
+                              totalWorkingDays: finalValue,
                             };
                             const earnedValues = calculateEarnedValues(updatedForm);
                             setSalaryForm({
@@ -2206,11 +2231,15 @@ export default function EmployeeDetailsPage() {
                         <Label className="text-slate-300">Actual Working Days</Label>
                         <Input
                           type="number"
+                          min="0"
                           value={salaryForm.actualWorkingDays}
                           onChange={(e) => {
+                            const value = e.target.value;
+                            const numValue = parseFloat(value) || 0;
+                            const finalValue = numValue < 0 ? "0" : value;
                             const updatedForm = {
                               ...salaryForm,
-                              actualWorkingDays: e.target.value,
+                              actualWorkingDays: finalValue,
                             };
                             const earnedValues = calculateEarnedValues(updatedForm);
                             setSalaryForm({
@@ -2270,18 +2299,21 @@ export default function EmployeeDetailsPage() {
                                     ) : (
                                       <Input
                                         type="number"
+                                        min="0"
                                         value={salaryForm[field.key as keyof typeof salaryForm]}
                                         onChange={(e) => {
                                           const value = e.target.value;
+                                          const numValue = parseFloat(value) || 0;
+                                          const finalValue = numValue < 0 ? "0" : value;
 
                                           // If Basic field is changed, auto-calculate dependent fields
                                           if (field.key === "basic") {
-                                            const basicValue = parseFloat(value) || 0;
+                                            const basicValue = parseFloat(finalValue) || 0;
                                             const calculations = calculateSalaryComponents(basicValue);
 
                                             const updatedForm = {
                                               ...salaryForm,
-                                              basic: value,
+                                              basic: finalValue,
                                               hra: calculations.hra.toString(),
                                               conveyance: calculations.conveyance.toString(),
                                               specialAllowance: calculations.specialAllowance.toString(),
@@ -2296,7 +2328,7 @@ export default function EmployeeDetailsPage() {
                                           } else {
                                             const updatedForm = {
                                               ...salaryForm,
-                                              [field.key]: value,
+                                              [field.key]: finalValue,
                                             };
 
                                             // Auto-calculate earned values for any actual field change
@@ -2393,13 +2425,16 @@ export default function EmployeeDetailsPage() {
                             </Label>
                             <Input
                               type="number"
+                              min="0"
                               value={salaryForm[field.key as keyof typeof salaryForm]}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                const numValue = parseFloat(value) || 0;
                                 setSalaryForm({
                                   ...salaryForm,
-                                  [field.key]: e.target.value,
+                                  [field.key]: numValue < 0 ? "0" : value,
                                 })
-                              }
+                              }}
                               className="bg-slate-800/50 border-slate-700 text-white text-sm"
                               placeholder="0"
                             />
