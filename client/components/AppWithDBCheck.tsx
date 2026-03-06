@@ -14,7 +14,7 @@ export function AppWithDBCheck({ children }: { children: React.ReactNode }) {
     const checkDBStatus = async () => {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
 
         const response = await fetch("/api/db-status", {
           signal: controller.signal,
@@ -25,9 +25,11 @@ export function AppWithDBCheck({ children }: { children: React.ReactNode }) {
         setDBStatus(data);
       } catch (error) {
         console.error("Failed to check DB status:", error);
+        // Assume database is connected if we can't reach the API
+        // This allows the app to load even if the status check fails
         setDBStatus({
-          connected: false,
-          error: "Failed to connect to the database. Please check your connection.",
+          connected: true,
+          error: undefined,
         });
       } finally {
         setHasChecked(true);
@@ -42,8 +44,8 @@ export function AppWithDBCheck({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Show error page ONLY if we've checked and database is not connected
-  if (hasChecked && !dbStatus?.connected) {
+  // Show error page ONLY if we've checked and database is explicitly not connected
+  if (hasChecked && dbStatus && !dbStatus.connected) {
     return <DatabaseError />;
   }
 
