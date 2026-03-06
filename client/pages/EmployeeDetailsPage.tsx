@@ -2664,17 +2664,6 @@ export default function EmployeeDetailsPage() {
                                   </Button>
                                   <Button
                                     onClick={() =>
-                                      handleDownloadPayslip(record)
-                                    }
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-green-500 text-green-400 hover:bg-green-500/20"
-                                    title="Download Payslip"
-                                  >
-                                    <Download className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    onClick={() =>
                                       handleEditSalaryRecord(record)
                                     }
                                     variant="outline"
