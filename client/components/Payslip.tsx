@@ -190,11 +190,15 @@ export function Payslip({ data }: { data: PayslipData }) {
               </tr>
             ))}
             <tr className="font-bold bg-gray-100">
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Gross Earnings</td>
+              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Actual Gross</td>
               <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.grossEarnings)}</td>
             </tr>
             <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Total Deduction</td>
+              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Earned Gross</td>
+              <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.earnedGrossEarnings)}</td>
+            </tr>
+            <tr className="font-bold bg-gray-100">
+              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Deduction</td>
               <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.totalDeduction)}</td>
             </tr>
             <tr className="font-bold bg-gray-100">
