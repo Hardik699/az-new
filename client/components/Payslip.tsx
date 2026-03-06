@@ -170,7 +170,7 @@ export function Payslip({ data }: { data: PayslipData }) {
       </div>
 
 
-      {/* Salary Details Table - Single Column Flow */}
+      {/* Salary Details Table - 5 Column Layout */}
       <div className="p-2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: '5px', marginBottom: '10px' }}>
           <h3 className="font-extrabold text-black" style={{ margin: 0, fontSize: '25px', textAlign: 'center' }}>Salary Details</h3>
@@ -179,35 +179,40 @@ export function Payslip({ data }: { data: PayslipData }) {
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Earning</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Actual</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Earned</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Deduction</th>
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Amount</th>
             </tr>
           </thead>
           <tbody>
             {data.earnings.map((earning, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
+              <tr key={`earning-${idx}`} className="hover:bg-gray-50">
                 <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left'}}>{earning.name}</td>
                 <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{formatCurrency(earning.actualGross || 0)}</td>
+                <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{formatCurrency(earning.earnedGross || 0)}</td>
+                <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left'}}>
+                  {data.deductions[idx]?.name || ''}
+                </td>
+                <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>
+                  {data.deductions[idx]?.amount ? formatCurrency(data.deductions[idx].amount) : ''}
+                </td>
               </tr>
             ))}
             <tr className="font-bold bg-gray-100">
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Actual Gross</td>
+              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Gross Earnings</td>
               <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.grossEarnings)}</td>
-            </tr>
-            <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Earned Gross</td>
               <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.earnedGrossEarnings)}</td>
-            </tr>
-            <tr className="font-bold bg-gray-100">
               <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Deduction</td>
               <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>{formatCurrency(data.totalDeduction)}</td>
             </tr>
             <tr className="font-bold bg-gray-100">
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Net Salary Credited</td>
-              <td className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>₹ {formatCurrency(data.netSalaryCredited)}</td>
+              <td colSpan={3} className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Net Salary Credited</td>
+              <td colSpan={2} className="border border-gray-700 text-black text-center" style={{...cellCenteringStyle, fontWeight: 'bold'}}>₹ {formatCurrency(data.netSalaryCredited)}</td>
             </tr>
             <tr>
-              <td className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Amount (in words)</td>
-              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.amountInWords}</td>
+              <td colSpan={3} className="border border-gray-700 text-black text-left" style={{...cellCenteringStyle, textAlign: 'left', fontWeight: 'bold'}}>Amount (in words)</td>
+              <td colSpan={2} className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.amountInWords}</td>
             </tr>
           </tbody>
         </table>
