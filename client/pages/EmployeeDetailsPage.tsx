@@ -2040,7 +2040,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, plTotal: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2055,7 +2055,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, plAvailed: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2079,7 +2079,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, clTotal: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2094,7 +2094,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, clAvailed: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2112,7 +2112,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, lwp: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2132,7 +2132,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, slTotal: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
@@ -2147,7 +2147,7 @@ export default function EmployeeDetailsPage() {
                                     const numValue = parseFloat(value) || 0;
                                     setSalaryForm({ ...salaryForm, slAvailed: numValue < 0 ? "0" : value })
                                   }}
-                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8"
+                                  className="bg-slate-800/50 border-slate-600 text-white text-center h-8 w-full"
                                   placeholder="0.0"
                                 />
                               </td>
