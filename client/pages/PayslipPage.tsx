@@ -358,86 +358,98 @@ export default function PayslipPage() {
                   wrapper.style.top = '-9999px';
                   wrapper.style.backgroundColor = '#ffffff';
                   wrapper.style.padding = '40px 0';
-                  wrapper.style.width = element.offsetWidth + 'px';
+                  wrapper.style.width = '1000px';
                   wrapper.style.minHeight = 'auto';
                   wrapper.style.boxSizing = 'border-box';
 
-                  // Create a clone with white background
+                  // Create a clone with white background and preserved styles
                   const clonedElement = element.cloneNode(true) as HTMLElement;
                   clonedElement.style.backgroundColor = '#ffffff';
                   clonedElement.style.margin = '0';
-                  clonedElement.style.padding = '30px';
-                  clonedElement.style.width = element.offsetWidth + 'px';
+                  clonedElement.style.padding = '40px';
+                  clonedElement.style.width = '100%';
                   clonedElement.style.minHeight = 'auto';
                   clonedElement.style.boxSizing = 'border-box';
+                  clonedElement.style.fontFamily = '"Segoe UI", Arial, sans-serif';
 
-                  // Ensure all table cells maintain proper centering
-                  const allCells = clonedElement.querySelectorAll('td, th');
-                  allCells.forEach((cell) => {
-                    (cell as HTMLElement).style.verticalAlign = 'middle';
-                    (cell as HTMLElement).style.textAlign = 'center';
-                  });
+                  // Copy all computed styles for all elements
+                  const copyStyles = (src: Element, tgt: Element) => {
+                    const computedStyle = window.getComputedStyle(src);
+                    Array.from(computedStyle).forEach(property => {
+                      (tgt as HTMLElement).style.setProperty(
+                        property,
+                        computedStyle.getPropertyValue(property),
+                        computedStyle.getPropertyPriority(property)
+                      );
+                    });
+                  };
+
+                  // Recursively copy styles for all child elements
+                  const recursiveCopyStyles = (srcEl: Element, tgtEl: Element) => {
+                    copyStyles(srcEl, tgtEl);
+                    const srcChildren = srcEl.children;
+                    const tgtChildren = tgtEl.children;
+                    for (let i = 0; i < srcChildren.length; i++) {
+                      recursiveCopyStyles(srcChildren[i], tgtChildren[i]);
+                    }
+                  };
+
+                  recursiveCopyStyles(element, clonedElement);
 
                   // Add cloned element to wrapper
                   wrapper.appendChild(clonedElement);
                   document.body.appendChild(wrapper);
 
                   // Wait for content to render
-                  await new Promise((resolve) => setTimeout(resolve, 200));
+                  await new Promise((resolve) => setTimeout(resolve, 300));
 
                   const canvas = await html2canvas(wrapper as HTMLElement, {
-                    scale: 1.5,
+                    scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    imageTimeout: 0
+                    imageTimeout: 0,
+                    width: 1000,
+                    windowHeight: 1500
                   });
 
                   // Remove wrapper
                   document.body.removeChild(wrapper);
 
-                  // Get image data and send to server for PDF generation with password
+                  // Create PDF with high quality
+                  const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                  });
+
                   const imgData = canvas.toDataURL('image/png');
-                  const imgBase64 = imgData.split(',')[1];
+                  const pageWidth = pdf.internal.pageSize.getWidth();
+                  const pageHeight = pdf.internal.pageSize.getHeight();
+                  const imgHeight = (canvas.height * pageWidth) / canvas.width;
+                  let heightLeft = imgHeight;
+                  let position = 0;
+
+                  pdf.addImage(imgData, 'PNG', 0, position, pageWidth, imgHeight);
+                  heightLeft -= pageHeight;
+
+                  while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, pageWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                  }
 
                   const monthName = new Date(payslipData.year, payslipData.month - 1).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric'
                   });
 
-                  // Send to server for encryption
-                  const uanNo = employee?.uanNumber || "1234"; // Defaulting to 1234 if no UAN provided
-                  const uanPassword = uanNo.toString().slice(-4);
+                  const fileName = `Payslip_${monthName}.pdf`;
+                  pdf.save(fileName);
 
-                  const response = await fetch('/api/encrypt-pdf', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      image: imgBase64,
-                      password: uanPassword,
-                      fileName: `Payslip_${monthName}`
-                    })
-                  });
-
-                  if (!response.ok) {
-                    throw new Error('Failed to encrypt PDF');
-                  }
-
-                  // Download the encrypted PDF
-                  const blob = await response.blob();
-                  const downloadUrl = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = downloadUrl;
-                  link.download = `Payslip_${monthName}.pdf`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(downloadUrl);
-
-                  toast.success('PDF Downloaded Successfully');
+                  toast.success('PDF Downloaded Successfully with Full Styling!');
                 } catch (error) {
                   console.error('Error generating PDF:', error);
                   toast.error('Failed to generate PDF');
