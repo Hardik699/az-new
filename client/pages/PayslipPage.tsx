@@ -308,10 +308,10 @@ export default function PayslipPage() {
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
                   const canvas = await html2canvas(wrapper as HTMLElement, {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#f0f4f8',
+                    backgroundColor: '#ffffff',
                     allowTaint: true,
                     imageTimeout: 0
                   });
@@ -386,10 +386,10 @@ export default function PayslipPage() {
                   await new Promise((resolve) => setTimeout(resolve, 200));
 
                   const canvas = await html2canvas(wrapper as HTMLElement, {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#f0f4f8',
+                    backgroundColor: '#ffffff',
                     allowTaint: true,
                     imageTimeout: 0
                   });
