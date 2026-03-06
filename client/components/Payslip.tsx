@@ -135,9 +135,9 @@ export function Payslip({ data }: { data: PayslipData }) {
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Leave Type</th>
-              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Total Leave</th>
-              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Availed</th>
-              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Subsisting</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Total Leave In The Account</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Leave Availed</th>
+              <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>Subsisting Leave</th>
               <th className="border border-gray-700 text-center text-black font-bold" style={headerCenteringStyle}>LWP</th>
             </tr>
           </thead>
@@ -154,15 +154,15 @@ export function Payslip({ data }: { data: PayslipData }) {
           </tbody>
           <tfoot>
             <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Total Taken -</td>
+              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Total Leaves Taken</td>
               <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.totalLeavesTaken.toFixed(1)}</td>
-              <td colSpan={2} className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Without Pay -</td>
+              <td colSpan={2} className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Total Leave Without Pay -</td>
               <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.totalLeaveWithoutPay.toFixed(1)}</td>
             </tr>
             <tr className="font-bold bg-gray-50">
-              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Present Days -</td>
+              <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Total Present Days</td>
               <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.totalPresentDays.toFixed(1)}</td>
-              <td colSpan={2} className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Payable Days -</td>
+              <td colSpan={2} className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>Total Days Payable</td>
               <td className="border border-gray-700 text-black text-center" style={cellCenteringStyle}>{data.totalDaysPayable.toFixed(1)}</td>
             </tr>
           </tfoot>
